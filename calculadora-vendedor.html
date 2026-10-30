@@ -227,6 +227,8 @@
       .ltotal { font-weight: 700; min-width: 72px; text-align: right; font-variant-numeric: tabular-nums; }
       .stone-line { background: #faf8f3; border-radius: 8px; padding: 10px 8px; margin-bottom: 8px; border-bottom: none; }
       .stone-ctrls .s-in { max-width: 165px; }
+      .pos-wrap { display: inline-flex; align-items: center; gap: 4px; font-size: 0.78rem; color: #777; font-weight: 600; }
+      .pos-in { max-width: 112px; }
       .precalc { background: #f5f2e9; border: 1.5px solid #c9a227; border-radius: 10px; padding: 10px 14px; margin-top: 10px; font-size: 0.9rem; line-height: 1.75; }
       .precalc:empty { display: none; }
       @media (max-width: 560px) {
@@ -441,6 +443,7 @@
                     <button type="button" data-value="3" aria-pressed="false" data-i18n="st3">3 storage</button>
                   </div>
                 </div>
+                <div id="island-storage-pos"></div>
                 <div class="mrow" style="display:none">
                   <div class="mlab" data-i18n="isl_panels">Paneles de la isla</div>
                   <div class="mright">
@@ -1026,6 +1029,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           wo_island_h: "Isla",
           wo_manual: "Framing manual (tamaño personalizado): cantidades según el formulario; sin lista de cortes automática.",
 
+          pos_l: "Posición", pos_left: "Izquierda", pos_center: "Centro", pos_right: "Derecha", dist_t: "Distribución",
+
           import_l: "Importar código de orden", import_ph: "Pega aquí el código LOS1-…",
           import_btn: "Cargar código", import_applied: "Código aplicado",
           import_base: "markup base 45%", import_extra: "extra del vendedor",
@@ -1161,6 +1166,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           wo_plan: "Cutting plan per stock bar", wo_bar: "Bar", wo_left: "left",
           wo_island_h: "Island",
           wo_manual: "Manual framing (custom size): quantities from the form; no automatic cut list.",
+
+          pos_l: "Position", pos_left: "Left", pos_center: "Center", pos_right: "Right", dist_t: "Layout",
 
           import_l: "Import order code", import_ph: "Paste the LOS1-… code here",
           import_btn: "Load code", import_applied: "Code applied",
@@ -1364,6 +1371,54 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       function autoQty1(id){ var qe = el("q_" + id); if (qe && num("q_" + id) === 0) qe.value = "1"; }
       function rowLabel(r){ return LANG === "es" ? r.es : r.en; }
       var EQON = {};
+      // ===== v27 (2026-10-30): DISTRIBUCIÓN de equipos — posiciones Izquierda/Centro/Derecha =====
+      // Pedido de Legra: cada equipo y cada storage (cocina e isla) lleva un selector de
+      // posición. Es SOLO presentación y datos: las posiciones NO cambian ningún precio,
+      // cantidad ni total. Regla de Legra: al ENCENDER el refrigerador, su posición se
+      // pone sola en el CENTRO (el usuario puede cambiarla después a mano).
+      var POS_ITEMS = ["grill", "cooktop", "sideburner", "sink", "fridge"];
+      var POS_DEF = { grill: "l", cooktop: "c", sideburner: "r", sink: "r", fridge: "c" };
+      var POS = { grill: "l", cooktop: "c", sideburner: "r", sink: "r", fridge: "c" };
+      var POS_DEF_LIST = ["l", "r", "c"];
+      var POS_STO = ["l", "r", "c"];
+      var POS_ISTO = ["l", "r", "c"];
+      var POS_NAMES = { grill: { es: "Parrilla", en: "Grill" }, cooktop: { es: "Estufa", en: "Cooktop" }, sideburner: { es: "Quemador lateral", en: "Side burner" }, sink: { es: "Fregadero", en: "Sink" }, fridge: { es: "Refrigerador", en: "Refrigerator" } };
+      function posOptsHTML(sel) {
+        return '<option value="l"' + (sel === "l" ? " selected" : "") + '>' + L("pos_left") + '</option>' +
+               '<option value="c"' + (sel === "c" ? " selected" : "") + '>' + L("pos_center") + '</option>' +
+               '<option value="r"' + (sel === "r" ? " selected" : "") + '>' + L("pos_right") + '</option>';
+      }
+      function posSelHTML(id) {
+        return '<label class="pos-wrap"><span>' + L("pos_l") + '</span><select class="s-in pos-in" id="pos_' + id + '">' + posOptsHTML(POS[id] || POS_DEF[id] || "c") + '</select></label>';
+      }
+      function posName(code) { return code === "l" ? L("pos_left") : code === "r" ? L("pos_right") : L("pos_center"); }
+      function posItemName(id) { var n = POS_NAMES[id]; return n ? (LANG === "es" ? n.es : n.en) : id; }
+      function layoutRows() {
+        var rows = [];
+        POS_ITEMS.forEach(function (id) { if (typeof EQON !== "undefined" && EQON[id]) rows.push([posItemName(id), posName(POS[id] || POS_DEF[id] || "c")]); });
+        var n = parseInt(state.nstorage || "1", 10);
+        for (var i = 0; i < n; i++) rows.push([L("storage_unit") + " " + (i + 1), posName(POS_STO[i] || POS_DEF_LIST[i] || "c")]);
+        if (el("island-on") && el("island-on").checked) {
+          var ni = parseInt(state.istorage || "1", 10);
+          for (var j = 0; j < ni; j++) rows.push([L("isl_storage") + " " + (j + 1), posName(POS_ISTO[j] || POS_DEF_LIST[j] || "c")]);
+        }
+        return rows;
+      }
+      function layoutText() { return layoutRows().map(function (rw) { return rw[0] + ": " + rw[1]; }).join("; "); }
+      function layoutClause() {
+        var es = LANG === "es";
+        var phrase = es ? { l: "a la izquierda", c: "al centro", r: "a la derecha" } : { l: "on the left", c: "in the center", r: "on the right" };
+        var parts = [];
+        POS_ITEMS.forEach(function (id) { if (typeof EQON !== "undefined" && EQON[id]) parts.push(posItemName(id).toLowerCase() + " " + phrase[POS[id] || POS_DEF[id] || "c"]); });
+        var n = parseInt(state.nstorage || "1", 10);
+        for (var i = 0; i < n; i++) parts.push("storage " + (i + 1) + " " + phrase[POS_STO[i] || POS_DEF_LIST[i] || "c"]);
+        if (el("island-on") && el("island-on").checked) {
+          var ni = parseInt(state.istorage || "1", 10);
+          for (var j = 0; j < ni; j++) parts.push((es ? "storage de la isla " : "island storage ") + (j + 1) + " " + phrase[POS_ISTO[j] || POS_DEF_LIST[j] || "c"]);
+        }
+        if (!parts.length) return "";
+        return (es ? "Distribución: " : "Layout: ") + parts.join(", ") + ". ";
+      }
       function rowById(id){ for (var i = 0; i < KDATA.length; i++){ if (KDATA[i].id === id) return KDATA[i]; } return null; }
       function presetStock(id){ var r = rowById(id); if (!r || !r.presets) return 288; var s = el("ps_" + id); var ix = s ? s.selectedIndex : (r.defPreset || 0); if (ix < 0) ix = r.defPreset || 0; return r.presets[ix].stock; }
       function effPrice(r){ if (r.kind === "presetqty" || r.kind === "priceqty") return num("p_" + r.id); return r.price || 0; }
@@ -1392,8 +1447,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           }).join("");
           d.innerHTML = '<div class="mlab">'+L("storage_unit")+' '+(i+1)+'</div>'+
             '<div class="mright"><select class="s-in" id="sto_'+i+'">'+opts+'</select>'+
+            '<label class="pos-wrap"><span>'+L("pos_l")+'</span><select class="s-in pos-in" id="pos_sto_'+i+'">'+posOptsHTML(POS_STO[i] || POS_DEF_LIST[i] || "c")+'</select></label>'+
             '</div>';
           box.appendChild(d);
+          (function(idx){ var ps = el("pos_sto_" + idx); if (ps) ps.addEventListener("change", function(){ POS_STO[idx] = this.value; }); })(i);
         }
       }
       function stoneSizes(){ return STONE.quartz.sizes; }
@@ -1431,7 +1488,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           } else if (r.kind === "selqty"){
             var opts = r.options.map(function(o,i){ var hid = ((r.id === "grill" && i === 1) || (r.id === "outlet" && i === 0)) ? " hidden disabled" : ""; return '<option value="'+i+'"'+hid+'>'+(LANG==="es"?o.es:o.en)+'</option>'; }).join("");
             right = '<select class="s-in" id="s_'+r.id+'">'+opts+'</select>' +
-              '<input type="number" class="q-in" id="q_'+r.id+'" value="0" min="0" step="1" inputmode="numeric"/>';
+              '<input type="number" class="q-in" id="q_'+r.id+'" value="0" min="0" step="1" inputmode="numeric"/>' +
+              (POS_ITEMS.indexOf(r.id) >= 0 ? posSelHTML(r.id) : "");
           } else if (r.kind === "money"){
             right = '<span class="uprice">$<input type="number" class="p-in" id="m_'+r.id+'" value="0" min="0" step="1" inputmode="decimal"/></span>';
           }
@@ -1453,8 +1511,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
               EQON[r.id] = this.checked;
               d.style.display = this.checked ? "" : "none";
               if (this.checked) autoQty1(r.id);
+              // Regla de Legra (v27): al ENCENDER el refrigerador, su posición se pone sola en el CENTRO.
+              if (this.checked && r.id === "fridge"){ POS.fridge = "c"; var pfr = el("pos_fridge"); if (pfr) pfr.value = "c"; }
               recalc();
             });
+            if (POS_ITEMS.indexOf(r.id) >= 0){
+              var posEl = el("pos_" + r.id);
+              if (posEl) posEl.addEventListener("change", function(){ POS[r.id] = this.value; });
+            }
             if (r.kind === "selqty"){
               el("s_" + r.id).addEventListener("change", function(){
                 autoQty1(r.id);
@@ -1515,6 +1579,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         var names = stoneNames(sm.value);
         names.forEach(function(n){ var o=document.createElement("option"); o.value=n; o.textContent=stoneLabel(sm.value, n); snEl.appendChild(o); });
         if (curName && names.indexOf(curName) >= 0) snEl.value = curName;
+        renderIslandPos();
+      }
+      // v27: selectores de posición de los storage de la isla (uno por unidad).
+      function renderIslandPos(){
+        var box = el("island-storage-pos"); if (!box) return;
+        box.innerHTML = "";
+        var n = parseInt(state.istorage || "1", 10);
+        for (var i = 0; i < n; i++){
+          var d = document.createElement("div"); d.className = "mrow";
+          d.innerHTML = '<div class="mlab">' + L("isl_storage") + ' ' + (i + 1) + '</div>' +
+            '<div class="mright"><label class="pos-wrap"><span>' + L("pos_l") + '</span><select class="s-in pos-in" id="pos_isto_' + i + '">' + posOptsHTML(POS_ISTO[i] || POS_DEF_LIST[i] || "c") + '</select></label></div>';
+          box.appendChild(d);
+          (function(idx){ var s = el("pos_isto_" + idx); if (s) s.addEventListener("change", function(){ POS_ISTO[idx] = this.value; }); })(i);
+        }
       }
       // ===== Framing automático (cocinas estándar 6'/8'/10') =====
       // Cortes en pulgadas — receta v18 (Legra, 2026-10-23).
@@ -1686,6 +1764,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           if (!btn) return;
           state[name] = btn.getAttribute("data-value");
           if (name === "nstorage") renderStorage();
+          if (name === "istorage") renderIslandPos();
           group.querySelectorAll("button").forEach(function (b) {
             var on = b === btn;
             b.classList.toggle("active", on);
@@ -2133,6 +2212,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           if (nsto > 0) t += "Incluye " + nsto + (nsto === 1 ? " módulo" : " módulos") + " de almacenamiento de acero inoxidable. ";
           if (islOn) t += "Incluye además una isla de " + (state.isize || "6") + "′ con la misma construcción en aluminio y su propia encimera de piedra. ";
           if (eqs.length) t += "Equipada con " + eqs.join(", ") + ", todo de grado exterior. ";
+          t += layoutClause();
           t += "Todos los materiales son para exposición a los elementos, de bajo mantenimiento y larga vida útil: una cocina de alta calidad, hecha para disfrutarse por muchos años.";
         } else {
           t = r.ktypeName + " outdoor kitchen, " + sizeTxt + ", built 100% with structural aluminum: it will not rust, rot, or be attacked by termites. ";
@@ -2141,6 +2221,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           if (nsto > 0) t += "Includes " + nsto + " stainless-steel storage " + (nsto === 1 ? "module" : "modules") + ". ";
           if (islOn) t += "It also includes a " + (state.isize || "6") + "′ island with the same aluminum construction and its own stone countertop. ";
           if (eqs.length) t += "Equipped with " + eqs.join(", ") + ", all outdoor-grade. ";
+          t += layoutClause();
           t += "Every material is made for exposure to the elements, low-maintenance and long-lasting: a high-quality kitchen built to be enjoyed for many years.";
         }
         return t;
@@ -2578,6 +2659,8 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           body += "<h2 class='sec'>" + L("wo_conn") + "</h2>" + woRowsHTML(woConnRows(d.main, d.esquineros));
         }
         body += woPanelsHTML(d.color, d.panels, r.ksize);
+        var layRows = layoutRows();
+        if (layRows.length) body += "<h2 class='sec'>" + L("dist_t") + "</h2>" + woRowsHTML(layRows);
         if (d.islandOn) {
           body += "<h2 class='sec'>" + L("wo_island_h") + " — " + d.islandSize + "' · " + L("k_" + d.islandType) + " · " + L("nstorage_l") + ": " + d.islandStorage + "</h2>";
           body += "<h2 class='sec'>" + L("wo_profiles") + "</h2>" + woCutsHTML(d.island);
@@ -2642,6 +2725,8 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
             rowsPDF(L("wo_conn"), woConnRows(d.main, d.esquineros));
           }
           panelsPDF(d.color, d.panels, r.ksize);
+          var layRows = layoutRows();
+          if (layRows.length) rowsPDF(L("dist_t"), layRows);
           if (d.islandOn) {
             y = pdfSection(doc, y, (L("wo_island_h") + " - " + d.islandSize + "' - " + L("k_" + d.islandType) + " - " + L("nstorage_l") + ": " + d.islandStorage).toUpperCase());
             cutsPDF(L("wo_profiles"), d.island);
@@ -2707,6 +2792,8 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
       //   sb: backsplash 0/1 · bs: piedra del backsplash (misma forma que st)
       //   ip: cantidades de la isla {panels, perfil, channel, connC, connT, connH, wheels} · ist: piedra de la isla {m, z, n}
       //   x: markup extra del vendedor % · p45: precio base (costos ÷ 0.55) · f: precio final al cliente · cc: costos totales
+      //   pos (v27): posiciones de la distribución {grill, cooktop, sideburner, sink, fridge, sto[], isto[]} con valores "l"/"c"/"r";
+      //   los códigos anteriores a v27 no traen "pos" y se importan igual (las posiciones quedan en sus defaults).
       // Este bloque JS es IDÉNTICO en la calculadora del vendedor y en la principal (se inyecta desde los_code.js en ambos builds).
       function losB64e(str) { return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
       function losB64d(s) { s = String(s).replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return decodeURIComponent(escape(atob(s))); }
@@ -2743,6 +2830,20 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         o.sto = [];
         var nst = parseInt(state.nstorage || "1", 10);
         for (var i = 0; i < nst; i++) o.sto.push(losSelIdx("sto_" + i));
+        // v27: posiciones de la distribución (l/c/r) — equipos, storage e isla.
+        // Clave NUEVA "pos": los códigos viejos no la traen y siguen importando igual.
+        o.pos = {};
+        ["grill", "cooktop", "sideburner", "sink", "fridge"].forEach(function (id) {
+          var s = el("pos_" + id);
+          o.pos[id] = s ? s.value : ((typeof POS !== "undefined" && POS[id]) || "c");
+        });
+        o.pos.sto = [];
+        for (var pi = 0; pi < nst; pi++) { var ps2 = el("pos_sto_" + pi); o.pos.sto.push(ps2 ? ps2.value : ((typeof POS_STO !== "undefined" && POS_STO[pi]) || "c")); }
+        o.pos.isto = [];
+        if (o.i) {
+          var nist = parseInt(state.istorage || "1", 10);
+          for (var pj = 0; pj < nist; pj++) { var ps3 = el("pos_isto_" + pj); o.pos.isto.push(ps3 ? ps3.value : ((typeof POS_ISTO !== "undefined" && POS_ISTO[pj]) || "c")); }
+        }
         function stoneObj(id) { return { m: el("sm_" + id) ? el("sm_" + id).value : "quartz", z: el("sz_" + id) ? el("sz_" + id).value : "", n: el("sn_" + id) ? el("sn_" + id).value : "", q: losNum("q_" + id) }; }
         o.st = stoneObj("stone1");
         o.sb = (el("backsplash-on") && el("backsplash-on").checked) ? 1 : 0;
@@ -2773,6 +2874,13 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         if (!inp) return;
         var o = losDecode(inp.value);
         if (!o) { if (msg) { msg.textContent = L("import_err"); msg.className = "import-msg err"; } return; }
+        // v27: posiciones (si el código las trae) — se cargan ANTES de re-renderizar
+        // storage/isla para que los selectores nazcan con el valor del código.
+        if (o.pos) {
+          ["grill", "cooktop", "sideburner", "sink", "fridge"].forEach(function (id) { if (o.pos[id] && typeof POS !== "undefined") POS[id] = o.pos[id]; });
+          if (o.pos.sto) o.pos.sto.forEach(function (v, i) { if (typeof POS_STO !== "undefined") POS_STO[i] = v; });
+          if (o.pos.isto) o.pos.isto.forEach(function (v, i) { if (typeof POS_ISTO !== "undefined") POS_ISTO[i] = v; });
+        }
         if (o.c) {
           losSetVal("client-name", o.c.n); losSetVal("client-contact", o.c.t);
           losSetVal("estimate-date", o.c.d); losSetVal("project-address", o.c.a);
@@ -2815,6 +2923,12 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         if (o.i) {
           if (o.ip) { losSetVal("island-panels", o.ip.panels); losSetVal("island-perfil", o.ip.perfil); losSetVal("island-channel", o.ip.channel); losSetVal("island-connC", o.ip.connC); losSetVal("island-connT", o.ip.connT); losSetVal("island-connH", o.ip.connH); losSetVal("island-wheels", o.ip.wheels); }
           if (o.ist) { losSetVal("ism_", o.ist.m); if (typeof renderIsland === "function") renderIsland(); losSetVal("isz_", o.ist.z); losSetVal("isn_", o.ist.n); }
+        }
+        // v27: reflejar las posiciones en los selectores visibles.
+        if (o.pos) {
+          ["grill", "cooktop", "sideburner", "sink", "fridge"].forEach(function (id) { if (o.pos[id]) { var s = el("pos_" + id); if (s) s.value = o.pos[id]; } });
+          (o.pos.sto || []).forEach(function (v, i) { var s = el("pos_sto_" + i); if (s) s.value = v; });
+          (o.pos.isto || []).forEach(function (v, i) { var s = el("pos_isto_" + i); if (s) s.value = v; });
         }
         window.__saleMode = "price";
         losSetVal("sale-price", o.f);
@@ -2897,6 +3011,8 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         }
         var eqs = r.lines.filter(function (l) { return l.cat === "equip"; }).map(function (l) { return l.label + (l.qty > 1 ? " × " + l.qty : ""); });
         specs.push([L("cat_equip"), eqs.length ? eqs.join("; ") : "—"]);
+        var layTxt = (typeof layoutText === "function") ? layoutText() : "";
+        if (layTxt) specs.push([L("dist_t"), layTxt]);
         specs.push([L("wo_days"), String(r.days)]);
         return { r: r, c: c, specs: specs, code: losEncode(gatherOrderCode(r)) };
       }
