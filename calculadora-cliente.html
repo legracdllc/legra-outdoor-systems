@@ -282,9 +282,7 @@
       .stone-charts { margin-top: 10px; }
       .stone-charts summary { cursor: pointer; font-weight: 700; color: var(--green, #004020); padding: 6px 0; }
       .stone-charts img { width: 100%; height: auto; display: block; border-radius: 10px; margin: 8px 0; }
-      .wo-code { font-family: monospace; font-size: 11px; word-break: break-all; border: 2px solid #004020; border-radius: 8px; padding: 10px; background: #f5f2e9; color: #1a1a1a; }
       .wo-notes div { border-bottom: 1px solid #bbb; height: 26px; }
-      #order-code { width: 100%; font-family: monospace; font-size: 11px; border: 1.5px solid #004020; border-radius: 8px; padding: 8px; background: #f5f2e9; }
 
     </style>
   </head>
@@ -345,7 +343,7 @@
             <fieldset>
               <legend data-i18n="ktype">Tipo de cocina</legend><div class="acc-body" hidden>
               <div class="seg" data-group="ktype" role="group">
-                <button type="button" data-value="modular" class="active" aria-pressed="true" data-i18n="k_modular">Modular</button>
+                <button type="button" data-value="modular" aria-pressed="false" data-i18n="k_modular">Modular</button>
                 <button type="button" data-value="movil" aria-pressed="false" data-i18n="k_movil">Móvil</button>
                 <button type="button" data-value="permanente" aria-pressed="false" data-i18n="k_permanente">Permanente</button>
               </div>
@@ -356,7 +354,7 @@
             <fieldset>
               <legend data-i18n="ksize">Tamaño</legend><div class="acc-body" hidden>
               <div class="seg" data-group="ksize" role="group">
-                <button type="button" data-value="6" class="active" aria-pressed="true" data-i18n="k_6">6'</button>
+                <button type="button" data-value="6" aria-pressed="false" data-i18n="k_6">6'</button>
                 <button type="button" data-value="8" aria-pressed="false" data-i18n="k_8">8'</button>
                 <button type="button" data-value="10" aria-pressed="false" data-i18n="k_10">10'</button>
                 <button type="button" data-value="custom" aria-pressed="false" data-i18n="k_custom">Personalizada</button>
@@ -379,7 +377,8 @@
             <fieldset>
               <legend>🗄️ <span data-i18n="cat_storage">Storage</span></legend><div class="acc-body" hidden>
               <div class="seg" data-group="nstorage" role="group" style="margin-bottom:10px">
-                <button type="button" data-value="1" class="active" aria-pressed="true" data-i18n="st1">1 storage</button>
+                <button type="button" data-value="0" class="active" aria-pressed="true" data-i18n="st0">0 storage</button>
+                <button type="button" data-value="1" aria-pressed="false" data-i18n="st1">1 storage</button>
                 <button type="button" data-value="2" aria-pressed="false" data-i18n="st2">2 storage</button>
                 <button type="button" data-value="3" aria-pressed="false" data-i18n="st3">3 storage</button>
               </div>
@@ -515,19 +514,6 @@
               <div class="t-value" id="seller-deposit">$0.00</div>
               <div class="t-sub" data-i18n="due_sign">A la firma</div>
             </div>
-          </div>
-          <div class="field" style="margin-top:14px">
-            <label for="order-code" data-i18n="code_l">Código de orden</label>
-            <textarea id="order-code" readonly rows="3"></textarea>
-            <p class="hint" data-i18n="code_hint"></p>
-            <button type="button" id="code-copy" class="cf-show-all" data-i18n="copy_code_l">Copiar código</button>
-          </div>
-          <div class="field" style="margin-top:14px">
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button type="button" id="wa-send" data-i18n="send_wa_l" style="flex:1;min-width:200px;background:#25D366;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:15px;cursor:pointer">📲 Enviar mi presupuesto por WhatsApp</button>
-              <button type="button" id="em-send" data-i18n="send_em_l" style="background:#fff;color:#004020;border:2px solid #c9a227;border-radius:10px;padding:12px;font-weight:700;font-size:15px;cursor:pointer">✉️ Enviar por correo</button>
-            </div>
-            <p class="hint" data-i18n="send_hint"></p>
           </div>
           <div class="est-btns">
             <button type="button" class="est-btn client" id="est-client" data-i18n="btn_client">📄 Mi presupuesto</button>
@@ -975,11 +961,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var T = {
         es: {
 
-          send_wa_l: "📲 Enviar mi presupuesto por WhatsApp", send_em_l: "✉️ Enviar por correo", send_hint: "Al enviarlo, Legra's recibe tus datos y tu presupuesto completo para revisarlo y contactarte.", stone_chart_l: "Ver carta de piedras",
+          stone_chart_l: "Ver carta de piedras",
           seller_results_l: "Precio para el cliente", total_l: "Precio total",
-          code_l: "Código de orden", code_hint: "Este código guarda toda la configuración de la orden. Entrégalo junto con la orden de trabajo.",
-          copy_code_l: "Copiar código",
-          doc_workorder: "ORDEN DE TRABAJO", wo_specs: "Características de la cocina", wo_notes: "Notas", wo_code: "Código de orden",
+          doc_workorder: "ORDEN DE TRABAJO", wo_specs: "Características de la cocina", wo_notes: "Notas",
           wo_days: "Días de trabajo", no_l: "No", st0: "0 storage",
           btn_workorder: "🧾 Orden de trabajo", wo_btn: "🧾 Orden de trabajo", doc_workorder: "Orden de trabajo",
           wo_profiles: "Perfiles 2x2", wo_channels: "Canales 2x1",
@@ -1018,7 +1002,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           deposit_l: "Anticipo (50%)",
           plumbing_l: "Plomer\u00eda", electrical_l: "Electricidad", water_l: "Agua",
           ksize: "Tama\u00f1o", k_6: "6'", k_8: "8'", k_10: "10'", k_custom: "Personalizada",
-          st1: "1 storage", st2: "2 storage", st3: "3 storage", storage_unit: "Storage",
+          st0: "0 storage", st1: "1 storage", st2: "2 storage", st3: "3 storage", storage_unit: "Storage",
           nstorage_l: "N\u00famero de storage",
           cat_island: "Isla (opcional)", island_add: "Agregar isla", island_ft: "Pies lineales de la isla",
           island_stone: "Piedra de la isla", island_framing: "Framing de la isla",
@@ -1107,11 +1091,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         },
         en: {
 
-          send_wa_l: "📲 Send my estimate via WhatsApp", send_em_l: "✉️ Send by email", send_hint: "When you send it, Legra's receives your details and your full estimate to review it and contact you.", stone_chart_l: "View stone chart",
+          stone_chart_l: "View stone chart",
           seller_results_l: "Client price", total_l: "Total price",
-          code_l: "Order code", code_hint: "This code stores the full order configuration. Hand it in together with the work order.",
-          copy_code_l: "Copy code",
-          doc_workorder: "WORK ORDER", wo_specs: "Kitchen characteristics", wo_notes: "Notes", wo_code: "Order code",
+          doc_workorder: "WORK ORDER", wo_specs: "Kitchen characteristics", wo_notes: "Notes",
           wo_days: "Work days", no_l: "No", st0: "0 storage",
           btn_workorder: "🧾 Work order", wo_btn: "🧾 Work Order", doc_workorder: "Work Order",
           wo_profiles: "2x2 Profiles", wo_channels: "2x1 Channels",
@@ -1150,7 +1132,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           deposit_l: "Deposit (50%)",
           plumbing_l: "Plumbing", electrical_l: "Electrical", water_l: "Water",
           ksize: "Size", k_6: "6'", k_8: "8'", k_10: "10'", k_custom: "Custom",
-          st1: "1 storage", st2: "2 storage", st3: "3 storage", storage_unit: "Storage",
+          st0: "0 storage", st1: "1 storage", st2: "2 storage", st3: "3 storage", storage_unit: "Storage",
           nstorage_l: "Number of storage units",
           cat_island: "Island (optional)", island_add: "Add island", island_ft: "Island linear feet",
           island_stone: "Island stone", island_framing: "Island framing",
@@ -1584,6 +1566,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       function applyStandard(){
         var std = state.ksize !== "custom";
         var movil = state.ktype === "movil";
+        // v28: arranque en cero — sin tipo o sin tamaño elegido todavía no hay
+        // cocina: framing, paneles, ruedas y días de labor quedan en 0 hasta
+        // que el usuario escoja. Al escoger, el flujo normal calcula todo igual.
+        if (!state.ktype || !state.ksize){
+          ["q_perfil22","q_channel21","q_connT","q_connC","q_connH","q_wallpanel","q_wheels"].forEach(function(id){ var e0 = el(id); if (e0) e0.value = 0; });
+          var dlE0 = el("labor-days"); if (dlE0) dlE0.value = 0;
+          var fn0 = el("framing-note"); if (fn0) fn0.innerHTML = "";
+          var sn0 = el("std-note"); if (sn0) sn0.textContent = "";
+          var wr0 = el("row-wheels"); if (wr0) wr0.style.display = "none";
+          return;
+        }
         // En modo estándar el framing se calcula solo: llenar las cantidades automáticamente
         var nstF0 = parseInt(state.nstorage || "1", 10);
         var stdQ = {};
@@ -1709,7 +1702,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
       function fmt(n) { return money.format(n); }
       function el(id) { return document.getElementById(id); }
-      var state = { ktype: "modular", ksize: "6", nstorage: "1", itype: "modular", isize: "6", istorage: "1" };
+      var state = { ktype: "", ksize: "", nstorage: "0", itype: "modular", isize: "6", istorage: "1" };
 
       document.querySelectorAll(".seg[data-group]").forEach(function (group) {
         var name = group.getAttribute("data-group");
@@ -1777,10 +1770,10 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         applyStandard();
         applyIsland();
         var islOnS = !!(el("island-on") && el("island-on").checked);
-        var screwKey = islOnS ? "2" : "1";
+        var screwKey = (!state.ktype || !state.ksize) ? "0" : (islOnS ? "2" : "1");
         if (window.__screwKey !== screwKey) {
           window.__screwKey = screwKey;
-          var sqEl = el("q_screws"); if (sqEl) sqEl.value = islOnS ? 2 : 1;
+          var sqEl = el("q_screws"); if (sqEl) sqEl.value = screwKey === "0" ? 0 : (islOnS ? 2 : 1);
         }
         var nst = parseInt(state.nstorage || "1", 10);
         var lines = [];
@@ -1842,7 +1835,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         // importar el código en la otra calculadora.
         var esqIst = islOnS ? Math.round(num("island-connT") / 4) : 0;
         var esqFridge = EQON["fridge"] ? num("q_fridge") : 0;
-        var esqN = 1 + (islOnS ? 1 : 0) + nst + esqIst + esqFridge;
+        var esqN = (!state.ktype || !state.ksize) ? 0 : 1 + (islOnS ? 1 : 0) + nst + esqIst + esqFridge;
         if (esqN > 0) lines.push({ cat: "panels", label: L("esquinero_l"), qty: esqN, unit: ESQUINERO_PRICE, total: esqN * ESQUINERO_PRICE, amazon: false, spec: "" });
         var uonEl = el("util-on");
         if (uonEl && uonEl.checked) {
@@ -1872,7 +1865,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         var sgEl = el("seller-grand"); if (sgEl) sgEl.textContent = fmt(grandTotal);
         var sdEl = el("seller-deposit"); if (sdEl) sdEl.textContent = fmt(grandTotal / 2);
         var gsEl = el("grand-sub");
-        if (gsEl) gsEl.textContent = (state.ksize === "custom" ? L("k_custom") : state.ksize + "\u2019") + " \u00b7 " + L("k_" + state.ktype) + (islOnS ? " \u00b7 " + L("cat_island") : "");
+        if (gsEl) gsEl.textContent = (!state.ktype || !state.ksize) ? "" : (state.ksize === "custom" ? L("k_custom") : state.ksize + "\u2019") + " \u00b7 " + L("k_" + state.ktype) + (islOnS ? " \u00b7 " + L("cat_island") : "");
         if (typeof updateOrderCode === "function") updateOrderCode({ total: grandTotal, precio45: precio45, extraPct: extraPct, sellerCosts: totalCosts });
         return {
           lines: lines, subMaterials: subMaterials, labor: labor, laborCost: laborCost, days: days,
@@ -2887,7 +2880,10 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
       var __importBtn = el("import-btn");
       if (__importBtn) __importBtn.addEventListener("click", applyOrderCode);
 
-    
+          // v28: piedra principal sin nombre seleccionado al abrir (precio $0).
+      var __sn28 = el("sn_stone1"); if (__sn28) __sn28.selectedIndex = -1;
+      recalc();
+
 
       // ===== CLIENTE: código de orden en vivo (sin markup) =====
       var __sellerExtra = 0;
@@ -2907,22 +2903,15 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
       var __sOut0 = el("s_outlet");
       if (__sOut0 && __sOut0.selectedIndex === 0) { __sOut0.selectedIndex = 1; recalc(); }
       function updateOrderCode(r) {
-        var ta = el("order-code"); if (!ta) return;
-        ta.value = losEncode(gatherOrderCode(r));
+        // v28: el código de orden es INTERNO — se sigue generando en cada
+        // recálculo y queda en memoria (window.__lastOrderCode) para el envío
+        // automático futuro, pero NUNCA se muestra al vendedor.
+        window.__lastOrderCode = losEncode(gatherOrderCode(r));
       }
       ["client-name", "client-contact", "estimate-date", "project-address", "project-title", "estimate-no"].forEach(function (id) {
         var ce = el(id);
         if (ce) ce.addEventListener("input", function () { if (typeof lastResult !== "undefined" && lastResult) updateOrderCode(lastResult); });
       });
-      var __ccBtn = el("code-copy");
-      if (__ccBtn) __ccBtn.addEventListener("click", function () {
-        var ta = el("order-code"); if (!ta) return;
-        ta.select();
-        function done2() { var o = __ccBtn.textContent; __ccBtn.textContent = L("copied"); setTimeout(function () { __ccBtn.textContent = o; }, 2000); }
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(done2, function () { fallbackCopy(ta.value); done2(); });
-        else { fallbackCopy(ta.value); done2(); }
-      });
-
       // ===== CLIENTE: documentos (pantalla + PDF, sin precios salvo donde se indica) =====
       function framingText(id) { var n = el(id); if (!n) return ""; return (n.textContent || "").replace(/\s+/g, " ").trim(); }
       function stoneDesc(id) {
@@ -2969,7 +2958,6 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         d.specs.forEach(function (sp) { body += row(sp[0], sp[1]); });
         body += "</table>";
         body += "<h2 class='sec'>" + L("wo_notes") + "</h2><div class='wo-notes'><div></div><div></div><div></div></div>";
-        body += "<h2 class='sec'>" + L("wo_code") + "</h2><div class='wo-code'>" + d.code + "</div>";
         return estimateShell(L("doc_workorder"), body);
       }
       function clientSellerHTML() {
@@ -2992,7 +2980,6 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           "<div class='sig'><div class='line'></div>" + L("sig_contractor") + "</div>" +
           "<div class='sig'><div class='line'></div>" + L("sig_date") + "</div>" +
           "<div class='sig'><div class='line'></div>" + L("sig_date") + "</div></div>";
-        body += "<h2 class='sec'>" + L("code_l") + "</h2><p style='font-family:monospace;font-size:10px;word-break:break-all;line-height:1.5;'>" + losEncode(gatherOrderCode(r)) + "</p>";
         return estimateShell(L("doc_client"), body);
       }
       function buildWorkOrderPDF() {
@@ -3006,12 +2993,6 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           y = doc.lastAutoTable.finalY + 8;
           y = pdfSection(doc, y, L("wo_notes"));
           for (var i = 0; i < 3; i++) { doc.setDrawColor(150); doc.line(14, y + 8, 196, y + 8); y += 12; }
-          y += 2;
-          y = pdfSection(doc, y, L("wo_code"));
-          doc.setFont("courier", "normal"); doc.setFontSize(8); doc.setTextColor(0, 0, 0);
-          var cl = doc.splitTextToSize(d.code, 182);
-          if (y + cl.length * 4 > 280) { doc.addPage(); y = 15; }
-          doc.text(cl, 14, y);
           doc.save("Orden-de-Trabajo-" + fileSafe(d.c.no) + ".pdf");
         });
       }
@@ -3045,53 +3026,9 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           doc.setFont("helvetica", "normal"); doc.setFontSize(10);
           doc.line(14, y + 12, 90, y + 12); doc.text(L("sig_client"), 14, y + 18);
           doc.line(110, y + 12, 186, y + 12); doc.text(L("sig_contractor"), 110, y + 18);
-          y = pdfSection(doc, y, L("code_l"));
-          doc.setFont("courier", "normal"); doc.setFontSize(8); doc.setTextColor(0, 0, 0);
-          var cl2 = doc.splitTextToSize(d2.code, 182);
-          if (y + cl2.length * 4 > 280) { doc.addPage(); y = 15; }
-          doc.text(cl2, 14, y);
           doc.save("Presupuesto-Cliente-" + fileSafe(c.no) + ".pdf");
         });
       }
-
-
-      // ===== Envío de la orden a Legra's (WhatsApp / correo) =====
-      function sendOrderText() {
-        var c = clientInfo();
-        var r = lastResult || calculate();
-        var code = el("order-code") ? el("order-code").value : "";
-        var lines = [];
-        if (LANG === "es") {
-          lines.push("Nueva orden — Calculadora web de cocinas");
-          lines.push("Cliente: " + (c.name || "—"));
-          lines.push("Contacto: " + (c.contact || "—"));
-          lines.push("Dirección: " + (c.address || "—"));
-          lines.push("Estimado: " + (c.no || "—"));
-          lines.push("Precio total: " + fmt(r.total));
-          lines.push("Código de orden:");
-          lines.push(code);
-        } else {
-          lines.push("New order — Web kitchen calculator");
-          lines.push("Client: " + (c.name || "—"));
-          lines.push("Contact: " + (c.contact || "—"));
-          lines.push("Address: " + (c.address || "—"));
-          lines.push("Estimate: " + (c.no || "—"));
-          lines.push("Total price: " + fmt(r.total));
-          lines.push("Order code:");
-          lines.push(code);
-        }
-        return lines.join("\n");
-      }
-      var __waBtn = el("wa-send");
-      if (__waBtn) __waBtn.addEventListener("click", function () {
-        window.open("https://wa.me/13462131203?text=" + encodeURIComponent(sendOrderText()), "_blank");
-      });
-      var __emBtn = el("em-send");
-      if (__emBtn) __emBtn.addEventListener("click", function () {
-        var c2 = clientInfo();
-        var subj = (LANG === "es" ? "Nueva orden de cocina — " : "New kitchen order — ") + (c2.name || "") + " (" + (c2.no || "") + ")";
-        window.location.href = "mailto:legracdllc@gmail.com?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(sendOrderText());
-      });
 
     </script>
   </body>
