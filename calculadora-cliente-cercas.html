@@ -423,7 +423,8 @@
         <section class="card results-card" aria-label="results">
           <h2 data-i18n="results">Desglose del estimado</h2>
 
-          <div class="total-strip">
+          <button type="button" class="est-btn" id="price-reveal" data-i18n="btn_reveal" style="width:100%;margin-bottom:10px">👁 Ver precio total</button>
+          <div class="total-strip" id="totals-wrap" style="display:none">
             <div class="total-box">
               <div class="t-label" data-i18n="total_project">Total del proyecto</div>
               <div class="t-value" id="grand-total">$0.00</div>
@@ -950,7 +951,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           expenses_l: "Gastos", expenses_sub: "Materiales + mano de obra interna + permisos + impuestos",
           box_profit_l: "Ganancia", deposit_l: "Anticipo (50%)", labor_group: "Mano de obra y costos",
           profit_note: "Total − materiales − permisos − impuestos − días de trabajo pagados. No aparece en el presupuesto del cliente.",
-          btn_contractor: "💼 Presupuesto vendedor-cliente", btn_client: "📄 Mi presupuesto", desc_t: "Descripción del proyecto", cat_colors: "📖 Catálogo de colores",
+          btn_contractor: "💼 Presupuesto vendedor-cliente", btn_client: "📄 Mi presupuesto",
+        btn_reveal: "👁 Ver precio total", desc_t: "Descripción del proyecto", cat_colors: "📖 Catálogo de colores",
           footer: "Cercas de metal DuraFence con instalación profesional. Houston / Katy, Texas.",
           back: "← Volver a la calculadora", print: "🖨️ Imprimir / Guardar PDF", copy: "📋 Copiar texto",
           copied: "¡Copiado!", day: "día", days_pl: "días",
@@ -1033,7 +1035,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           expenses_l: "Expenses", expenses_sub: "Materials + internal labor + permits + taxes",
           box_profit_l: "Profit", deposit_l: "Deposit (50%)", labor_group: "Labor & costs",
           profit_note: "Total − materials − permits − taxes − paid work days. Not shown on the client estimate.",
-          btn_contractor: "💼 Seller–client estimate", btn_client: "📄 My estimate", desc_t: "Project description", cat_colors: "📖 Color catalog",
+          btn_contractor: "💼 Seller–client estimate", btn_client: "📄 My estimate",
+        btn_reveal: "👁 View total price", desc_t: "Project description", cat_colors: "📖 Color catalog",
           footer: "DuraFence metal fences with professional installation. Houston / Katy, Texas.",
           back: "← Back to calculator", print: "🖨️ Print / Save PDF", copy: "📋 Copy text",
           copied: "Copied!", day: "day", days_pl: "days",
@@ -1883,4 +1886,183 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // con el flujo «Ver el estimado en PDF» (siguiente pasada).
 
       recalc();
+
+
+// ===== v29: ENVÍO AUTOMÁTICO DE QUOTES (invisible) =====
+// Al gatillo de cada calculadora (cliente: ver el precio / generar su
+// presupuesto; vendedor: generar los presupuestos) se envía SOLO el
+// paquete completo al receptor: fila en la Base de Quotes + carpeta
+// con los 3 PDF + correo de aviso. Sin botones visibles de envío.
+// Si la configuración cambia tras un envío, el siguiente gatillo
+// reenvía la versión nueva; sin cambios no se duplica.
+var __QUOTE_KIND = "client";
+var __QUOTE_COLLECTION = "Cercas";
+var __RECEIVER_URL = "https://script.google.com/macros/s/AKfycbyfhzsyBcVwpVwXV0t9UfQIexUHCQKr_zMooFHzPofVZgV5usLDXZ77H4R5Sf7wytW0/exec";
+var __Q_DOCS = [["workOrder", "buildPOPDF"], ["detailed", "buildContractorPDF"], ["client", "buildClientPDF"]];
+var __Q_VIEWS = ["clientEstimate"];
+var __qSentHash = "";
+var __qSending = false;
+function __qHash(s) { var h = 0, i; for (i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; } return "h" + h; }
+function __qEl(id) { return document.getElementById(id); }
+function __qSplitContact(v) { v = (v || "").trim(); if (v.indexOf("@") >= 0) return { phone: "", email: v }; return { phone: v, email: "" }; }
+function __qCodeObj() {
+  try {
+    var code = window.__lastOrderCode || "";
+    var b64 = code.substring(code.indexOf("-") + 1).replace(/-/g, "+").replace(/_/g, "/");
+    while (b64.length % 4) b64 += "=";
+    return JSON.parse(decodeURIComponent(escape(atob(b64))));
+  } catch (e) { return null; }
+}
+function __qSpecs() {
+  try {
+    var r = (typeof lastResult !== "undefined" && lastResult) ? lastResult : null;
+    if (!r && typeof calculate === "function") { try { r = calculate(); } catch (e) {} }
+    return descText(r) || "";
+  } catch (e) { return ""; }
+}
+function __qBuildPayload(pdfs) {
+  var c = { name: "", contact: "", address: "" };
+  try { c = clientInfo(); } catch (e) {}
+  var o = __qCodeObj() || {};
+  var total = Number(o.f || 0);
+  var base = (o.p45 != null) ? Number(o.p45) : ((o.b != null) ? Number(o.b) : total);
+  var cs = __qSplitContact(c.contact);
+  var sellerName = "";
+  if (__QUOTE_KIND === "seller" && __qEl("seller-name")) sellerName = __qEl("seller-name").value.trim();
+  var p = {
+    type: "quote",
+    origin: __QUOTE_KIND === "seller" ? "Vendedor" : "Cliente web",
+    collection: __QUOTE_COLLECTION,
+    code: window.__lastOrderCode || "",
+    seller: sellerName,
+    client: c.name || "", phone: cs.phone, email: cs.email, address: c.address || "",
+    specs: __qSpecs(),
+    total: total, financing: "", message: "",
+    pdfs: pdfs || {}
+  };
+  if (__QUOTE_KIND === "seller") {
+    p.markupPct = Number(o.x || 0);
+    p.markupAmt = Math.round((total - base) * 100) / 100;
+  }
+  return p;
+}
+function __qCapture(done) {
+  var pairs = [];
+  for (var i = 0; i < __Q_DOCS.length; i++) {
+    if (typeof window[__Q_DOCS[i][1]] === "function") pairs.push(__Q_DOCS[i]);
+  }
+  var blobs = [];
+  try {
+    var API = window.jspdf.jsPDF.API, orig = API.save;
+    API.save = function () { try { blobs.push(this.output("blob")); } catch (e) { blobs.push(null); } };
+    for (var j = 0; j < pairs.length; j++) {
+      try { window[pairs[j][1]](); } catch (e) { blobs.push(null); }
+      if (blobs.length < j + 1) blobs.push(null);
+    }
+    API.save = orig;
+  } catch (e) {}
+  var out = {}, pending = 0, k;
+  for (k = 0; k < pairs.length; k++) { if (blobs[k]) pending++; }
+  if (!pending) { done(out); return; }
+  var left = pending;
+  blobs.forEach(function (b, idx) {
+    if (!b) return;
+    var fr = new FileReader();
+    fr.onload = function () { out[pairs[idx][0]] = String(fr.result).split(",")[1] || ""; if (--left === 0) done(out); };
+    fr.onerror = function () { if (--left === 0) done(out); };
+    fr.readAsDataURL(b);
+  });
+}
+function __qPost(payload) {
+  try {
+    fetch(__RECEIVER_URL, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+  } catch (e) {}
+}
+function __qSend() {
+  if (__qSending) return;
+  var o = __qCodeObj();
+  if (!o || !Number(o.f)) return;
+  var h = __qHash(String(window.__lastOrderCode || "") + "|" + __QUOTE_KIND);
+  if (h === __qSentHash) return;
+  __qSentHash = h;
+  __qSending = true;
+  __qCapture(function (pdfs) {
+    __qPost(__qBuildPayload(pdfs));
+    __qSending = false;
+  });
+}
+function __qCallback() {
+  var c = { name: "", contact: "" };
+  try { c = clientInfo(); } catch (e) {}
+  var cs = __qSplitContact(c.contact);
+  __qPost({
+    type: "callback", origin: "Cliente web", collection: __QUOTE_COLLECTION,
+    client: c.name || "", phone: cs.phone, email: cs.email,
+    message: "Solicitó que lo llamen desde su presupuesto en la calculadora."
+  });
+}
+function __qWrap(name) {
+  var f = window[name];
+  if (typeof f !== "function" || f.__qWrapped) return;
+  var w = function () {
+    var r;
+    try { r = f.apply(this, arguments); }
+    finally { try { __qSend(); } catch (e) {} }
+    return r;
+  };
+  w.__qWrapped = true;
+  window[name] = w;
+}
+(function __qInit() {
+  var i;
+  for (i = 0; i < __Q_DOCS.length; i++) __qWrap(__Q_DOCS[i][1]);
+  for (i = 0; i < __Q_VIEWS.length; i++) __qWrap(__Q_VIEWS[i]);
+  if (__QUOTE_KIND === "seller") {
+    var sn = __qEl("seller-name");
+    if (sn) {
+      try { sn.value = localStorage.getItem("legraSellerName") || ""; } catch (e) {}
+      sn.addEventListener("input", function () {
+        try { localStorage.setItem("legraSellerName", sn.value.trim()); } catch (e) {}
+      });
+    }
+  }
+  if (__QUOTE_KIND === "client") {
+    // Opciones de contacto SOLO arriba del presupuesto del cliente.
+    var viewName = __Q_VIEWS[0];
+    var origView = window[viewName];
+    if (typeof origView === "function" && !origView.__qContact) {
+      var wv = function () {
+        var html = origView.apply(this, arguments);
+        var es = (typeof LANG !== "undefined") ? (LANG === "es") : true;
+        var block =
+          '<div style="border:2px solid #0a3d24;border-radius:12px;padding:12px 14px;margin:0 0 14px;background:#f4faf6">' +
+          '<div style="font-weight:700;color:#0a3d24;margin-bottom:8px">' + (es ? "¿Preguntas sobre tu estimado?" : "Questions about your estimate?") + "</div>" +
+          '<button type="button" class="q-callback" style="background:#0a3d24;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer;margin-right:8px">📞 ' + (es ? "Solicitar que me llamen" : "Request a call back") + "</button>" +
+          '<a href="tel:+13462131203" style="display:inline-block;background:#c9a227;color:#0a3d24;border-radius:8px;padding:9px 14px;font-weight:700;text-decoration:none;margin-right:8px">📱 (346) 213-1203</a>' +
+          '<a href="https://wa.me/13462131203" target="_blank" rel="noopener" style="display:inline-block;background:#25d366;color:#06330f;border-radius:8px;padding:9px 14px;font-weight:700;text-decoration:none">💬 WhatsApp</a>' +
+          "</div>";
+        return block + html;
+      };
+      wv.__qContact = true;
+      window[viewName] = wv;
+    }
+  }
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    if (t.closest(".q-callback")) { __qCallback(); }
+    var rv = t.closest("#price-reveal");
+    if (rv) {
+      var tw = __qEl("totals-wrap");
+      if (tw) tw.style.display = "";
+      rv.style.display = "none";
+      try { __qSend(); } catch (e2) {}
+    }
+  });
+})();
+
 </script></body></html>
