@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Conectar WhatsApp — Legra's Outdoor Systems</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background:#0b3d24; color:#fff; margin:0; padding:32px 18px; }
+  .card { max-width:560px; margin:0 auto; background:#ffffff; color:#17301f; border-radius:16px; padding:28px 24px; box-shadow:0 8px 30px rgba(0,0,0,.35); }
+  h1 { font-size:22px; margin:0 0 10px; color:#0b3d24; }
+  p { font-size:15px; line-height:1.5; margin:0 0 14px; }
+  button { display:block; width:100%; background:#c9a227; color:#17301f; border:0; border-radius:10px; padding:15px 18px; font-size:17px; font-weight:700; cursor:pointer; }
+  button:hover { background:#b8931f; }
+  #status { margin-top:16px; font-size:14px; font-weight:600; color:#0b3d24; min-height:20px; }
+  #result { margin-top:10px; background:#f2f2f2; border:1px solid #ddd; border-radius:8px; padding:12px; font-size:11px; white-space:pre-wrap; word-break:break-all; max-height:300px; overflow:auto; }
+  .small { font-size:12.5px; color:#555; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Conectar el WhatsApp del negocio</h1>
+  <p>Este botón abre la ventana oficial de Meta para conectar el número <strong>+1 346-213-1203</strong> (el de la app de WhatsApp Business) con la plataforma, <strong>sin salir de la app</strong> (coexistencia).</p>
+  <p class="small">En la ventana de Meta: elige conectar la cuenta existente de WhatsApp Business, entra el número y confirma en la app cuando Meta lo pida. Al final, esta página muestra los datos de la sesión.</p>
+  <button id="launch" type="button">Conectar mi número de WhatsApp Business</button>
+  <div id="status"></div>
+  <pre id="result">(sin datos todavía)</pre>
+</div>
+
+<script>
+  window.waSessionEvents = [];
+
+  window.addEventListener('message', function (e) {
+    if (e.origin !== 'https://www.facebook.com' && e.origin !== 'https://web.facebook.com') return;
+    try {
+      var data = JSON.parse(e.data);
+      if (data && data.type === 'WA_EMBEDDED_SIGNUP') {
+        window.waSessionEvents.push(data);
+        renderResults();
+        if (data.event && data.event.indexOf('FINISH') === 0) {
+          document.getElementById('status').textContent = 'Flujo terminado: ' + data.event + '. No cierres esta página.';
+        }
+        if (data.event === 'CANCEL') {
+          document.getElementById('status').textContent = 'El flujo fue cancelado en el paso: ' + (data.data ? data.data.current_step : '');
+        }
+        if (data.event === 'ERROR') {
+          document.getElementById('status').textContent = 'Error en el flujo: ' + (data.data ? data.data.error_message : '');
+        }
+      }
+    } catch (err) { /* mensajes ajenos al flujo */ }
+  });
+
+  function renderResults(code) {
+    var out = '';
+    if (window.waAuthCode) out += 'AUTH_CODE: ' + window.waAuthCode + '\n\n';
+    out += 'EVENTOS DE SESIÓN:\n' + JSON.stringify(window.waSessionEvents, null, 2);
+    document.getElementById('result').textContent = out;
+  }
+
+  window.fbAsyncInit = function () {
+    FB.init({
+      appId: '958052786969357',
+      autoLogAppEvents: true,
+      xfbml: true,
+      version: 'v25.0'
+    });
+  };
+
+  function launchWhatsAppSignup() {
+    document.getElementById('status').textContent = 'Abriendo la ventana oficial de Meta…';
+    FB.login(function (response) {
+      if (response.authResponse && response.authResponse.code) {
+        window.waAuthCode = response.authResponse.code;
+        document.getElementById('status').textContent = 'Código recibido. Revisa los datos de la sesión abajo y no cierres esta página.';
+        renderResults();
+      } else {
+        document.getElementById('status').textContent = 'La ventana se cerró sin completar el flujo.';
+      }
+    }, {
+      config_id: '1425827362864993',
+      response_type: 'code',
+      override_default_response_type: true,
+      extras: {
+        setup: {},
+        featureType: 'whatsapp_business_app_onboarding',
+        sessionInfoVersion: '3'
+      }
+    });
+  }
+
+  document.getElementById('launch').addEventListener('click', launchWhatsAppSignup);
+</script>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+</body>
+</html>
