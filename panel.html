@@ -65,6 +65,7 @@ h2{font-family:Georgia,serif;font-weight:400;margin:4px 0 6px}
 <body>
 <header>
   <div class="brand">LEGRA'S OUTDOOR SYSTEMS<small>PANEL DE ESTIMADOS</small></div>
+  <a class="btn ghost small" href="https://legra-outdoor-systems.com/" style="text-decoration:none;margin-left:auto;margin-right:14px">&#8592; Volver al inicio</a>
   <div id="userBox" class="hide"><span id="userName" style="margin-right:12px"></span><button class="btn ghost small" id="logoutBtn" type="button">Salir</button></div>
 </header>
 
@@ -119,7 +120,7 @@ h2{font-family:Georgia,serif;font-weight:400;margin:4px 0 6px}
 
     <section id="tab-media" class="tabPage hide">
       <h2>Media de los carruseles</h2>
-      <p class="muted">Cada sección está en su propio menú desplegable: haz clic en el título para abrirla. Adentro decides qué fotos y videos salen en el carrusel y en qué orden: <b>Sustituir</b> cambia la foto por otra en su mismo lugar, <b>Borrar</b> la quita de la lista, y quitar la marca de <b>Activo</b> la esconde sin borrarla. Para una foto o video <b>nuevo</b>: primero hay que subir el archivo al sitio (pídeselo a Legra o a VILI) y luego lo agregas aquí con su dirección (ejemplo: <b>photo_090.jpg</b>). Al final, guarda con el botón de abajo.</p>
+      <p class="muted">Cada sección está en su propio menú desplegable: haz clic en el título para abrirla. Adentro decides qué fotos y videos salen en el carrusel y en qué orden: <b>Sustituir</b> cambia la foto por otra en su mismo lugar, <b>Borrar</b> la quita de la lista, y quitar la marca de <b>Activo</b> la esconde sin borrarla. Para agregar o sustituir puedes <b>subir la foto directamente</b> desde tu teléfono o computadora con el selector de archivo (se guarda sola en Drive), o escribir la dirección de un archivo del website. Al final, guarda con el botón de abajo.</p>
       <div id="mediaSections"></div>
       <div style="margin-top:20px"><button class="btn" id="mediaSaveBtn" type="button">Guardar cambios de media</button></div>
     </section>
@@ -387,6 +388,20 @@ function previewHtml(tipo, url){
     ? '<video src="' + esc(url) + '" muted preload="metadata"></video>'
     : '<img src="' + esc(url) + '" alt="" loading="lazy">';
 }
+function uploadMediaFile(file, done){
+  if (!file) return;
+  if (file.size > 12000000) { showMsg("mediaMsg", "Ese archivo pesa más de 12 MB", false); return; }
+  showMsg("mediaMsg", "Subiendo «" + file.name + "»…", true);
+  var rd = new FileReader();
+  rd.onload = function(){
+    var b64 = String(rd.result).split(",")[1] || "";
+    apiCall("panel_media_upload", { filename: file.name, mimeType: file.type || "application/octet-stream", data: b64 }).then(function(r){
+      if (r.ok) done(r);
+      else showMsg("mediaMsg", r.error || "No se pudo subir el archivo", false);
+    });
+  };
+  rd.readAsDataURL(file);
+}
 function buildMediaItem(sec, m, orden){
   var div = document.createElement("div");
   div.className = "mediaItem"; div.setAttribute("data-sec", sec);
@@ -394,6 +409,7 @@ function buildMediaItem(sec, m, orden){
     '<span class="mPrev">' + previewHtml(m.tipo, m.url) + "</span>" +
     '<span class="url">' + esc(m.url) + "</span>" +
     '<span class="subRow hide"><input type="text" class="mSubUrl" value="' + esc(m.url) + '" placeholder="Dirección de la foto/video nuevo">' +
+    '<input type="file" class="mSubFile" accept="image/*,video/*" title="O sube la foto directamente desde tu teléfono o computadora">' +
     '<button type="button" class="btn small mSubOk">Aplicar</button>' +
     '<button type="button" class="miniBtn mSubCancel">Cancelar</button></span>' +
     '<select class="mini mTipo"><option value="foto"' + (m.tipo === "foto" ? " selected" : "") + '>Foto</option><option value="video"' + (m.tipo === "video" ? " selected" : "") + ">Video</option></select>" +
@@ -418,6 +434,18 @@ function buildMediaItem(sec, m, orden){
     var nu = subInput.value.trim();
     if (nu) { urlSpan.textContent = nu; refreshPreview(); }
     subRow.classList.add("hide");
+  });
+  div.querySelector(".mSubFile").addEventListener("change", function(ev){
+    var file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    uploadMediaFile(file, function(r){
+      urlSpan.textContent = r.url;
+      div.querySelector(".mTipo").value = (file.type.indexOf("video") === 0) ? "video" : "foto";
+      refreshPreview();
+      subRow.classList.add("hide");
+      showMsg("mediaMsg", "✅ Sustituida en su lugar por «" + r.name + "». Falta guardar con el botón de abajo.", true);
+    });
+    ev.target.value = "";
   });
   div.querySelector(".mTipo").addEventListener("change", refreshPreview);
   return div;
@@ -444,9 +472,20 @@ function renderMedia(){
     items.forEach(function(m, i){ list.appendChild(buildMediaItem(sec, m, m.orden || (i + 1))); });
     var addBox = document.createElement("div");
     addBox.className = "mediaItem";
-    addBox.innerHTML = '<input class="url mNewUrl" type="text" placeholder="Dirección del archivo nuevo (ej.: photo_090.jpg o video.mp4)">' +
+    addBox.innerHTML = '<input type="file" class="mNewFile" accept="image/*,video/*" title="Subir una foto o video directamente desde tu teléfono o computadora">' +
+      '<input class="url mNewUrl" type="text" placeholder="…o escribe la dirección del archivo (ej.: photo_090.jpg)">' +
       '<select class="mini mNewTipo"><option value="foto">Foto</option><option value="video">Video</option></select>' +
       '<button type="button" class="btn small mAdd">+ Agregar</button>';
+    addBox.querySelector(".mNewFile").addEventListener("change", function(ev){
+      var file = ev.target.files && ev.target.files[0];
+      if (!file) return;
+      uploadMediaFile(file, function(r){
+        var n = list.querySelectorAll(".mediaItem").length + 1;
+        list.appendChild(buildMediaItem(sec, { tipo: (file.type.indexOf("video") === 0 ? "video" : "foto"), url: r.url, activo: "SI" }, n));
+        showMsg("mediaMsg", "✅ «" + r.name + "» subido y agregado a esta sección. Falta guardar con el botón de abajo.", true);
+      });
+      ev.target.value = "";
+    });
     addBox.querySelector(".mAdd").addEventListener("click", function(){
       var url = addBox.querySelector(".mNewUrl").value.trim();
       if (!url) return;
