@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel — Legra's Outdoor Systems</title>
+<style>
+:root{--green:#062d23;--green2:#0c4a37;--gold:#d7ac59;--cream:#f7f5ee;--ink:#15251f;--muted:#62736a;--line:#dde3da}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+header{background:var(--green);color:#fff;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.brand{font-weight:800;letter-spacing:.8px;font-size:16px}
+.brand small{display:block;font-weight:400;font-size:9px;letter-spacing:2px;color:var(--gold);margin-top:3px}
+button{cursor:pointer;font:inherit}
+.btn{background:var(--gold);color:#15271d;border:0;border-radius:6px;padding:11px 18px;font-weight:700}
+.btn.ghost{background:transparent;color:#fff;border:1px solid #ffffff88}
+.btn.small{padding:7px 12px;font-size:13px}
+.btn.danger{background:#b3382e;color:#fff}
+.wrap{max-width:1180px;margin:auto;padding:26px 18px 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;box-shadow:0 6px 24px #12271b10}
+.loginBox{max-width:420px;margin:7vh auto}
+label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #bdc9c0;border-radius:6px;background:#fff;font:inherit}
+input:focus,select:focus{outline:2px solid var(--gold)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+.tab{background:#e7ece5;border:1px solid var(--line);border-radius:40px;padding:10px 16px;font-weight:700;font-size:14px}
+.tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+.msg{padding:12px 14px;border-radius:8px;margin:14px 0;font-size:14px;display:none}
+.msg.err{display:block;background:#fbe9e7;color:#8c2b21;border:1px solid #efc4bf}
+.msg.ok{display:block;background:#e7f4ea;color:#14532d;border:1px solid #bfe3c8}
+.tableWrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:760px}
+th{background:var(--green);color:#fff;text-align:left;padding:10px;white-space:nowrap}
+td{padding:9px 10px;border-top:1px solid var(--line);vertical-align:top;max-width:340px}
+tr:nth-child(even) td{background:#f4f6f1}
+td .long{white-space:pre-wrap;word-break:break-word}
+.search{max-width:340px;margin:0 0 14px}
+h2{font-family:Georgia,serif;font-weight:400;margin:4px 0 6px}
+.muted{color:var(--muted);font-size:14px;line-height:1.55}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.mediaItem{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px;margin:10px 0;background:#fbfbf8;flex-wrap:wrap}
+.mediaItem img,.mediaItem video{width:86px;height:64px;object-fit:cover;border-radius:6px;background:#17251f}
+.mediaItem .url{flex:1;min-width:180px;font-size:13px;word-break:break-all}
+.mediaItem .mini{width:90px}
+.mediaItem select.mini{width:100px}
+.secTitle{margin:26px 0 4px;font-size:18px}
+.checkline{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.checkline input{width:auto}
+.credBox{background:#fff8e6;border:1px solid var(--gold);border-radius:10px;padding:14px;margin-top:14px;font-size:15px}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">LEGRA'S OUTDOOR SYSTEMS<small>PANEL DE ESTIMADOS</small></div>
+  <div id="userBox" class="hide"><span id="userName" style="margin-right:12px"></span><button class="btn ghost small" id="logoutBtn" type="button">Salir</button></div>
+</header>
+
+<div class="wrap">
+  <!-- LOGIN -->
+  <div id="loginView" class="card loginBox">
+    <h2>Acceso</h2>
+    <p class="muted">Vendedores y administración. Ingresa con tu usuario y tu clave.</p>
+    <div class="msg" id="loginMsg"></div>
+    <form id="loginForm">
+      <label for="lu">Usuario</label>
+      <input id="lu" autocomplete="username" required>
+      <label for="lp">Clave</label>
+      <input id="lp" type="password" autocomplete="current-password" required>
+      <div style="margin-top:18px"><button class="btn" type="submit" style="width:100%">Ingresar</button></div>
+    </form>
+  </div>
+
+  <!-- APP -->
+  <div id="appView" class="hide">
+    <div class="tabs" id="tabs"></div>
+    <div class="msg" id="appMsg"></div>
+
+    <section id="tab-quotes" class="tabPage hide">
+      <h2>Estimados de clientes</h2>
+      <p class="muted">Todos los estimados que llegan del website (calculadora del cliente y formulario), con todos los datos. Puedes cambiar el estatus de cada uno.</p>
+      <input class="search" id="searchQuotes" type="search" placeholder="Buscar por nombre, teléfono, código…">
+      <div class="tableWrap"><table id="tableQuotes"></table></div>
+    </section>
+
+    <section id="tab-vendedores" class="tabPage hide">
+      <h2 id="vendTitle">Estimados de vendedores</h2>
+      <p class="muted" id="vendNote">Estimados creados con la calculadora del vendedor, con su markup.</p>
+      <input class="search" id="searchVend" type="search" placeholder="Buscar por cliente, vendedor, código…">
+      <div class="tableWrap"><table id="tableVend"></table></div>
+    </section>
+
+    <section id="tab-usuarios" class="tabPage hide">
+      <h2>Vendedores</h2>
+      <p class="muted">Crea el acceso de cada vendedor. <b>Regla:</b> su usuario es su primer nombre + la primera letra de su apellido, y su clave inicial es su número de teléfono (ejemplo: Juan Pérez, 832-555-1234 → usuario <b>juanp</b>, clave <b>8325551234</b>).</p>
+      <div class="card" style="box-shadow:none">
+        <form id="userForm" class="grid2">
+          <div><label for="nu">Nombre completo del vendedor</label><input id="nu" required placeholder="Ej.: Juan Pérez"></div>
+          <div><label for="nt">Teléfono (será su clave)</label><input id="nt" type="tel" required placeholder="Ej.: 832-555-1234"></div>
+          <div><button class="btn" type="submit">Crear acceso</button></div>
+        </form>
+        <div class="credBox hide" id="credBox"></div>
+      </div>
+      <div style="height:16px"></div>
+      <div class="tableWrap"><table id="tableUsers"></table></div>
+    </section>
+
+    <section id="tab-media" class="tabPage hide">
+      <h2>Media de los carruseles</h2>
+      <p class="muted">Aquí decides qué fotos y videos salen en el carrusel de cada sección del website, y en qué orden. Quita la marca de <b>Activo</b> para esconder un archivo sin borrarlo, o bórralo de la lista. Para una foto o video <b>nuevo</b>: primero hay que subir el archivo al sitio (pídeselo a Legra o a VILI) y luego agregas aquí su dirección (ejemplo: <b>photo_090.jpg</b>).</p>
+      <div id="mediaSections"></div>
+      <div style="margin-top:20px"><button class="btn" id="mediaSaveBtn" type="button">Guardar cambios de media</button></div>
+    </section>
+
+    <section id="tab-clave" class="tabPage hide">
+      <h2>Mi clave</h2>
+      <p class="muted">Cambia tu clave de acceso al panel.</p>
+      <form id="passForm" style="max-width:420px">
+        <label for="np">Clave nueva</label>
+        <input id="np" type="password" autocomplete="new-password" required minlength="4">
+        <div style="margin-top:16px"><button class="btn" type="submit">Guardar clave nueva</button></div>
+      </form>
+    </section>
+  </div>
+</div>
+
+<script>
+var API = "https://script.google.com/macros/s/AKfycbyfhzsyBcVwpVwXV0t9UfQIexUHCQKr_zMooFHzPofVZgV5usLDXZ77H4R5Sf7wytW0/exec";
+var CREDS = { u: "", p: "" };
+var DATA = null;
+var ESTATUS = ["Nuevo","Contactado","Visita agendada","Cotización enviada","Ganado","Perdido","Cerrado"];
+var SECCIONES = [["kitchens","Cocinas exteriores"],["fences","Cercas de metal"],["pergolas","Pérgolas"],["casitas","Pool bath & casitas"],["mailboxes","Buzones"],["poolhouses","Pool houses"]];
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function showMsg(id, text, ok){ var m=$(id); m.textContent=text; m.className="msg "+(ok?"ok":"err"); }
+function clearMsg(id){ var m=$(id); m.textContent=""; m.className="msg"; }
+
+function jsonp(payload){
+  return new Promise(function(resolve, reject){
+    var cb = "cb" + Math.random().toString(36).slice(2);
+    var s = document.createElement("script");
+    window[cb] = function(d){ try{ delete window[cb]; }catch(e){} s.remove(); resolve(d); };
+    s.onerror = function(){ try{ delete window[cb]; }catch(e){} s.remove(); reject(new Error("Sin conexión")); };
+    s.src = API + "?action=panel&callback=" + cb + "&payload=" + encodeURIComponent(JSON.stringify(payload));
+    document.head.appendChild(s);
+  });
+}
+function apiCall(type, extra){
+  var payload = { type: type, usuario: CREDS.u, clave: CREDS.p };
+  if (extra) for (var k in extra) payload[k] = extra[k];
+  return fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) })
+    .then(function(r){ return r.text(); })
+    .then(function(t){ return JSON.parse(t); })
+    .catch(function(){ return jsonp(payload); });
+}
+
+/* ---------- Login ---------- */
+$("loginForm").addEventListener("submit", function(ev){
+  ev.preventDefault(); clearMsg("loginMsg");
+  CREDS = { u: $("lu").value.trim().toLowerCase(), p: $("lp").value };
+  apiCall("panel_login").then(function(r){
+    if (!r.ok) { showMsg("loginMsg", r.error || "No se pudo ingresar", false); return; }
+    sessionStorage.setItem("panelCreds", JSON.stringify(CREDS));
+    enterApp(r);
+    loadData();
+  }).catch(function(){ showMsg("loginMsg", "Sin conexión con el servidor. Revisa tu internet e inténtalo de nuevo.", false); });
+});
+$("logoutBtn").addEventListener("click", function(){
+  sessionStorage.removeItem("panelCreds"); CREDS = { u:"", p:"" }; DATA = null;
+  $("appView").classList.add("hide"); $("userBox").classList.add("hide"); $("loginView").classList.remove("hide");
+});
+
+function enterApp(r){
+  $("loginView").classList.add("hide"); $("appView").classList.remove("hide"); $("userBox").classList.remove("hide");
+  $("userName").textContent = r.nombre + (r.rol === "admin" ? " · Administrador" : " · Vendedor");
+  buildTabs(r.rol);
+}
+function buildTabs(rol){
+  var defs = rol === "admin"
+    ? [["quotes","Estimados de clientes"],["vendedores","Estimados de vendedores"],["usuarios","Vendedores"],["media","Media"],["clave","Mi clave"]]
+    : [["vendedores","Mis estimados"],["clave","Mi clave"]];
+  $("tabs").innerHTML = defs.map(function(d, i){
+    return '<button type="button" class="tab' + (i === 0 ? " active" : "") + '" data-tab="' + d[0] + '">' + d[1] + "</button>";
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(b){
+    b.addEventListener("click", function(){ openTab(b.getAttribute("data-tab")); });
+  });
+  openTab(defs[0][0]);
+}
+function openTab(name){
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(b){
+    b.classList.toggle("active", b.getAttribute("data-tab") === name);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".tabPage"), function(p){ p.classList.add("hide"); });
+  var page = $("tab-" + name); if (page) page.classList.remove("hide");
+}
+
+/* ---------- Datos ---------- */
+function loadData(){
+  apiCall("panel_data").then(function(r){
+    if (!r.ok) { showMsg("appMsg", r.error || "No se pudieron cargar los datos", false); return; }
+    DATA = r;
+    renderQuotes(); renderVend(); renderUsers(); renderMedia();
+    if (r.rol !== "admin") {
+      $("vendTitle").textContent = "Mis estimados";
+      $("vendNote").textContent = "Los estimados que tú has creado con la calculadora del vendedor.";
+    }
+  }).catch(function(){ showMsg("appMsg", "Sin conexión con el servidor.", false); });
+}
+
+function renderTable(tableId, data, tabName, editable){
+  var t = $(tableId);
+  if (!data || !data.head || !data.head.length) { t.innerHTML = "<tr><td style='padding:16px'>Sin registros todavía.</td></tr>"; return; }
+  var head = data.head;
+  var html = "<thead><tr>" + head.map(function(h){ return "<th>" + esc(h) + "</th>"; }).join("") + "</tr></thead><tbody>";
+  data.rows.forEach(function(row){
+    html += "<tr>" + head.map(function(h, j){
+      var v = row[h];
+      if (editable && String(h).toLowerCase().indexOf("estatus") >= 0) {
+        var opts = ESTATUS.map(function(e){ return '<option value="' + esc(e) + '"' + (String(v) === e ? " selected" : "") + ">" + esc(e) + "</option>"; }).join("");
+        if (ESTATUS.indexOf(String(v)) < 0) opts = '<option value="' + esc(v) + '" selected>' + esc(v) + "</option>" + opts;
+        return '<td><select class="statusSel" data-tab="' + tabName + '" data-code="' + esc(row[head[1]]) + '">' + opts + "</select></td>";
+      }
+      return "<td><span class='long'>" + esc(v) + "</span></td>";
+    }).join("") + "</tr>";
+  });
+  t.innerHTML = html + "</tbody>";
+  Array.prototype.forEach.call(t.querySelectorAll(".statusSel"), function(sel){
+    sel.addEventListener("change", function(){
+      apiCall("panel_quote_status", { tab: sel.getAttribute("data-tab"), code: sel.getAttribute("data-code"), estatus: sel.value }).then(function(r){
+        showMsg("appMsg", r.ok ? "Estatus actualizado." : (r.error || "No se pudo actualizar"), r.ok);
+      });
+    });
+  });
+}
+function filterTable(inputId, tableId){
+  var q = $(inputId).value.toLowerCase();
+  Array.prototype.forEach.call($(tableId).querySelectorAll("tbody tr"), function(tr){
+    tr.style.display = tr.textContent.toLowerCase().indexOf(q) >= 0 ? "" : "none";
+  });
+}
+function renderQuotes(){ renderTable("tableQuotes", DATA.quotes, "Quotes", DATA.rol === "admin"); }
+function renderVend(){ renderTable("tableVend", DATA.vendedores, "Vendedores", DATA.rol === "admin"); }
+$("searchQuotes").addEventListener("input", function(){ filterTable("searchQuotes", "tableQuotes"); });
+$("searchVend").addEventListener("input", function(){ filterTable("searchVend", "tableVend"); });
+
+/* ---------- Usuarios (admin) ---------- */
+function renderUsers(){
+  if (!DATA || DATA.rol !== "admin") return;
+  var t = $("tableUsers");
+  var html = "<thead><tr><th>Usuario</th><th>Nombre</th><th>Teléfono (= su clave)</th><th>Rol</th><th>Activo</th><th></th></tr></thead><tbody>";
+  (DATA.usuarios || []).forEach(function(u){
+    html += "<tr><td><b>" + esc(u.usuario) + "</b></td><td>" + esc(u.nombre) + "</td><td>" + esc(u.telefono) + "</td><td>" + esc(u.rol) + "</td><td>" + esc(u.activo) + "</td>" +
+      "<td>" + (u.rol !== "admin" ? '<button type="button" class="btn small toggleUser" data-u="' + esc(u.usuario) + '">' + (u.activo === "SI" ? "Desactivar" : "Activar") + "</button>" : "") + "</td></tr>";
+  });
+  t.innerHTML = html + "</tbody>";
+  Array.prototype.forEach.call(t.querySelectorAll(".toggleUser"), function(b){
+    b.addEventListener("click", function(){
+      apiCall("panel_user_toggle", { target: b.getAttribute("data-u") }).then(function(r){
+        showMsg("appMsg", r.ok ? ("Usuario " + r.usuario + " → activo: " + r.activo) : (r.error || "Error"), r.ok);
+        if (r.ok) loadData();
+      });
+    });
+  });
+}
+$("userForm").addEventListener("submit", function(ev){
+  ev.preventDefault();
+  apiCall("panel_user_create", { nombre: $("nu").value.trim(), telefono: $("nt").value.trim() }).then(function(r){
+    if (!r.ok) { showMsg("appMsg", r.error || "No se pudo crear", false); return; }
+    var box = $("credBox"); box.classList.remove("hide");
+    box.innerHTML = "✅ Acceso creado para <b>" + esc(r.nombre) + "</b><br>Usuario: <b>" + esc(r.usuario) + "</b> · Clave: <b>" + esc(r.clave) + "</b><br><span class='muted'>Dale estos datos al vendedor. Entra en <b>legra-outdoor-systems.com/panel.html</b></span>";
+    $("nu").value = ""; $("nt").value = "";
+    loadData();
+  });
+});
+
+/* ---------- Media (admin) ---------- */
+function renderMedia(){
+  if (!DATA || DATA.rol !== "admin") return;
+  var bySec = {};
+  (DATA.media || []).forEach(function(m){ (bySec[m.seccion] = bySec[m.seccion] || []).push(m); });
+  var extra = Object.keys(bySec).filter(function(s){ return !SECCIONES.some(function(x){ return x[0] === s; }); });
+  var secs = SECCIONES.concat(extra.map(function(s){ return [s, s]; }));
+  $("mediaSections").innerHTML = secs.map(function(pair){
+    var sec = pair[0], label = pair[1];
+    var items = (bySec[sec] || []).slice().sort(function(a, b){ return a.orden - b.orden; });
+    var rows = items.map(function(m, i){
+      var prev = m.tipo === "video"
+        ? '<video src="' + esc(m.url) + '" muted preload="metadata"></video>'
+        : '<img src="' + esc(m.url) + '" alt="" loading="lazy">';
+      return '<div class="mediaItem" data-sec="' + esc(sec) + '">' + prev +
+        '<span class="url">' + esc(m.url) + "</span>" +
+        '<select class="mini mTipo"><option value="foto"' + (m.tipo === "foto" ? " selected" : "") + '>Foto</option><option value="video"' + (m.tipo === "video" ? " selected" : "") + ">Video</option></select>" +
+        '<input class="mini mOrden" type="number" value="' + (m.orden || (i + 1)) + '" title="Orden">' +
+        '<label class="checkline"><input type="checkbox" class="mActivo"' + (String(m.activo).toUpperCase() === "SI" ? " checked" : "") + "> Activo</label>" +
+        '<button type="button" class="btn small danger mDel">Borrar</button></div>';
+    }).join("");
+    return '<h3 class="secTitle">' + esc(label) + '</h3><div class="mediaList" data-sec="' + esc(sec) + '">' + rows + "</div>" +
+      '<div class="mediaItem"><input class="url mNewUrl" type="text" placeholder="Dirección del archivo nuevo (ej.: photo_090.jpg o video.mp4)">' +
+      '<select class="mini mNewTipo"><option value="foto">Foto</option><option value="video">Video</option></select>' +
+      '<button type="button" class="btn small mAdd" data-sec="' + esc(sec) + '">+ Agregar</button></div>';
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll(".mDel"), function(b){
+    b.addEventListener("click", function(){ b.closest(".mediaItem").remove(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".mAdd"), function(b){
+    b.addEventListener("click", function(){
+      var box = b.closest(".mediaItem");
+      var url = box.querySelector(".mNewUrl").value.trim();
+      if (!url) return;
+      var sec = b.getAttribute("data-sec");
+      var list = document.querySelector('.mediaList[data-sec="' + sec + '"]');
+      var n = list.querySelectorAll(".mediaItem").length + 1;
+      var tipo = box.querySelector(".mNewTipo").value;
+      var div = document.createElement("div");
+      div.className = "mediaItem"; div.setAttribute("data-sec", sec);
+      div.innerHTML = (tipo === "video" ? '<video src="' + esc(url) + '" muted preload="metadata"></video>' : '<img src="' + esc(url) + '" alt="">') +
+        '<span class="url">' + esc(url) + "</span>" +
+        '<select class="mini mTipo"><option value="foto"' + (tipo === "foto" ? " selected" : "") + '>Foto</option><option value="video"' + (tipo === "video" ? " selected" : "") + ">Video</option></select>" +
+        '<input class="mini mOrden" type="number" value="' + n + '">' +
+        '<label class="checkline"><input type="checkbox" class="mActivo" checked> Activo</label>' +
+        '<button type="button" class="btn small danger mDel">Borrar</button>';
+      div.querySelector(".mDel").addEventListener("click", function(){ div.remove(); });
+      list.appendChild(div);
+      box.querySelector(".mNewUrl").value = "";
+    });
+  });
+}
+$("mediaSaveBtn").addEventListener("click", function(){
+  var media = [];
+  Array.prototype.forEach.call(document.querySelectorAll(".mediaList .mediaItem"), function(it){
+    media.push({
+      seccion: it.getAttribute("data-sec"),
+      tipo: it.querySelector(".mTipo").value,
+      url: it.querySelector(".url").textContent.trim(),
+      orden: Number(it.querySelector(".mOrden").value) || 0,
+      activo: it.querySelector(".mActivo").checked ? "SI" : "NO"
+    });
+  });
+  apiCall("panel_media_save", { media: media }).then(function(r){
+    showMsg("appMsg", r.ok ? ("Media guardada: " + r.count + " archivos. El website se actualiza en su próxima carga.") : (r.error || "Error"), r.ok);
+    if (r.ok) loadData();
+  });
+});
+
+/* ---------- Mi clave ---------- */
+$("passForm").addEventListener("submit", function(ev){
+  ev.preventDefault();
+  var nueva = $("np").value;
+  apiCall("panel_change_pass", { nueva: nueva }).then(function(r){
+    if (r.ok) { CREDS.p = nueva; sessionStorage.setItem("panelCreds", JSON.stringify(CREDS)); $("np").value = ""; }
+    showMsg("appMsg", r.ok ? "Clave actualizada." : (r.error || "Error"), r.ok);
+  });
+});
+
+/* ---------- Sesión guardada ---------- */
+(function(){
+  try {
+    var saved = JSON.parse(sessionStorage.getItem("panelCreds") || "null");
+    if (saved && saved.u) {
+      CREDS = saved;
+      apiCall("panel_login").then(function(r){
+        if (r.ok) { enterApp(r); loadData(); }
+        else { sessionStorage.removeItem("panelCreds"); }
+      }).catch(function(){});
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
