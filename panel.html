@@ -248,7 +248,7 @@ function renderTable(tableId, data, tabName, editable){
   var t = $(tableId);
   if (!data || !data.head || !data.head.length) { t.innerHTML = "<tr><td style='padding:16px'>Sin registros todavía.</td></tr>"; return; }
   var head = data.head;
-  var html = "<thead><tr>" + head.map(function(h){ return "<th>" + esc(h) + "</th>"; }).join("") + "</tr></thead><tbody>";
+  var html = "<thead><tr>" + head.map(function(h){ return "<th>" + esc(h) + "</th>"; }).join("") + (editable ? "<th>Archivos</th>" : "") + "</tr></thead><tbody>";
   data.rows.forEach(function(row){
     html += "<tr>" + head.map(function(h, j){
       var v = row[h];
@@ -268,7 +268,9 @@ function renderTable(tableId, data, tabName, editable){
           '<div class="ddBox hide"><div class="spec">' + esc(v) + "</div></div></td>";
       }
       return "<td><span class='long'>" + esc(v) + "</span></td>";
-    }).join("") + "</tr>";
+    }).join("") + (editable
+      ? '<td><button type="button" class="miniBtn filesBtn" data-tab="' + tabName + '" data-code="' + esc(row[head[1]]) + '">📎 Archivos</button><div class="ddBox filesBox hide" style="max-width:430px"></div></td>'
+      : "") + "</tr>";
   });
   t.innerHTML = html + "</tbody>";
   Array.prototype.forEach.call(t.querySelectorAll(".statusSel"), function(sel){
@@ -286,6 +288,56 @@ function renderTable(tableId, data, tabName, editable){
   });
   Array.prototype.forEach.call(t.querySelectorAll(".copyBtn"), function(b){
     b.addEventListener("click", function(){ copyText(b.getAttribute("data-copy") || "", b); });
+  });
+  Array.prototype.forEach.call(t.querySelectorAll(".filesBtn"), function(b){
+    b.addEventListener("click", function(){
+      var box = b.parentElement.querySelector(".filesBox");
+      if (!box) return;
+      box.classList.toggle("hide");
+      if (!box.classList.contains("hide") && !box.getAttribute("data-loaded")) {
+        box.setAttribute("data-loaded", "1");
+        loadFiles(box, b.getAttribute("data-tab"), b.getAttribute("data-code"));
+      }
+    });
+  });
+}
+function loadFiles(box, tab, code){
+  box.innerHTML = "<span class='muted'>Cargando archivos…</span>";
+  apiCall("panel_files_list", { tab: tab, code: code }).then(function(r){ renderFiles(box, tab, code, r); })
+    .catch(function(){ box.innerHTML = "Sin conexión con el servidor."; });
+}
+function renderFiles(box, tab, code, r){
+  if (!r.ok) { box.innerHTML = esc(r.error || "No se pudieron cargar los archivos"); return; }
+  var h = "";
+  if (r.folder) h += '<div style="margin-bottom:6px"><a href="' + esc(r.folder) + '" target="_blank" rel="noopener">📁 Abrir carpeta en Drive</a></div>';
+  if (r.note) h += '<div class="muted" style="font-size:12.5px">' + esc(r.note) + "</div>";
+  h += (r.files || []).map(function(f){
+    var icon = f.mime.indexOf("pdf") >= 0 ? "📄" : (f.mime.indexOf("image") >= 0 ? "🖼️" : (f.mime.indexOf("video") >= 0 ? "🎬" : "📎"));
+    return '<div style="margin:3px 0"><a href="' + esc(f.url) + '" target="_blank" rel="noopener">' + icon + " " + esc(f.name) + "</a></div>";
+  }).join("");
+  if (r.folder) {
+    h += '<div style="margin-top:9px;border-top:1px solid var(--line);padding-top:8px"><input type="file" class="fUp">' +
+      '<div><button type="button" class="miniBtn fAdd" style="margin-top:6px">Añadir archivo a este estimado</button></div>' +
+      '<div class="fMsg muted" style="font-size:12.5px;margin-top:4px"></div></div>';
+  }
+  box.innerHTML = h;
+  var addBtn = box.querySelector(".fAdd");
+  if (addBtn) addBtn.addEventListener("click", function(){
+    var inp = box.querySelector(".fUp");
+    var file = inp.files && inp.files[0];
+    var msg = box.querySelector(".fMsg");
+    if (!file) { msg.textContent = "Primero elige un archivo."; return; }
+    if (file.size > 12000000) { msg.textContent = "Ese archivo pesa más de 12 MB."; return; }
+    msg.textContent = "Subiendo «" + file.name + "»…";
+    var rd = new FileReader();
+    rd.onload = function(){
+      var b64 = String(rd.result).split(",")[1] || "";
+      apiCall("panel_file_add", { tab: tab, code: code, filename: file.name, mimeType: file.type || "application/octet-stream", data: b64 }).then(function(rr){
+        if (rr.ok) { msg.textContent = "✅ Añadido: " + rr.name; loadFiles(box, tab, code); }
+        else msg.textContent = rr.error || "No se pudo subir";
+      });
+    };
+    rd.readAsDataURL(file);
   });
 }
 function filterTable(inputId, tableId){
