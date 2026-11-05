@@ -50,6 +50,16 @@ h2{font-family:Georgia,serif;font-weight:400;margin:4px 0 6px}
 .checkline input{width:auto}
 .credBox{background:#fff8e6;border:1px solid var(--gold);border-radius:10px;padding:14px;margin-top:14px;font-size:15px}
 .hide{display:none!important}
+.miniBtn{background:#e7ece5;border:1px solid var(--line);border-radius:6px;padding:5px 9px;font-size:12px;font-weight:700;white-space:nowrap}
+.miniBtn:hover{background:#dfe7dc}
+.ddBox{margin-top:7px;background:#f4f6f1;border:1px solid var(--line);border-radius:8px;padding:8px;max-width:320px}
+.ddBox code{font-size:11px;word-break:break-all;white-space:pre-wrap;display:block;max-height:130px;overflow:auto}
+.ddBox .spec{font-size:12.5px;white-space:pre-wrap;word-break:break-word;max-height:180px;overflow:auto}
+.secToggle{width:100%;text-align:left;background:var(--green);color:#fff;border:0;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:700;margin:18px 0 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.secToggle .cnt{color:var(--gold);font-size:13px;font-weight:400}
+.secBody{border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;padding:6px 12px 12px;background:#fff}
+.subRow{display:flex;gap:8px;align-items:center;flex:1;min-width:200px}
+.subRow input{flex:1}
 </style>
 </head>
 <body>
@@ -109,7 +119,7 @@ h2{font-family:Georgia,serif;font-weight:400;margin:4px 0 6px}
 
     <section id="tab-media" class="tabPage hide">
       <h2>Media de los carruseles</h2>
-      <p class="muted">Aquí decides qué fotos y videos salen en el carrusel de cada sección del website, y en qué orden. Quita la marca de <b>Activo</b> para esconder un archivo sin borrarlo, o bórralo de la lista. Para una foto o video <b>nuevo</b>: primero hay que subir el archivo al sitio (pídeselo a Legra o a VILI) y luego agregas aquí su dirección (ejemplo: <b>photo_090.jpg</b>).</p>
+      <p class="muted">Cada sección está en su propio menú desplegable: haz clic en el título para abrirla. Adentro decides qué fotos y videos salen en el carrusel y en qué orden: <b>Sustituir</b> cambia la foto por otra en su mismo lugar, <b>Borrar</b> la quita de la lista, y quitar la marca de <b>Activo</b> la esconde sin borrarla. Para una foto o video <b>nuevo</b>: primero hay que subir el archivo al sitio (pídeselo a Legra o a VILI) y luego lo agregas aquí con su dirección (ejemplo: <b>photo_090.jpg</b>). Al final, guarda con el botón de abajo.</p>
       <div id="mediaSections"></div>
       <div style="margin-top:20px"><button class="btn" id="mediaSaveBtn" type="button">Guardar cambios de media</button></div>
     </section>
@@ -211,6 +221,29 @@ function loadData(){
   }).catch(function(){ showMsg("appMsg", "Sin conexión con el servidor.", false); });
 }
 
+function shortCodeLabel(code){
+  code = String(code || "");
+  var prefix = code.split("-")[0] || "Código";
+  try {
+    var b64 = code.substring(code.indexOf("-") + 1).replace(/-/g, "+").replace(/_/g, "/");
+    while (b64.length % 4) b64 += "=";
+    var obj = JSON.parse(decodeURIComponent(escape(atob(b64))));
+    if (obj && obj.c && obj.c.no) return prefix + " · " + obj.c.no;
+  } catch (e) {}
+  return prefix + " · ver";
+}
+function copyText(txt, btn){
+  function done(){ if (btn) { var o = btn.textContent; btn.textContent = "¡Copiado!"; setTimeout(function(){ btn.textContent = o; }, 1600); } }
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done).catch(function(){ fallback(); }); }
+  else fallback();
+  function fallback(){
+    var ta = document.createElement("textarea");
+    ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) {}
+    ta.remove();
+  }
+}
 function renderTable(tableId, data, tabName, editable){
   var t = $(tableId);
   if (!data || !data.head || !data.head.length) { t.innerHTML = "<tr><td style='padding:16px'>Sin registros todavía.</td></tr>"; return; }
@@ -219,10 +252,20 @@ function renderTable(tableId, data, tabName, editable){
   data.rows.forEach(function(row){
     html += "<tr>" + head.map(function(h, j){
       var v = row[h];
-      if (editable && String(h).toLowerCase().indexOf("estatus") >= 0) {
+      var hl = String(h).toLowerCase();
+      if (editable && hl.indexOf("estatus") >= 0) {
         var opts = ESTATUS.map(function(e){ return '<option value="' + esc(e) + '"' + (String(v) === e ? " selected" : "") + ">" + esc(e) + "</option>"; }).join("");
         if (ESTATUS.indexOf(String(v)) < 0) opts = '<option value="' + esc(v) + '" selected>' + esc(v) + "</option>" + opts;
         return '<td><select class="statusSel" data-tab="' + tabName + '" data-code="' + esc(row[head[1]]) + '">' + opts + "</select></td>";
+      }
+      if (hl.indexOf("código") >= 0 || hl.indexOf("codigo") >= 0) {
+        return '<td><button type="button" class="miniBtn ddToggle">' + esc(shortCodeLabel(v)) + ' ▾</button> ' +
+          '<button type="button" class="miniBtn copyBtn" data-copy="' + esc(v) + '">Copiar</button>' +
+          '<div class="ddBox hide"><code>' + esc(v) + "</code></div></td>";
+      }
+      if (hl.indexOf("especific") >= 0) {
+        return '<td><button type="button" class="miniBtn ddToggle">Ver ▾</button>' +
+          '<div class="ddBox hide"><div class="spec">' + esc(v) + "</div></div></td>";
       }
       return "<td><span class='long'>" + esc(v) + "</span></td>";
     }).join("") + "</tr>";
@@ -234,6 +277,15 @@ function renderTable(tableId, data, tabName, editable){
         showMsg("appMsg", r.ok ? "Estatus actualizado." : (r.error || "No se pudo actualizar"), r.ok);
       });
     });
+  });
+  Array.prototype.forEach.call(t.querySelectorAll(".ddToggle"), function(b){
+    b.addEventListener("click", function(){
+      var box = b.parentElement.querySelector(".ddBox");
+      if (box) box.classList.toggle("hide");
+    });
+  });
+  Array.prototype.forEach.call(t.querySelectorAll(".copyBtn"), function(b){
+    b.addEventListener("click", function(){ copyText(b.getAttribute("data-copy") || "", b); });
   });
 }
 function filterTable(inputId, tableId){
@@ -278,55 +330,82 @@ $("userForm").addEventListener("submit", function(ev){
 });
 
 /* ---------- Media (admin) ---------- */
+function previewHtml(tipo, url){
+  return tipo === "video"
+    ? '<video src="' + esc(url) + '" muted preload="metadata"></video>'
+    : '<img src="' + esc(url) + '" alt="" loading="lazy">';
+}
+function buildMediaItem(sec, m, orden){
+  var div = document.createElement("div");
+  div.className = "mediaItem"; div.setAttribute("data-sec", sec);
+  div.innerHTML =
+    '<span class="mPrev">' + previewHtml(m.tipo, m.url) + "</span>" +
+    '<span class="url">' + esc(m.url) + "</span>" +
+    '<span class="subRow hide"><input type="text" class="mSubUrl" value="' + esc(m.url) + '" placeholder="Dirección de la foto/video nuevo">' +
+    '<button type="button" class="btn small mSubOk">Aplicar</button>' +
+    '<button type="button" class="miniBtn mSubCancel">Cancelar</button></span>' +
+    '<select class="mini mTipo"><option value="foto"' + (m.tipo === "foto" ? " selected" : "") + '>Foto</option><option value="video"' + (m.tipo === "video" ? " selected" : "") + ">Video</option></select>" +
+    '<input class="mini mOrden" type="number" value="' + (orden || 1) + '" title="Orden">' +
+    '<label class="checkline"><input type="checkbox" class="mActivo"' + (String(m.activo).toUpperCase() === "SI" ? " checked" : "") + "> Activo</label>" +
+    '<button type="button" class="btn small mSub">Sustituir</button>' +
+    '<button type="button" class="btn small danger mDel">Borrar</button>';
+  var urlSpan = div.querySelector(".url");
+  var subRow = div.querySelector(".subRow");
+  var subInput = div.querySelector(".mSubUrl");
+  function refreshPreview(){
+    div.querySelector(".mPrev").innerHTML = previewHtml(div.querySelector(".mTipo").value, urlSpan.textContent.trim());
+  }
+  div.querySelector(".mDel").addEventListener("click", function(){ div.remove(); });
+  div.querySelector(".mSub").addEventListener("click", function(){
+    subInput.value = urlSpan.textContent.trim();
+    subRow.classList.toggle("hide");
+    if (!subRow.classList.contains("hide")) subInput.focus();
+  });
+  div.querySelector(".mSubCancel").addEventListener("click", function(){ subRow.classList.add("hide"); });
+  div.querySelector(".mSubOk").addEventListener("click", function(){
+    var nu = subInput.value.trim();
+    if (nu) { urlSpan.textContent = nu; refreshPreview(); }
+    subRow.classList.add("hide");
+  });
+  div.querySelector(".mTipo").addEventListener("change", refreshPreview);
+  return div;
+}
 function renderMedia(){
   if (!DATA || DATA.rol !== "admin") return;
   var bySec = {};
   (DATA.media || []).forEach(function(m){ (bySec[m.seccion] = bySec[m.seccion] || []).push(m); });
   var extra = Object.keys(bySec).filter(function(s){ return !SECCIONES.some(function(x){ return x[0] === s; }); });
   var secs = SECCIONES.concat(extra.map(function(s){ return [s, s]; }));
-  $("mediaSections").innerHTML = secs.map(function(pair){
+  var host = $("mediaSections");
+  host.innerHTML = "";
+  secs.forEach(function(pair){
     var sec = pair[0], label = pair[1];
     var items = (bySec[sec] || []).slice().sort(function(a, b){ return a.orden - b.orden; });
-    var rows = items.map(function(m, i){
-      var prev = m.tipo === "video"
-        ? '<video src="' + esc(m.url) + '" muted preload="metadata"></video>'
-        : '<img src="' + esc(m.url) + '" alt="" loading="lazy">';
-      return '<div class="mediaItem" data-sec="' + esc(sec) + '">' + prev +
-        '<span class="url">' + esc(m.url) + "</span>" +
-        '<select class="mini mTipo"><option value="foto"' + (m.tipo === "foto" ? " selected" : "") + '>Foto</option><option value="video"' + (m.tipo === "video" ? " selected" : "") + ">Video</option></select>" +
-        '<input class="mini mOrden" type="number" value="' + (m.orden || (i + 1)) + '" title="Orden">' +
-        '<label class="checkline"><input type="checkbox" class="mActivo"' + (String(m.activo).toUpperCase() === "SI" ? " checked" : "") + "> Activo</label>" +
-        '<button type="button" class="btn small danger mDel">Borrar</button></div>';
-    }).join("");
-    return '<h3 class="secTitle">' + esc(label) + '</h3><div class="mediaList" data-sec="' + esc(sec) + '">' + rows + "</div>" +
-      '<div class="mediaItem"><input class="url mNewUrl" type="text" placeholder="Dirección del archivo nuevo (ej.: photo_090.jpg o video.mp4)">' +
+    var wrap = document.createElement("div");
+    var btn = document.createElement("button");
+    btn.type = "button"; btn.className = "secToggle";
+    btn.innerHTML = "<span>" + esc(label) + '</span><span class="cnt">' + items.length + ' archivos · clic para abrir ▾</span>';
+    var body = document.createElement("div");
+    body.className = "secBody hide";
+    var list = document.createElement("div");
+    list.className = "mediaList"; list.setAttribute("data-sec", sec);
+    items.forEach(function(m, i){ list.appendChild(buildMediaItem(sec, m, m.orden || (i + 1))); });
+    var addBox = document.createElement("div");
+    addBox.className = "mediaItem";
+    addBox.innerHTML = '<input class="url mNewUrl" type="text" placeholder="Dirección del archivo nuevo (ej.: photo_090.jpg o video.mp4)">' +
       '<select class="mini mNewTipo"><option value="foto">Foto</option><option value="video">Video</option></select>' +
-      '<button type="button" class="btn small mAdd" data-sec="' + esc(sec) + '">+ Agregar</button></div>';
-  }).join("");
-  Array.prototype.forEach.call(document.querySelectorAll(".mDel"), function(b){
-    b.addEventListener("click", function(){ b.closest(".mediaItem").remove(); });
-  });
-  Array.prototype.forEach.call(document.querySelectorAll(".mAdd"), function(b){
-    b.addEventListener("click", function(){
-      var box = b.closest(".mediaItem");
-      var url = box.querySelector(".mNewUrl").value.trim();
+      '<button type="button" class="btn small mAdd">+ Agregar</button>';
+    addBox.querySelector(".mAdd").addEventListener("click", function(){
+      var url = addBox.querySelector(".mNewUrl").value.trim();
       if (!url) return;
-      var sec = b.getAttribute("data-sec");
-      var list = document.querySelector('.mediaList[data-sec="' + sec + '"]');
       var n = list.querySelectorAll(".mediaItem").length + 1;
-      var tipo = box.querySelector(".mNewTipo").value;
-      var div = document.createElement("div");
-      div.className = "mediaItem"; div.setAttribute("data-sec", sec);
-      div.innerHTML = (tipo === "video" ? '<video src="' + esc(url) + '" muted preload="metadata"></video>' : '<img src="' + esc(url) + '" alt="">') +
-        '<span class="url">' + esc(url) + "</span>" +
-        '<select class="mini mTipo"><option value="foto"' + (tipo === "foto" ? " selected" : "") + '>Foto</option><option value="video"' + (tipo === "video" ? " selected" : "") + ">Video</option></select>" +
-        '<input class="mini mOrden" type="number" value="' + n + '">' +
-        '<label class="checkline"><input type="checkbox" class="mActivo" checked> Activo</label>' +
-        '<button type="button" class="btn small danger mDel">Borrar</button>';
-      div.querySelector(".mDel").addEventListener("click", function(){ div.remove(); });
-      list.appendChild(div);
-      box.querySelector(".mNewUrl").value = "";
+      list.appendChild(buildMediaItem(sec, { tipo: addBox.querySelector(".mNewTipo").value, url: url, activo: "SI" }, n));
+      addBox.querySelector(".mNewUrl").value = "";
     });
+    btn.addEventListener("click", function(){ body.classList.toggle("hide"); });
+    body.appendChild(list); body.appendChild(addBox);
+    wrap.appendChild(btn); wrap.appendChild(body);
+    host.appendChild(wrap);
   });
 }
 $("mediaSaveBtn").addEventListener("click", function(){
