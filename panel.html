@@ -96,26 +96,24 @@ tr:nth-child(even) td{background:#f4f6f1}
 .loginWrap{max-width:430px;margin:56px auto;padding:0 16px}
 .credBox{background:#fff8e6;border:1px solid var(--gold);border-radius:10px;padding:14px;margin-top:14px;font-size:15px}
 
-/* ===== Gestión del Website (v2.1) ===== */
-.gtabs{display:flex;gap:10px;margin:16px 0 6px;flex-wrap:wrap}
-.gtab{background:#e7ece5;border:1px solid var(--line);border-radius:40px;padding:10px 18px;font-weight:700;font-size:14px;cursor:pointer;color:var(--ink)}
-.gtab.active{background:var(--green);color:#fff;border-color:var(--green)}
+/* ===== Gestión del Website (v2.1): media y materiales ===== */
 .mediaItem{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px;margin:10px 0;background:#fbfbf8;flex-wrap:wrap}
-.mediaItem .mPrev img,.mediaItem .mPrev video{width:86px;height:64px;object-fit:cover;border-radius:6px;background:#17251f;display:block}
+.mediaItem img,.mediaItem video{width:86px;height:64px;object-fit:cover;border-radius:6px;background:#17251f}
 .mediaItem .url{flex:1;min-width:180px;font-size:13px;word-break:break-all}
-.mediaItem input.mini{width:90px;padding:7px}
-.mediaItem select.mini{width:104px;padding:7px}
-.checkline{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
-.checkline input{width:auto}
+.mediaItem .mini{width:90px}
+.mediaItem select.mini{width:100px}
+.mediaItem label.checkline{margin:0}
 .secToggle{width:100%;text-align:left;background:var(--green);color:#fff;border:0;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:700;margin:18px 0 0;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
 .secToggle .cnt{color:var(--gold);font-size:13px;font-weight:400}
 .secBody{border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;padding:6px 12px 12px;background:#fff}
-.subRow{display:flex;gap:8px;align-items:center;flex:1;min-width:220px;flex-wrap:wrap}
-.subRow input[type=text]{flex:1;min-width:160px}
-.msec{margin:20px 0 8px;color:var(--green2);border-bottom:2px solid var(--gold);padding-bottom:4px;font-size:16px}
-.mrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:4px 0;border-bottom:1px dashed #e3ddcf}
+.subRow{display:flex;gap:8px;align-items:center;flex:1;min-width:200px}
+.subRow input{flex:1}
+.checkline{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.checkline input{width:auto}
+.msec{margin:20px 0 8px;color:var(--green2);border-bottom:2px solid var(--gold);padding-bottom:4px;font-size:15px}
+.mrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:4px 0;border-bottom:1px dashed #e3ddcf;font-size:14px}
 .mrow span{flex:1}
-.mrow input{width:130px;padding:6px 8px;border:1px solid #cfc9b8;border-radius:8px;text-align:right}
+.mrow input{width:130px;padding:6px 8px;text-align:right}
 </style>
 </head>
 <body>
@@ -285,30 +283,29 @@ tr:nth-child(even) td{background:#f4f6f1}
         </div>
       </section>
 
-
-      <!-- GESTIÓN DEL WEBSITE (v2.1) -->
+      <!-- GESTIÓN DEL WEBSITE -->
       <section class="view hide" id="view-gestion">
         <h2>Gestión del Website</h2>
-        <p class="muted">Aquí vive TODO lo editable del website: las fotos de cada sección (incluida la portada) y los precios y materiales que usan las calculadoras. Abres, ves y cambias lo que quieras; al guardar, el website y las calculadoras leen los cambios en su próxima carga.</p>
-        <div class="gtabs">
-          <button type="button" class="gtab active" id="gtabFotos">&#128247; Fotos</button>
-          <button type="button" class="gtab" id="gtabMat">&#128176; Materiales y precios</button>
+        <div class="toolbar">
+          <button type="button" class="chipFilter active" data-gtab="fotos">🖼️ Fotos</button>
+          <button type="button" class="chipFilter" data-gtab="materiales">💲 Materiales y precios</button>
         </div>
 
-        <div id="gFotos">
+        <div id="gesPaneFotos">
+          <p class="muted">Aquí viven <b>todas las fotos</b>: las de los carruseles del website, las de las calculadoras y la portada. Cada sección está en su propio menú desplegable: haz clic en el título para abrirla. Adentro decides qué fotos y videos salen y en qué orden: <b>Sustituir</b> cambia la foto por otra en su mismo lugar, <b>Borrar</b> la quita de la lista, y quitar la marca de <b>Activo</b> la esconde sin borrarla. Para agregar o sustituir puedes <b>subir la foto directamente</b> desde tu teléfono o computadora con el selector de archivo (se guarda sola en Drive), o escribir la dirección de un archivo del website. Al final, guarda con el botón de abajo.</p>
           <div id="mediaMsg" class="msg"></div>
           <div id="mediaSections"></div>
-          <div style="margin-top:20px"><button class="btn" id="mediaSaveBtn" type="button">Guardar cambios de fotos</button></div>
-          <p class="muted">Sustituir sube la foto nueva en su lugar; Borrar la quita de la lista. Nada cambia en el website hasta que guardas con el botón.</p>
+          <div style="margin-top:20px"><button class="btn" id="mediaSaveBtn" type="button">Guardar cambios de media</button></div>
         </div>
 
-        <div id="gMateriales" class="hide">
+        <div id="gesPaneMateriales" class="hide">
           <div class="card">
-            <h3 style="margin-top:0">Precios y cantidades de materiales</h3>
-            <p class="muted">Estos son los precios que usan las tres calculadoras de cocinas (principal, vendedor y cliente) y la orden de compra. Edita el número y guarda.</p>
+            <h3 style="margin-top:0">Materiales — precios, cantidades y fórmulas</h3>
+            <p class="muted">Estos valores alimentan las TRES calculadoras (principal, vendedor y cliente) cada vez que se abren: si cambias un precio aquí, las calculadoras lo leen del servidor al abrirse. Si el servidor no responde, cada calculadora sigue con sus valores guardados. Los vendedores nunca ven estos costos. Nota: la isla usa los mismos precios principales y las cantidades de su tamaño (modelo actual); el anticipo no va aquí porque es comercial, no de materiales.</p>
             <div id="matMsg" class="msg"></div>
             <div id="matBody"></div>
-            <div style="margin-top:16px"><button class="btn green" id="matSaveBtn" type="button">Guardar materiales y precios</button></div>
+            <div style="margin-top:16px"><button type="button" class="btn" id="matSaveBtn">Guardar materiales</button></div>
+            <p class="muted" style="margin-top:14px">Nota: la tarifa de las <b>cercas</b> (precio por pie y portones) vive dentro de la calculadora de cercas y los precios de los <b>buzones</b> en su catálogo; no forman parte de esta tienda de materiales.</p>
           </div>
         </div>
       </section>
@@ -411,13 +408,13 @@ function openView(name){
   if (name === "customers") renderClientes();
   if (name === "workorders") renderWorkOrders();
   if (name === "inventario") renderInventario();
-  if (name === "gestion") { renderMedia(); renderMateriales(); }
+  if (name === "gestion") renderGestion();
 }
 
 /* ---------- Carga de datos ---------- */
 function loadAll(){
   apiCall("panel_data").then(function(r){
-    if (r.ok) { DATA = r; renderQuotes(); renderVend(); if (curView === "gestion") { renderMedia(); renderMateriales(); } }
+    if (r.ok) { DATA = r; renderQuotes(); renderVend(); if (curView === "gestion") renderGestion(); }
   }).catch(function(){});
   loadP2();
 }
@@ -933,25 +930,37 @@ $("btnClave").addEventListener("click", function(){
 
 
 /* ================= GESTIÓN DEL WEBSITE (v2.1) =================
-   Fotos: editor de la Base «Media» (ops panel_media_upload /
-   panel_media_save, ya existentes en el receptor v4.0).
-   Materiales: editor de la tienda que leen las calculadoras
-   (op panel_materiales_save). Portado del panel anterior (v36)
-   con dos correcciones: las etiquetas se leen de es/label/name
-   (la tienda guarda es/en) y los presets muestran su largo de
-   stock además del precio. */
-var SECCIONES_WEB = [["inicio","Portada — foto principal y logo"],["kitchens","Cocinas exteriores"],["fences","Cercas de metal"],["pergolas","Pérgolas"],["casitas","Pool bath & casitas"],["mailboxes","Buzones"],["poolhouses","Pool houses"],["calc-equipos","Calculadoras · Equipos"],["calc-cartas","Calculadoras · Cartas y catálogos"],["calc-cercas","Calculadoras · Cercas"]];
+   Vive dentro del panel: pestañas Fotos y Materiales y precios.
+   Fotos: editor de la Base «Media» (ops panel_media_save /
+   panel_media_upload, ya existentes en el receptor). Incluye la
+   sección «inicio»: su foto 1 es el fondo principal (hero) de la
+   portada y su foto 2 es el banner del logo.
+   Materiales: editor de la tienda que leen las tres calculadoras
+   (op panel_materiales_save, ya existente). UI portada del panel
+   v36, adaptada al estilo del panel v2. */
+var GES_SECCIONES = [["inicio","Inicio (portada)"],["kitchens","Cocinas exteriores"],["fences","Cercas de metal"],["pergolas","Pérgolas"],["casitas","Pool bath & casitas"],["mailboxes","Buzones"],["poolhouses","Pool houses"],["calc-equipos","Calculadoras · equipos"],["calc-cartas","Calculadoras · cartas"],["calc-cercas","Calculadoras · cercas"]];
+var GES_HINTS = { inicio: "La foto 1 es el fondo principal (hero) de la portada y la foto 2 es el banner del logo. Ya vienen puestas las fotos actuales de la portada: al guardar, esta sección queda creada y manda en el website." };
+var GES_INICIO_DEF = [
+  { seccion: "inicio", tipo: "foto", url: "photo_001.jpg", orden: 1, activo: "SI" },
+  { seccion: "inicio", tipo: "foto", url: "photo_007.jpg", orden: 2, activo: "SI" }
+];
+var gesTab = "fotos";
+var gesStamp = null;
 
-$("gtabFotos").addEventListener("click", function(){ setGTab(false); });
-$("gtabMat").addEventListener("click", function(){ setGTab(true); });
-function setGTab(mat){
-  $("gtabFotos").classList.toggle("active", !mat);
-  $("gtabMat").classList.toggle("active", mat);
-  $("gFotos").classList.toggle("hide", mat);
-  $("gMateriales").classList.toggle("hide", !mat);
+function renderGestion(){
+  Array.prototype.forEach.call(document.querySelectorAll("[data-gtab]"), function(b){
+    b.classList.toggle("active", b.getAttribute("data-gtab") === gesTab);
+  });
+  $("gesPaneFotos").classList.toggle("hide", gesTab !== "fotos");
+  $("gesPaneMateriales").classList.toggle("hide", gesTab !== "materiales");
+  if (!DATA) return;
+  if (gesStamp !== DATA) { renderMedia(); renderMateriales(); gesStamp = DATA; }
 }
+Array.prototype.forEach.call(document.querySelectorAll("[data-gtab]"), function(b){
+  b.addEventListener("click", function(){ gesTab = b.getAttribute("data-gtab"); renderGestion(); });
+});
 
-/* ---------- Fotos (Media) ---------- */
+/* ---------- Fotos (Media, admin) ---------- */
 function previewHtml(tipo, url){
   return tipo === "video"
     ? '<video src="' + esc(url) + '" muted preload="metadata"></video>'
@@ -1023,8 +1032,9 @@ function renderMedia(){
   if (!DATA || DATA.rol !== "admin") return;
   var bySec = {};
   (DATA.media || []).forEach(function(m){ (bySec[m.seccion] = bySec[m.seccion] || []).push(m); });
-  var extra = Object.keys(bySec).filter(function(s){ return !SECCIONES_WEB.some(function(x){ return x[0] === s; }); });
-  var secs = SECCIONES_WEB.concat(extra.map(function(s){ return [s, s]; }));
+  if (!bySec["inicio"] || !bySec["inicio"].length) bySec["inicio"] = GES_INICIO_DEF.slice();
+  var extra = Object.keys(bySec).filter(function(s){ return !GES_SECCIONES.some(function(x){ return x[0] === s; }); });
+  var secs = GES_SECCIONES.concat(extra.map(function(s){ return [s, s]; }));
   var host = $("mediaSections");
   host.innerHTML = "";
   secs.forEach(function(pair){
@@ -1036,10 +1046,10 @@ function renderMedia(){
     btn.innerHTML = "<span>" + esc(label) + '</span><span class="cnt">' + items.length + ' archivos · clic para abrir ▾</span>';
     var body = document.createElement("div");
     body.className = "secBody hide";
-    if (sec === "inicio") {
+    if (GES_HINTS[sec]) {
       var hint = document.createElement("p");
-      hint.className = "muted";
-      hint.innerHTML = "La <b>primera</b> foto activa de esta sección es el <b>fondo principal</b> de la portada y la <b>segunda</b> es el <b>banner del logo</b>. Hoy son photo_001.jpg y photo_007.jpg: si la sección está vacía, agrégalas con esos nombres (en ese orden) o sube fotos nuevas y guarda.";
+      hint.className = "muted"; hint.style.margin = "8px 2px 0";
+      hint.textContent = GES_HINTS[sec];
       body.appendChild(hint);
     }
     var list = document.createElement("div");
@@ -1086,43 +1096,39 @@ $("mediaSaveBtn").addEventListener("click", function(){
     });
   });
   apiCall("panel_media_save", { media: media }).then(function(r){
-    showMsg("mediaMsg", r.ok ? ("Fotos guardadas: " + r.count + " archivos. El website se actualiza en su próxima carga.") : (r.error || "Error"), r.ok);
+    showMsg("appMsg", r.ok ? ("Media guardada: " + r.count + " archivos. El website se actualiza en su próxima carga.") : (r.error || "Error"), r.ok);
     if (r.ok) loadAll();
   });
 });
 
-/* ---------- Materiales y precios ---------- */
+/* ---------- Materiales y precios (admin) ---------- */
 var MAT_SIZE13 = ["Counter 96x26","Counter 108x26","Counter 120x26","Isla 108x28","Isla 108x32","Isla 108x36","Isla 108x39","Isla 108x42","Isla 108x52","Bar 108x14","Bar 108x16","B/S 108x4","B/S 108x7"];
 var MAT_STONE_NAMES = {"Q001": "Ice Star", "Q002": "Snow White", "Q003": "Grey Star", "Q004": "Black Star", "Q005": "Venato", "Q006": "Calico", "Q007": "Concrete Grey", "Q008": "Shangi Grey", "Q009": "Autumn Leaf", "Q010": "Pure White", "Q011": "Pure Black", "Q013": "Cappuccino White", "Q014": "Fosmine", "Q015": "Frost Flowers", "Q016": "Calacata", "Q017": "New Calacata", "Q018": "Ice Flower", "Q020": "Calacata Grey", "Q022": "Dark Grey", "Q025": "Calacata Panda", "Q026": "Calacata Gold", "Q027": "Calacata Flower", "Q028": "Calacata Alaska", "Q029": "Calacata Galaxy", "Q030": "Calacata Venus", "Q031": "Calacata Cloud", "Q032": "Taj Mahal", "Q033": "White Dream", "Q034": "Calacata Florence", "Q035": "Carrera", "Q036": "Volarano", "Q037": "Valentino", "Q038": "Fantasy White", "Q039": "Winston White"};
 var MAT_ITEM_LABELS = { perfil22: 'Perfil 22" — framing', channel21: 'Perfil 21" — channel', screws: "Tornillos (paquete)", connT: "Conectores T", connC: "Conectores C (esquina)", connH: "Conectores H (horizontales)", wheels: "Rueditas", corner10: 'Esquinero decorativo 10"' };
-function matLabel(o, fallback){ return (o && (o.es || o.label || o.name || o.en)) || fallback || ""; }
 function renderMateriales(){
   var host = $("matBody"); if (!host) return;
   var M = DATA && DATA.materiales;
-  if (!M) { host.innerHTML = '<p class="muted">Cargando materiales…</p>'; return; }
+  if (!M) { host.innerHTML = ""; return; }
   function num(path, val, step){ return '<input type="number" step="' + (step || "0.01") + '" data-mp="' + path + '" value="' + val + '">'; }
   function row(label, path, val, step){ return '<div class="mrow"><span>' + label + '</span>' + num(path, val, step) + '</div>'; }
   var h = "";
   h += '<h4 class="msec">Precios — framing y paneles</h4>';
   (M.mat_items || []).forEach(function(it){
-    if (it.id === "wallpanel") return;   /* su precio es el del color de panel (abajo) */
+    if (it.id === "wallpanel") return;
     if (it.presets) {
       h += '<div class="mrow"><span><strong>' + esc(MAT_ITEM_LABELS[it.id] || it.id) + '</strong> — precios por largo de stock</span></div>';
-      it.presets.forEach(function(p, ix){
-        h += row('&nbsp;&nbsp;Precio — stock de ' + (p.stock || p.len || "?") + '&quot;', "mat_items|" + it.id + "|presets|" + ix, p.price);
-        h += row('&nbsp;&nbsp;Largo de stock (pulgadas)', "mat_items|" + it.id + "|pstock|" + ix, (p.stock != null ? p.stock : p.len), "1");
-      });
+      it.presets.forEach(function(p, ix){ h += row('&nbsp;&nbsp;Largo ' + (p.stock != null ? p.stock : (p.len != null ? p.len : "")) + '&quot;', "mat_items|" + it.id + "|presets|" + ix, p.price); });
       h += row('&nbsp;&nbsp;Preset por defecto (0, 1, 2…)', "mat_items|" + it.id + "|defPreset", it.defPreset || 0, "1");
     } else {
       h += row(esc(MAT_ITEM_LABELS[it.id] || it.id), "mat_items|" + it.id + "|price", it.price);
     }
   });
   h += '<div class="mrow"><span><strong>Paneles por color</strong> (precio por panel)</span></div>';
-  (M.mat_panel_colors || []).forEach(function(c){ h += row('&nbsp;&nbsp;' + esc(matLabel(c, "Color " + c.idx)), "mat_panel_colors|" + c.idx, c.price); });
+  (M.mat_panel_colors || []).forEach(function(c){ h += row('&nbsp;&nbsp;' + esc(c.name), "mat_panel_colors|" + c.idx, c.price); });
   h += '<h4 class="msec">Equipos — costo de compra por opción</h4>';
-  (M.mat_equipment || []).forEach(function(e2){ h += row(esc(matLabel(e2, e2.equip + " " + e2.idx)), "mat_equipment|" + e2.equip + "|" + e2.idx, e2.price); });
+  (M.mat_equipment || []).forEach(function(e2){ h += row(esc(e2.label), "mat_equipment|" + e2.equip + "|" + e2.idx, e2.price); });
   h += '<h4 class="msec">Storages — costo por opción</h4>';
-  (M.mat_storage || []).forEach(function(s2){ h += row(esc(matLabel(s2, "Storage " + s2.idx)), "mat_storage|" + s2.idx, s2.price); });
+  (M.mat_storage || []).forEach(function(s2){ h += row(esc(s2.label), "mat_storage|" + s2.idx, s2.price); });
   h += '<h4 class="msec">Piedras — precio por GRUPO y tamaño</h4>';
   h += '<p class="muted">Cada piedra hereda los 13 precios de su grupo. Orden de tamaños en cada grupo: ' + MAT_SIZE13.join(" · ") + '. Los tamaños Counter 114x26 y «Verificar» no tienen precio de catálogo y no se editan aquí.</p>';
   var byGroup = {}; var mp = M.mat_stone_map || {};
@@ -1160,7 +1166,6 @@ function collectMateriales(){
     if (root === "mat_items") {
       for (i = 0; i < M.mat_items.length; i++) if (M.mat_items[i].id === parts[1]) {
         if (parts[2] === "presets") M.mat_items[i].presets[Number(parts[3])].price = v;
-        else if (parts[2] === "pstock") { var pr = M.mat_items[i].presets[Number(parts[3])]; if ("stock" in pr || !("len" in pr)) pr.stock = v; else pr.len = v; }
         else if (parts[2] === "defPreset") M.mat_items[i].defPreset = v;
         else M.mat_items[i].price = v;
       }
