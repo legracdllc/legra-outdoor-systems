@@ -200,8 +200,24 @@ function closeDetail(){stopAuto();$('detailDialog').close();current=null}documen
    fotos que ya trae la página. */
 (function(){
   var API = "https://script.google.com/macros/s/AKfycbyfhzsyBcVwpVwXV0t9UfQIexUHCQKr_zMooFHzPofVZgV5usLDXZ77H4R5Sf7wytW0/exec";
+  function heroBg(u){
+    var st = document.getElementById("inicioHeroCss");
+    if (!st) { st = document.createElement("style"); st.id = "inicioHeroCss"; document.head.appendChild(st); }
+    st.textContent = '.hero::before{background-image:url(' + JSON.stringify(u) + ')}.heroPhoto{background-image:url(' + JSON.stringify(u) + ')}';
+  }
+  function applyInicio(d){
+    /* Portada desde el manifiesto (v2.1): la sección «inicio» manda.
+       inicio[0] = fondo principal (hero) · inicio[1] = banner del logo.
+       Si la sección no existe o viene vacía, no se toca nada y la
+       página queda EXACTAMENTE como hoy (photo_001.jpg / photo_007.jpg). */
+    var ini = d.sections && d.sections.inicio;
+    if (!ini || !ini.length) return;
+    if (ini[0] && ini[0].u) heroBg(ini[0].u);
+    if (ini[1] && ini[1].u) { var lg = document.getElementById("logo"); if (lg) lg.src = ini[1].u; }
+  }
   function apply(d){
     if (!d || !d.sections) return;
+    applyInicio(d);
     Object.keys(d.sections).forEach(function(k){
       var items = d.sections[k];
       if (items && items.length && typeof COLLECTION_PHOTOS !== "undefined") {
