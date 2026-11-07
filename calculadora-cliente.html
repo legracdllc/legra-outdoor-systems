@@ -2018,7 +2018,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         // precio es la ganancia (misma definición fijada para la calculadora principal).
         // El vendedor nunca ve este markup. Precio final = base × (1 + extra/100).
         var extraPct = sellerExtraPct();
-        var precio45 = totalCosts > 0 ? Math.round(totalCosts / 0.55 * 100) / 100 : 0;
+        var precio45 = totalCosts > 0 ? Math.round(totalCosts / SELLER_DIV * 100) / 100 : 0;
         grandTotal = precio45;
         var salePrice = grandTotal;
         var profit = grandTotal - totalCosts;
@@ -3042,6 +3042,39 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         s.src = MAT_API + "?action=materiales&k=" + encodeURIComponent(MAT_TOKEN) + "&callback=" + cb;
         (document.head || document.documentElement).appendChild(s);
       })();
+
+      var SELLER_DIV = 0.55; // v34 (Panel v2.2): divisor del margen base (1 − 45%); la tienda (mat_profit) puede cambiarlo al cargar
+      // ===== v34 (Panel v2.2): margen de ganancia desde la tienda =====
+      // Segunda lectura de ?action=materiales (mismo patrón JSONP v33,
+      // timeout de 4 s): aplica mat_profit SOLO si trae números válidos;
+      // si la tienda no responde o no trae la tabla, quedan los valores
+      // incrustados de siempre, EXACTOS (divisor 0.55 = margen base 45%).
+      (function () {
+        var PRC_API = "https://script.google.com/macros/s/AKfycbyfhzsyBcVwpVwXV0t9UfQIexUHCQKr_zMooFHzPofVZgV5usLDXZ77H4R5Sf7wytW0/exec";
+        var PRC_TOKEN = "mat_10043294959ebe09fc965c65";
+        function isNum(v) { return typeof v === "number" && isFinite(v); }
+        function applyPrecios(d) {
+          if (!d || !d.ok) return;
+          try {
+            var p = d.mat_profit || {}, changed = false;
+            if (isNum(p.seller_margin_pct) && p.seller_margin_pct > 0 && p.seller_margin_pct <= 99) {
+              SELLER_DIV = Math.round((1 - p.seller_margin_pct / 100) * 10000) / 10000;
+              changed = true;
+              try { ["es", "en"].forEach(function (lg) { if (typeof T !== "undefined" && T[lg] && typeof T[lg].import_base === "string") T[lg].import_base = T[lg].import_base.replace(/45%/, p.seller_margin_pct + "%"); }); } catch (e2) {}
+            }
+            if (changed && typeof recalc === "function") recalc();
+          } catch (e) { /* si algo falla, quedan los valores incrustados */ }
+        }
+        var cb = "prcCb" + Math.random().toString(36).slice(2);
+        var s = document.createElement("script");
+        var finished = false;
+        function cleanup() { try { delete window[cb]; } catch (e) { window[cb] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
+        var timer = setTimeout(function () { if (!finished) { finished = true; cleanup(); } }, 4000);
+        window[cb] = function (d) { if (finished) return; finished = true; clearTimeout(timer); cleanup(); applyPrecios(d); };
+        s.onerror = function () { if (!finished) { finished = true; clearTimeout(timer); cleanup(); } };
+        s.src = PRC_API + "?action=materiales&k=" + encodeURIComponent(PRC_TOKEN) + "&callback=" + cb;
+        (document.head || document.documentElement).appendChild(s);
+        })();
 
       // ===== LOS1: código de orden (formato COMPARTIDO vendedor ↔ principal) =====
       // Formato: "LOS1-" + base64url( UTF-8 JSON ). Claves compactas:
