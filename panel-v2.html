@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel v2 — Legra's Outdoor Systems</title>
+<style>
+:root{--green:#062d23;--green2:#0c4a37;--accent:#0b6e3c;--gold:#d7ac59;--cream:#f7f5ee;--ink:#15251f;--muted:#62736a;--line:#dde3da;--red:#b3382e;--amber:#b97d16}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,"Segoe UI",Arial,Helvetica,sans-serif}
+header{background:var(--green);color:#fff;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.brand{font-size:19px;font-weight:800;letter-spacing:.4px}
+.brand small{display:block;font-weight:400;font-size:9px;letter-spacing:2px;color:var(--gold);margin-top:3px}
+.btn{background:var(--gold);color:#15271d;border:0;border-radius:8px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:15px}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent;color:#fff;border:1px solid #ffffff88}
+.btn.green{background:var(--accent);color:#fff}
+.btn.small{padding:8px 13px;font-size:13px}
+.btn.danger{background:var(--red);color:#fff}
+.miniBtn{background:#e7ece5;border:1px solid var(--line);border-radius:6px;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.miniBtn:hover{background:#dfe7dc}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;box-shadow:0 6px 24px #12271b10;margin-bottom:18px}
+.hide{display:none!important}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px;font-weight:600}
+input,select,textarea{width:100%;padding:11px;border:1px solid #bdc9c0;border-radius:8px;background:#fff;font:inherit;font-size:15px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold)}
+.msg{display:none;padding:12px 14px;border-radius:8px;margin:0 0 14px;font-size:14px}
+.msg.err{display:block;background:#fbe9e7;color:#8c2b21;border:1px solid #efc4bf}
+.msg.ok{display:block;background:#e7f4ea;color:#14532d;border:1px solid #bfe3c8}
+.muted{color:var(--muted);font-size:14px;line-height:1.55}
+h2{margin:4px 0 14px;font-size:21px}
+h3{margin:20px 0 10px;font-size:16px;color:var(--green2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 18px}
+@media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr}}
+
+/* ===== Layout con barra lateral =====
+   La barra es UN solo elemento con la clase .sidebar.
+   PARA MOVERLA A LA DERECHA: cambiar en .layout la propiedad
+   flex-direction:row por flex-direction:row-reverse. Nada más. */
+.layout{display:flex;flex-direction:row;align-items:stretch;max-width:1460px;margin:0 auto}
+.sidebar{width:228px;flex:0 0 228px;background:var(--green);color:#fff;display:flex;flex-direction:column;padding:16px 12px;min-height:calc(100vh - 64px);position:sticky;top:0;max-height:100vh}
+.sidebar nav{display:flex;flex-direction:column;gap:6px}
+.sideBtn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;color:#e9f2ec;border:1px solid transparent;border-radius:10px;padding:12px 13px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none}
+.sideBtn:hover{background:#ffffff14}
+.sideBtn.active{background:var(--green2);border-color:#d7ac5955;color:#fff}
+.sideBtn .cnt{margin-left:auto;color:var(--gold);font-size:12px;font-weight:700}
+.sidebarBottom{margin-top:auto;padding-top:16px;border-top:1px solid #ffffff2b;display:flex;flex-direction:column;gap:6px}
+.sideBtn.gestion{background:var(--gold);color:#15271d;font-weight:800;justify-content:center}
+.sideBtn.gestion:hover{filter:brightness(1.07)}
+.content{flex:1;min-width:0;padding:20px 22px 60px}
+@media(max-width:820px){
+  .layout{flex-direction:column}
+  .sidebar{width:100%;flex:none;min-height:0;position:static;max-height:none}
+  .sidebar nav{flex-direction:row;flex-wrap:wrap}
+  .sidebar nav .sideBtn{width:auto}
+  .sidebarBottom{flex-direction:row;flex-wrap:wrap}
+}
+
+/* ===== Componentes ===== */
+.chip{display:inline-block;border-radius:40px;padding:4px 11px;font-size:12px;font-weight:700;white-space:nowrap}
+.chip.etapa{background:#e3efe6;color:#0b5136;border:1px solid #bcd8c2}
+.chip.tipo{background:#f3ead2;color:#6d5518;border:1px solid #e3d3a0}
+.chip.saldoOk{background:#e7f4ea;color:#14532d;border:1px solid #bfe3c8}
+.chip.saldoDebe{background:#fbe9e7;color:#8c2b21;border:1px solid #efc4bf}
+.chip.comprar{background:#fbe9e7;color:#8c2b21;border:1px solid #efc4bf}
+.chip.desc{background:#e7f4ea;color:#14532d;border:1px solid #bfe3c8}
+.chipFilter{background:#e7ece5;border:1px solid var(--line);border-radius:40px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer}
+.chipFilter.active{background:var(--green);color:#fff;border-color:var(--green)}
+.proyCard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:12px;cursor:pointer;box-shadow:0 3px 12px #12271b08}
+.proyCard:hover{border-color:var(--gold)}
+.proyCard .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.proyCard .name{font-size:17px;font-weight:800}
+.proyCard .money{margin-left:auto;text-align:right;font-size:14px}
+.money b{font-size:16px}
+.stepper{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.step{border:1px solid var(--line);background:#eef2ec;border-radius:40px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted)}
+.step.done{background:#dcefe0;color:#14532d;border-color:#bfe3c8}
+.step.now{background:var(--accent);color:#fff;border-color:var(--accent)}
+.step:disabled{cursor:default;opacity:.85}
+.tableWrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{background:var(--green);color:#fff;text-align:left;padding:10px;white-space:nowrap}
+td{padding:9px 10px;border-top:1px solid var(--line);vertical-align:top;max-width:340px}
+tr:nth-child(even) td{background:#f4f6f1}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.kv .cell{background:#f7f8f3;border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.kv .cell small{display:block;color:var(--muted);font-size:11px;letter-spacing:.6px;text-transform:uppercase;font-weight:700}
+.kv .cell b{font-size:16px}
+.faltaBox{background:#fff8e6;border:1px solid var(--gold);border-radius:10px;padding:14px 16px;margin:14px 0}
+.faltaBox b{color:#6d5518}
+.listRow{display:flex;gap:10px;align-items:center;border-bottom:1px dashed #e3ddcf;padding:8px 0;font-size:14px;flex-wrap:wrap}
+.listRow .right{margin-left:auto;text-align:right}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.toolbar input[type=search]{max-width:320px}
+.loginWrap{max-width:430px;margin:56px auto;padding:0 16px}
+.credBox{background:#fff8e6;border:1px solid var(--gold);border-radius:10px;padding:14px;margin-top:14px;font-size:15px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Legra's Outdoor Systems<small>PANEL DE GESTIÓN · PROYECTOS</small></div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <a class="btn ghost small" href="https://legra-outdoor-systems.com/" style="text-decoration:none">&#8592; Volver al inicio</a>
+    <div id="userBox" class="hide"><span id="userName"></span></div>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<div id="loginView" class="loginWrap">
+  <div class="card">
+    <h2>Ingresar al panel</h2>
+    <div id="loginMsg" class="msg"></div>
+    <form id="loginForm">
+      <label for="lu">Usuario</label>
+      <input id="lu" autocomplete="username" required>
+      <label for="lp">Clave</label>
+      <input id="lp" type="password" autocomplete="current-password" required>
+      <div style="margin-top:18px"><button class="btn" type="submit" style="width:100%">Entrar</button></div>
+    </form>
+    <p class="muted">Mismo usuario y clave del panel de estimados.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appView" class="hide">
+  <div class="layout">
+    <aside class="sidebar">
+      <nav id="sideNav">
+        <button type="button" class="sideBtn" data-view="proyectos">📁 Proyectos <span class="cnt" id="cntProyectos"></span></button>
+        <button type="button" class="sideBtn" data-view="estimados">🧾 Estimados</button>
+        <button type="button" class="sideBtn" data-view="citas">📅 Citas <span class="cnt" id="cntCitas"></span></button>
+        <button type="button" class="sideBtn" data-view="customers">👥 Customers</button>
+        <button type="button" class="sideBtn" data-view="workorders">🛠️ Work Orders <span class="cnt" id="cntWO"></span></button>
+        <button type="button" class="sideBtn adminOnly" data-view="inventario">📦 Inventario</button>
+      </nav>
+      <div class="sidebarBottom">
+        <a class="sideBtn gestion adminOnly" href="panel.html">&#9881;&#65039; Gestión del Website</a>
+        <button type="button" class="sideBtn" data-view="clave">🔑 Mi clave</button>
+        <button type="button" class="sideBtn" id="logoutBtn">&#x1F6AA; Salir</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div id="appMsg" class="msg"></div>
+
+      <!-- PROYECTOS -->
+      <section class="view" id="view-proyectos">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <h2 style="margin:0">Proyectos</h2>
+          <button type="button" class="btn green small adminOnly" id="btnNuevoProy" style="margin-left:auto">&#43; Nuevo proyecto</button>
+        </div>
+        <div class="toolbar" id="tipoFilters" style="margin-top:14px"></div>
+        <div id="proyList"></div>
+
+        <div class="card adminOnly hide" id="nuevoProyCard">
+          <h3 style="margin-top:0">Nuevo proyecto (manual)</h3>
+          <div class="grid2">
+            <div><label>Cliente existente</label><select id="npClienteSel"><option value="">— Nuevo cliente —</option></select></div>
+            <div><label>Nombre del cliente *</label><input id="npCliente"></div>
+            <div><label>Teléfono</label><input id="npTelefono"></div>
+            <div><label>Email</label><input id="npEmail"></div>
+            <div><label>Tipo</label><select id="npTipo"></select></div>
+            <div><label>Total inicial ($)</label><input id="npTotal" type="number" step="0.01" min="0" value="0"></div>
+          </div>
+          <label>Notas</label><textarea id="npNotas" rows="2"></textarea>
+          <div style="margin-top:14px;display:flex;gap:10px">
+            <button type="button" class="btn green" id="npGuardar">Crear proyecto</button>
+            <button type="button" class="btn" id="npCancelar">Cancelar</button>
+          </div>
+          <div id="npMsg" class="msg" style="margin-top:12px"></div>
+        </div>
+
+        <div id="proyDetail"></div>
+      </section>
+
+      <!-- ESTIMADOS -->
+      <section class="view hide" id="view-estimados">
+        <h2>Estimados</h2>
+        <h3>Estimados de clientes</h3>
+        <div class="toolbar"><input type="search" id="qSearchQ" placeholder="Buscar en estimados de clientes…"></div>
+        <div class="tableWrap"><table id="tableQuotes"></table></div>
+        <div id="filesBoxQ"></div>
+        <h3 style="margin-top:30px" id="vendTitle">Estimados de vendedores</h3>
+        <p class="muted" id="vendNote"></p>
+        <div class="toolbar"><input type="search" id="qSearchV" placeholder="Buscar en estimados de vendedores…"></div>
+        <div class="tableWrap"><table id="tableVend"></table></div>
+        <div id="filesBoxV"></div>
+      </section>
+
+      <!-- CITAS -->
+      <section class="view hide" id="view-citas">
+        <h2>Citas</h2>
+        <div class="card adminOnly">
+          <h3 style="margin-top:0">Nueva cita</h3>
+          <div class="grid3">
+            <div><label>Fecha *</label><input id="ctFecha" type="date"></div>
+            <div><label>Hora</label><input id="ctHora" type="time"></div>
+            <div><label>Tipo</label><select id="ctTipo"><option>Medición</option><option>Instalación</option><option>Visita</option><option>Otro</option></select></div>
+            <div><label>Proyecto</label><select id="ctProyecto"><option value="">— Sin proyecto —</option></select></div>
+            <div><label>Cliente (si no hay proyecto)</label><input id="ctCliente"></div>
+            <div><label>Lugar</label><input id="ctLugar"></div>
+          </div>
+          <label>Notas</label><input id="ctNotas">
+          <div style="margin-top:14px"><button type="button" class="btn green" id="ctGuardar">Guardar cita</button></div>
+          <div id="ctMsg" class="msg" style="margin-top:12px"></div>
+          <p class="muted">Las citas quedan guardadas en la Base. La sincronización con Google Calendar se activa al desplegar (ver notas de despliegue).</p>
+        </div>
+        <div class="tableWrap"><table id="tableCitas"></table></div>
+      </section>
+
+      <!-- CUSTOMERS -->
+      <section class="view hide" id="view-customers">
+        <h2>Customers</h2>
+        <div class="toolbar"><input type="search" id="cuSearch" placeholder="Buscar cliente por nombre, teléfono o email…"></div>
+        <div class="tableWrap"><table id="tableClientes"></table></div>
+        <div id="clienteDetail"></div>
+        <div class="card adminOnly" style="margin-top:18px">
+          <h3 style="margin-top:0">Nuevo cliente (manual)</h3>
+          <div class="grid2">
+            <div><label>Nombre *</label><input id="ncNombre"></div>
+            <div><label>Teléfono</label><input id="ncTelefono"></div>
+            <div><label>Email</label><input id="ncEmail"></div>
+            <div><label>Dirección</label><input id="ncDireccion"></div>
+          </div>
+          <div style="margin-top:14px"><button type="button" class="btn green" id="ncGuardar">Guardar cliente</button></div>
+          <div id="ncMsg" class="msg" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <!-- WORK ORDERS -->
+      <section class="view hide" id="view-workorders">
+        <h2>Work Orders</h2>
+        <div id="woList"></div>
+        <div class="card adminOnly">
+          <h3 style="margin-top:0">Nueva orden de trabajo</h3>
+          <div class="grid2">
+            <div><label>Proyecto</label><select id="woProyecto"><option value="">— Sin proyecto —</option></select></div>
+            <div><label>Descripción *</label><input id="woDesc"></div>
+          </div>
+          <label>Notas</label><input id="woNotas">
+          <div style="margin-top:14px"><button type="button" class="btn green" id="woGuardar">Crear orden</button></div>
+          <div id="woMsg" class="msg" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <!-- INVENTARIO -->
+      <section class="view hide" id="view-inventario">
+        <h2>Inventario</h2>
+        <p class="muted">Lo que tenemos en existencia. Al agregar una partida de material a un proyecto, la cantidad se descuenta de aquí; si no alcanza, la orden de trabajo marca lo que falta <b>comprar</b>.</p>
+        <div class="tableWrap"><table id="tableInventario"></table></div>
+        <div class="card adminOnly" style="margin-top:18px">
+          <h3 style="margin-top:0">Nuevo artículo</h3>
+          <div class="grid3">
+            <div><label>Nombre *</label><input id="ivNombre"></div>
+            <div><label>Categoría</label><input id="ivCategoria"></div>
+            <div><label>Cantidad</label><input id="ivCantidad" type="number" step="1" value="0"></div>
+            <div><label>Unidad</label><input id="ivUnidad" placeholder="pzas, pies, cajas…"></div>
+            <div><label>Costo unitario ($)</label><input id="ivCosto" type="number" step="0.01" value="0"></div>
+            <div><label>Notas</label><input id="ivNotas"></div>
+          </div>
+          <div style="margin-top:14px"><button type="button" class="btn green" id="ivGuardar">Agregar artículo</button></div>
+          <div id="ivMsg" class="msg" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <!-- MI CLAVE -->
+      <section class="view hide" id="view-clave">
+        <h2>Mi clave</h2>
+        <div class="card" style="max-width:480px">
+          <label for="np">Clave nueva</label>
+          <input id="np" type="password" autocomplete="new-password">
+          <div style="margin-top:14px"><button type="button" class="btn green" id="btnClave">Cambiar mi clave</button></div>
+          <div id="claveMsg" class="msg" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+var API = "https://script.google.com/macros/s/AKfycbyfhzsyBcVwpVwXV0t9UfQIexUHCQKr_zMooFHzPofVZgV5usLDXZ77H4R5Sf7wytW0/exec";
+var CREDS = { u: "", p: "" };
+var DATA = null;   // panel_data (estimados, usuarios, media, materiales)
+var P2 = null;     // panel_p2_data (proyectos, clientes, citas, workorders, inventario)
+var ESTATUS = ["Nuevo","Contactado","Visita agendada","Cotización enviada","Ganado","Perdido","Cerrado"];
+var TIPOS = ["Cocina","Cerca","Pérgola","Buzón","Pool Bath","Otro"];
+var curView = "proyectos";
+var curProyId = "";
+var tipoFilter = "Todos";
+var clienteSelId = "";
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function showMsg(id, text, ok){ var m=$(id); if(!m) return; m.textContent=text; m.className="msg "+(ok?"ok":"err"); }
+function clearMsg(id){ var m=$(id); if(!m) return; m.textContent=""; m.className="msg"; }
+function money(n){ return "$" + (Number(n)||0).toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2}); }
+function isAdmin(){ return P2 && P2.rol === "admin"; }
+
+/* Mismo patrón de transporte del panel actual: POST text/plain con
+   respaldo JSONP; las credenciales viajan en CADA llamada. */
+function jsonp(payload){
+  return new Promise(function(resolve, reject){
+    var cb = "cb" + Math.random().toString(36).slice(2);
+    var s = document.createElement("script");
+    window[cb] = function(d){ try{ delete window[cb]; }catch(e){} s.remove(); resolve(d); };
+    s.onerror = function(){ try{ delete window[cb]; }catch(e){} s.remove(); reject(new Error("Sin conexión")); };
+    s.src = API + "?action=panel&callback=" + cb + "&payload=" + encodeURIComponent(JSON.stringify(payload));
+    document.head.appendChild(s);
+  });
+}
+function apiCall(type, extra){
+  var payload = { type: type, usuario: CREDS.u, clave: CREDS.p };
+  if (extra) for (var k in extra) payload[k] = extra[k];
+  return fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) })
+    .then(function(r){ return r.text(); })
+    .then(function(t){ return JSON.parse(t); })
+    .catch(function(){ return jsonp(payload); });
+}
+
+/* ---------- Login / sesión (idéntico al panel actual) ---------- */
+$("loginForm").addEventListener("submit", function(ev){
+  ev.preventDefault(); clearMsg("loginMsg");
+  CREDS = { u: $("lu").value.trim().toLowerCase(), p: $("lp").value };
+  apiCall("panel_login").then(function(r){
+    if (!r.ok) { showMsg("loginMsg", r.error || "No se pudo ingresar", false); return; }
+    sessionStorage.setItem("panelCreds", JSON.stringify(CREDS));
+    enterApp(r);
+    loadAll();
+  }).catch(function(){ showMsg("loginMsg", "Sin conexión con el servidor. Revisa tu internet e inténtalo de nuevo.", false); });
+});
+function doLogout(){
+  sessionStorage.removeItem("panelCreds"); CREDS = { u:"", p:"" }; DATA = null; P2 = null;
+  $("appView").classList.add("hide"); $("userBox").classList.add("hide"); $("loginView").classList.remove("hide");
+}
+$("logoutBtn").addEventListener("click", doLogout);
+
+function enterApp(r){
+  $("loginView").classList.add("hide"); $("appView").classList.remove("hide"); $("userBox").classList.remove("hide");
+  $("userName").textContent = r.nombre + (r.rol === "admin" ? " · Administrador" : " · Vendedor");
+  if (r.rol !== "admin") {
+    Array.prototype.forEach.call(document.querySelectorAll(".adminOnly"), function(el){ el.classList.add("hide"); });
+  }
+  openView("proyectos");
+}
+
+/* ---------- Navegación (barra lateral) ---------- */
+Array.prototype.forEach.call(document.querySelectorAll("#sideNav .sideBtn, .sidebarBottom .sideBtn[data-view]"), function(b){
+  b.addEventListener("click", function(){ openView(b.getAttribute("data-view")); });
+});
+function openView(name){
+  curView = name;
+  Array.prototype.forEach.call(document.querySelectorAll(".sideBtn[data-view]"), function(b){
+    b.classList.toggle("active", b.getAttribute("data-view") === name);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".view"), function(v){ v.classList.add("hide"); });
+  var v = $("view-" + name); if (v) v.classList.remove("hide");
+  if (name === "proyectos") renderProyectos();
+  if (name === "estimados") { renderQuotes(); renderVend(); }
+  if (name === "citas") renderCitas();
+  if (name === "customers") renderClientes();
+  if (name === "workorders") renderWorkOrders();
+  if (name === "inventario") renderInventario();
+}
+
+/* ---------- Carga de datos ---------- */
+function loadAll(){
+  apiCall("panel_data").then(function(r){
+    if (r.ok) { DATA = r; renderQuotes(); renderVend(); }
+  }).catch(function(){});
+  loadP2();
+}
+function loadP2(){
+  return apiCall("panel_p2_data").then(function(r){
+    if (!r.ok) { showMsg("appMsg", r.error || "No se pudieron cargar los proyectos", false); return; }
+    P2 = r;
+    $("cntProyectos").textContent = P2.proyectos.length || "";
+    $("cntCitas").textContent = P2.citas.filter(function(c){ return c.estado === "Pendiente"; }).length || "";
+    $("cntWO").textContent = P2.workorders.filter(function(w){ return w.estado === "Pendiente" || w.estado === "En proceso"; }).length || "";
+    fillSelects();
+    openView(curView);
+    if (curProyId) renderProyDetail(curProyId);
+    if (clienteSelId) renderClienteDetail(clienteSelId);
+  }).catch(function(){ showMsg("appMsg", "Sin conexión con el servidor.", false); });
+}
+function fillSelects(){
+  if (!P2) return;
+  var cliOpts = '<option value="">— Nuevo cliente —</option>' + P2.clientes.map(function(c){
+    return '<option value="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? " · " + esc(c.telefono) : "") + "</option>";
+  }).join("");
+  $("npClienteSel").innerHTML = cliOpts;
+  $("npTipo").innerHTML = TIPOS.map(function(t){ return "<option>" + t + "</option>"; }).join("");
+  var proyOpts = '<option value="">— Sin proyecto —</option>' + P2.proyectos.map(function(p){
+    return '<option value="' + esc(p.id) + '">' + esc(p.cliente) + " · " + esc(p.tipo) + " · " + money(p.total) + "</option>";
+  }).join("");
+  $("ctProyecto").innerHTML = proyOpts;
+  $("woProyecto").innerHTML = proyOpts;
+}
+
+/* ---------- Utilidades de estimados (del panel actual) ---------- */
+function shortCodeLabel(code){
+  code = String(code || "");
+  var prefix = code.split("-")[0] || "Código";
+  try {
+    var b64 = code.substring(code.indexOf("-") + 1).replace(/-/g, "+").replace(/_/g, "/");
+    while (b64.length % 4) b64 += "=";
+    var obj = JSON.parse(decodeURIComponent(escape(atob(b64))));
+    if (obj && obj.c && obj.c.no) return prefix + " · " + obj.c.no;
+  } catch (e) {}
+  return prefix + " · ver";
+}
+function copyText(txt, btn){
+  function done(){ if (btn) { var o = btn.textContent; btn.textContent = "¡Copiado!"; setTimeout(function(){ btn.textContent = o; }, 1600); } }
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done).catch(function(){ fallback(); }); }
+  else fallback();
+  function fallback(){
+    var ta = document.createElement("textarea");
+    ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) {}
+    ta.remove();
+  }
+}
+function proyById(id){ return P2 ? (P2.proyectos.filter(function(p){ return p.id === id; })[0] || null) : null; }
+function clienteById(id){ return P2 ? (P2.clientes.filter(function(c){ return c.id === id; })[0] || null) : null; }
+
+/* ================= PROYECTOS ================= */
+function renderProyectos(){
+  if (!P2) { $("proyList").innerHTML = '<p class="muted">Cargando…</p>'; return; }
+  var tipos = ["Todos"].concat(TIPOS);
+  $("tipoFilters").innerHTML = tipos.map(function(t){
+    var n = t === "Todos" ? P2.proyectos.length : P2.proyectos.filter(function(p){ return p.tipo === t; }).length;
+    return '<button type="button" class="chipFilter' + (tipoFilter === t ? " active" : "") + '" data-tipo="' + esc(t) + '">' + esc(t) + " (" + n + ")</button>";
+  }).join("");
+  Array.prototype.forEach.call($("tipoFilters").querySelectorAll(".chipFilter"), function(b){
+    b.addEventListener("click", function(){ tipoFilter = b.getAttribute("data-tipo"); renderProyectos(); });
+  });
+  var list = P2.proyectos.filter(function(p){ return tipoFilter === "Todos" || p.tipo === tipoFilter; });
+  if (!list.length) { $("proyList").innerHTML = '<div class="card"><p class="muted">Todavía no hay proyectos' + (tipoFilter !== "Todos" ? " de este tipo" : "") + '. Cuando un cliente somete su estimado en el website, su proyecto se crea solo aquí.</p></div>'; return; }
+  $("proyList").innerHTML = list.map(function(p){
+    return '<div class="proyCard" data-proy="' + esc(p.id) + '">' +
+      '<div class="top"><span class="name">' + esc(p.cliente || "Sin nombre") + '</span>' +
+      '<span class="chip tipo">' + esc(p.tipo) + '</span>' +
+      '<span class="chip etapa">' + esc(p.etapa) + '</span>' +
+      '<span class="money">Total <b>' + money(p.total) + '</b> · Pagado ' + money(p.pagado) +
+      ' · <span class="chip ' + (p.saldo > 0 ? "saldoDebe" : "saldoOk") + '">Saldo ' + money(p.saldo) + "</span></span></div>" +
+      '<div class="muted" style="margin-top:6px">' + esc(p.fecha) +
+      (p.codigo ? " · Estimado " + esc(shortCodeLabel(p.codigo)) : " · Proyecto manual") +
+      (p.telefono ? " · " + esc(p.telefono) : "") + "</div></div>";
+  }).join("");
+  Array.prototype.forEach.call($("proyList").querySelectorAll(".proyCard"), function(c){
+    c.addEventListener("click", function(){ curProyId = c.getAttribute("data-proy"); renderProyDetail(curProyId); });
+  });
+}
+
+function renderProyDetail(id){
+  var p = proyById(id);
+  var box = $("proyDetail");
+  if (!p) { box.innerHTML = ""; curProyId = ""; return; }
+  var etapas = P2.etapas || [];
+  var idx = etapas.indexOf(p.etapa);
+  var stepper = etapas.map(function(e, i){
+    var cls = i < idx ? "done" : (i === idx ? "now" : "");
+    return '<button type="button" class="step ' + cls + '" data-etapa="' + esc(e) + '"' + (isAdmin() ? "" : " disabled") + ">" + (i + 1) + ". " + esc(e) + "</button>";
+  }).join("");
+  var siguiente = idx >= 0 && idx < etapas.length - 1 ? etapas[idx + 1] : "";
+  var faltaMat = [];
+  P2.workorders.filter(function(w){ return w.proyectoId === p.id; }).forEach(function(w){
+    w.lineas.forEach(function(L){ if (L.estado === "comprar") faltaMat.push(L); });
+  });
+  var falta = "<b>Qué falta:</b> " +
+    (siguiente ? "siguiente etapa → <b>" + esc(siguiente) + "</b>. " : "proyecto en su etapa final. ") +
+    (p.saldo > 0 ? "Saldo por cobrar: <b>" + money(p.saldo) + "</b>. " : "Sin saldo pendiente. ") +
+    (faltaMat.length ? "Material por comprar: <b>" + faltaMat.map(function(L){ return esc(L.nombre) + " ×" + esc(L.cantidad); }).join(", ") + "</b>." : "Sin material pendiente de comprar.");
+  var pagosHtml = p.pagos.length ? p.pagos.map(function(pg){
+    return '<div class="listRow"><span>' + esc(pg.fecha) + "</span><span>" + esc(pg.metodo || "") + (pg.nota ? " · " + esc(pg.nota) : "") + '</span><span class="right"><b>' + money(pg.monto) + "</b></span></div>";
+  }).join("") : '<p class="muted">Sin pagos registrados.</p>';
+  var ajustesHtml = p.ajustes.length ? p.ajustes.map(function(a){
+    return '<div class="listRow"><span>' + esc(a.fecha) + "</span><span>" + esc(a.descripcion) + (a.esMaterial ? ' <span class="chip tipo">material</span>' : "") + '</span><span class="right"><b>' + (a.monto >= 0 ? "+" : "") + money(a.monto) + "</b></span></div>";
+  }).join("") : '<p class="muted">Sin partidas agregadas.</p>';
+  var citasP = P2.citas.filter(function(c){ return c.proyectoId === p.id; });
+  var citasHtml = citasP.length ? citasP.map(function(c){
+    return '<div class="listRow"><span>📅 ' + esc(c.fecha) + (c.hora ? " " + esc(c.hora) : "") + "</span><span>" + esc(c.tipo) + (c.lugar ? " · " + esc(c.lugar) : "") + '</span><span class="right"><span class="chip etapa">' + esc(c.estado) + "</span></span></div>";
+  }).join("") : '<p class="muted">Sin citas. Agrégala en la sección Citas.</p>';
+  var wosP = P2.workorders.filter(function(w){ return w.proyectoId === p.id; });
+  var wosHtml = wosP.length ? wosP.map(function(w){
+    return '<div class="listRow"><span>🛠️ ' + esc(w.descripcion) + "</span><span>" + w.lineas.map(function(L){
+      return esc(L.nombre) + " ×" + esc(L.cantidad) + ' <span class="chip ' + (L.estado === "comprar" ? "comprar" : "desc") + '">' + (L.estado === "comprar" ? "⚠ comprar" : "en inventario") + "</span>";
+    }).join(" · ") + '</span><span class="right"><span class="chip etapa">' + esc(w.estado) + "</span></span></div>";
+  }).join("") : '<p class="muted">Sin órdenes de trabajo.</p>';
+  var invOpts = '<option value="">— Sin ligar a inventario —</option>' + P2.inventario.map(function(it){
+    return '<option value="' + esc(it.id) + '">' + esc(it.nombre) + " (hay " + esc(it.cantidad) + " " + esc(it.unidad) + ")</option>";
+  }).join("");
+
+  box.innerHTML =
+  '<div class="card">' +
+    '<button type="button" class="miniBtn" id="pdBack">&#8592; Volver a la lista</button>' +
+    '<h3 style="font-size:20px;margin:12px 0 2px">' + esc(p.cliente || "Sin nombre") + ' <span class="chip tipo">' + esc(p.tipo) + "</span></h3>" +
+    '<div class="muted">' + (p.codigo ? "Estimado " + esc(shortCodeLabel(p.codigo)) + ' <button type="button" class="miniBtn" id="pdCopyCode">Ver código</button>' : "Proyecto creado a mano") +
+    (p.carpeta ? ' · <a href="' + esc(p.carpeta) + '" target="_blank" rel="noopener">📎 Carpeta del cliente</a>' : "") + "</div>" +
+    '<div class="stepper">' + stepper + "</div>" +
+    '<div class="faltaBox">' + falta + "</div>" +
+    '<div class="kv">' +
+      '<div class="cell"><small>Total del proyecto</small><b>' + money(p.total) + "</b></div>" +
+      '<div class="cell"><small>Pagado</small><b>' + money(p.pagado) + "</b></div>" +
+      '<div class="cell"><small>Saldo (automático)</small><b>' + money(p.saldo) + "</b></div>" +
+      '<div class="cell"><small>Teléfono</small><b>' + esc(p.telefono || "—") + "</b></div>" +
+      '<div class="cell"><small>Email</small><b>' + esc(p.email || "—") + "</b></div>" +
+      '<div class="cell"><small>Etapa actual</small><b>' + esc(p.etapa) + "</b></div>" +
+    "</div>" +
+    (p.notas ? '<p class="muted">' + esc(p.notas) + "</p>" : "") +
+
+    '<h3>Pagos</h3>' + pagosHtml +
+    (isAdmin() ? '<div class="grid3"><div><label>Monto ($)</label><input id="pgMonto" type="number" step="0.01" min="0"></div>' +
+      '<div><label>Método</label><select id="pgMetodo"><option>Zelle</option><option>Efectivo</option><option>Tarjeta</option><option>Cheque</option><option>Transferencia</option><option>Financiamiento</option><option>Otro</option></select></div>' +
+      '<div><label>Nota</label><input id="pgNota"></div></div>' +
+      '<div style="margin-top:10px"><button type="button" class="btn green small" id="pgGuardar">Registrar pago</button></div>' : "") +
+
+    '<h3>Partidas agregadas (ajustes)</h3>' + ajustesHtml +
+    (isAdmin() ? '<div class="card" style="background:#fbfbf8;margin-top:12px"><b>Agregar partida</b>' +
+      '<div class="grid2"><div><label>Descripción *</label><input id="ajDesc"></div>' +
+      '<div><label>Monto ($) *</label><input id="ajMonto" type="number" step="0.01"></div></div>' +
+      '<label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="ajMat" style="width:auto"> Es material / equipo (entra a Work Order e Inventario)</label>' +
+      '<div class="grid2"><div><label>Artículo de inventario</label><select id="ajInv">' + invOpts + '</select></div>' +
+      '<div><label>Cantidad</label><input id="ajCant" type="number" step="1" value="1"></div></div>' +
+      '<div style="margin-top:10px"><button type="button" class="btn green small" id="ajGuardar">Agregar partida</button></div>' +
+      '<p class="muted">Cada partida lleva su fecha, suma al total y el saldo se recalcula solo. Si es material, se descuenta del inventario o queda marcado «comprar».</p></div>' : "") +
+
+    '<h3>Citas de este proyecto</h3>' + citasHtml +
+    '<h3>Work Orders de este proyecto</h3>' + wosHtml +
+    '<div id="pdMsg" class="msg" style="margin-top:12px"></div>' +
+  "</div>";
+
+  $("pdBack").addEventListener("click", function(){ curProyId = ""; box.innerHTML = ""; window.scrollTo(0, 0); });
+  var cp = $("pdCopyCode");
+  if (cp) cp.addEventListener("click", function(){ copyText(p.codigo, cp); });
+  Array.prototype.forEach.call(box.querySelectorAll(".step"), function(b){
+    b.addEventListener("click", function(){
+      apiCall("panel_p2_proyecto_etapa", { id: p.id, etapa: b.getAttribute("data-etapa") }).then(function(r){
+        if (!r.ok) { showMsg("pdMsg", r.error || "No se pudo cambiar la etapa", false); return; }
+        loadP2();
+      });
+    });
+  });
+  var pg = $("pgGuardar");
+  if (pg) pg.addEventListener("click", function(){
+    var monto = Number($("pgMonto").value);
+    if (!(monto > 0)) { showMsg("pdMsg", "Escribe el monto del pago.", false); return; }
+    apiCall("panel_p2_proyecto_pago", { id: p.id, monto: monto, metodo: $("pgMetodo").value, nota: $("pgNota").value }).then(function(r){
+      if (!r.ok) { showMsg("pdMsg", r.error || "No se pudo registrar el pago", false); return; }
+      loadP2();
+    });
+  });
+  var aj = $("ajGuardar");
+  if (aj) aj.addEventListener("click", function(){
+    var desc = $("ajDesc").value.trim(), monto = Number($("ajMonto").value);
+    if (!desc || !monto) { showMsg("pdMsg", "La partida necesita descripción y monto.", false); return; }
+    apiCall("panel_p2_proyecto_ajuste", { id: p.id, descripcion: desc, monto: monto,
+      esMaterial: $("ajMat").checked, inventarioId: $("ajInv").value, cantidad: Number($("ajCant").value) || 0 }).then(function(r){
+      if (!r.ok) { showMsg("pdMsg", r.error || "No se pudo agregar la partida", false); return; }
+      loadP2();
+    });
+  });
+}
+
+$("btnNuevoProy").addEventListener("click", function(){ $("nuevoProyCard").classList.toggle("hide"); });
+$("npCancelar").addEventListener("click", function(){ $("nuevoProyCard").classList.add("hide"); });
+$("npGuardar").addEventListener("click", function(){
+  var sel = $("npClienteSel").value;
+  var payload = { tipo: $("npTipo").value, total: Number($("npTotal").value) || 0, notas: $("npNotas").value };
+  if (sel) payload.clienteId = sel;
+  else {
+    payload.cliente = $("npCliente").value.trim();
+    payload.telefono = $("npTelefono").value; payload.email = $("npEmail").value;
+    if (!payload.cliente) { showMsg("npMsg", "Escribe el nombre del cliente o elige uno existente.", false); return; }
+  }
+  apiCall("panel_p2_proyecto_create", payload).then(function(r){
+    if (!r.ok) { showMsg("npMsg", r.error || "No se pudo crear el proyecto", false); return; }
+    $("nuevoProyCard").classList.add("hide");
+    curProyId = r.proyecto.id;
+    loadP2();
+  });
+});
+
+/* ================= ESTIMADOS ================= */
+function renderQuotesTable(tableId, data, tabName, editable, boxId){
+  var t = $(tableId);
+  if (!data || !data.head || !data.head.length) { t.innerHTML = "<tr><td style='padding:16px'>Sin registros todavía.</td></tr>"; return; }
+  var head = data.head;
+  var codeIdx = 1, estIdx = -1;
+  head.forEach(function(h, i){
+    if (String(h).indexOf("Código") === 0 || String(h).indexOf("Codigo") === 0) codeIdx = i;
+    if (String(h) === "Estatus") estIdx = i;
+  });
+  var html = "<thead><tr>" + head.map(function(h){ return "<th>" + esc(h) + "</th>"; }).join("") + (editable ? "<th>Archivos</th>" : "") + "</tr></thead><tbody>";
+  data.rows.forEach(function(r){
+    html += "<tr>" + head.map(function(h, i){
+      var v = r[h];
+      if (i === codeIdx) {
+        return "<td><b>" + esc(shortCodeLabel(v)) + '</b> <button type="button" class="miniBtn" data-copy="' + esc(v) + '">Copiar</button></td>';
+      }
+      if (i === estIdx && editable) {
+        var opts = ESTATUS.map(function(e){ return '<option' + (String(v) === e ? " selected" : "") + ">" + e + "</option>"; }).join("");
+        return '<td><select data-estatus="' + esc(r[head[codeIdx]]) + '" style="padding:7px;font-size:13px">' + opts + "</select></td>";
+      }
+      if (typeof v === "number") {
+        if (String(h).indexOf("%") >= 0) return "<td>" + esc(v) + "%</td>";
+        return "<td>" + money(v) + "</td>";
+      }
+      return "<td>" + esc(v) + "</td>";
+    }).join("") + (editable ? '<td><button type="button" class="miniBtn" data-files="' + esc(r[head[codeIdx]]) + '">📎 Archivos</button></td>' : "") + "</tr>";
+  });
+  t.innerHTML = html + "</tbody>";
+  Array.prototype.forEach.call(t.querySelectorAll("[data-copy]"), function(b){
+    b.addEventListener("click", function(){ copyText(b.getAttribute("data-copy"), b); });
+  });
+  Array.prototype.forEach.call(t.querySelectorAll("[data-estatus]"), function(sel){
+    sel.addEventListener("change", function(){
+      apiCall("panel_quote_status", { tab: tabName, code: sel.getAttribute("data-estatus"), estatus: sel.value }).then(function(r){
+        if (!r.ok) showMsg("appMsg", r.error || "No se pudo cambiar el estatus", false);
+        else showMsg("appMsg", "Estatus actualizado.", true);
+      });
+    });
+  });
+  Array.prototype.forEach.call(t.querySelectorAll("[data-files]"), function(b){
+    b.addEventListener("click", function(){ loadFiles(boxId, tabName, b.getAttribute("data-files")); });
+  });
+}
+function renderQuotes(){ if (DATA) renderQuotesTable("tableQuotes", DATA.quotes, "Quotes", isAdmin(), "filesBoxQ"); }
+function renderVend(){
+  if (!DATA) return;
+  renderQuotesTable("tableVend", DATA.vendedores, "Vendedores", isAdmin(), "filesBoxV");
+  if (DATA.rol !== "admin") {
+    $("vendTitle").textContent = "Mis estimados";
+    $("vendNote").textContent = "Los estimados que tú has creado con la calculadora del vendedor.";
+  }
+}
+function filterRows(inputId, tableId){
+  var q = $(inputId).value.toLowerCase();
+  Array.prototype.forEach.call($(tableId).querySelectorAll("tbody tr"), function(tr){
+    tr.style.display = tr.textContent.toLowerCase().indexOf(q) >= 0 ? "" : "none";
+  });
+}
+$("qSearchQ").addEventListener("input", function(){ filterRows("qSearchQ", "tableQuotes"); });
+$("qSearchV").addEventListener("input", function(){ filterRows("qSearchV", "tableVend"); });
+
+function loadFiles(boxId, tab, code){
+  var box = $(boxId);
+  box.innerHTML = '<div class="card"><p class="muted">Cargando archivos de ' + esc(shortCodeLabel(code)) + "…</p></div>";
+  apiCall("panel_files_list", { tab: tab, code: code }).then(function(r){
+    if (!r.ok) { box.innerHTML = '<div class="card"><p class="muted">' + esc(r.error || "No se pudieron cargar los archivos") + "</p></div>"; return; }
+    var files = (r.files || []).map(function(f){
+      return '<div class="listRow"><span>📄 <a href="' + esc(f.url) + '" target="_blank" rel="noopener">' + esc(f.name) + '</a></span><span class="right muted">' + Math.round((f.size || 0) / 1024) + " KB</span></div>";
+    }).join("");
+    box.innerHTML = '<div class="card"><b>Archivos — ' + esc(shortCodeLabel(code)) + "</b>" +
+      (r.folder ? ' · <a href="' + esc(r.folder) + '" target="_blank" rel="noopener">Abrir carpeta en Drive</a>' : "") +
+      (r.note ? '<p class="muted">' + esc(r.note) + "</p>" : "") +
+      (files || '<p class="muted">Sin archivos todavía.</p>') +
+      (r.folder ? '<label>Agregar archivo (PDF, foto, video… máx. ~12 MB)</label><input type="file" id="addFile_' + boxId + '">' : "") +
+      '<div id="fileMsg_' + boxId + '" class="msg" style="margin-top:10px"></div></div>';
+    var inp = $("addFile_" + boxId);
+    if (inp) inp.addEventListener("change", function(){
+      var file = inp.files[0]; if (!file) return;
+      var rd = new FileReader();
+      rd.onload = function(){
+        var b64 = String(rd.result).split(",")[1] || "";
+        apiCall("panel_file_add", { tab: tab, code: code, filename: file.name, mimeType: file.type || "application/octet-stream", data: b64 }).then(function(rr){
+          if (!rr.ok) { showMsg("fileMsg_" + boxId, rr.error || "No se pudo subir", false); return; }
+          loadFiles(boxId, tab, code);
+        });
+      };
+      rd.readAsDataURL(file);
+    });
+  });
+}
+
+/* ================= CITAS ================= */
+function renderCitas(){
+  if (!P2) return;
+  var rows = P2.citas.slice().sort(function(a, b){ return (a.fecha + a.hora) < (b.fecha + b.hora) ? -1 : 1; });
+  if (!rows.length) { $("tableCitas").innerHTML = "<tr><td style='padding:16px'>Sin citas todavía.</td></tr>"; return; }
+  var html = "<thead><tr><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Cliente</th><th>Proyecto</th><th>Lugar</th><th>Estado</th><th>Notas</th></tr></thead><tbody>";
+  rows.forEach(function(c){
+    var p = c.proyectoId ? proyById(c.proyectoId) : null;
+    var estadoCell = isAdmin()
+      ? '<select data-cita-estado="' + esc(c.id) + '" style="padding:7px;font-size:13px">' + P2.citaEstados.map(function(e){ return '<option' + (c.estado === e ? " selected" : "") + ">" + e + "</option>"; }).join("") + "</select>"
+      : esc(c.estado);
+    html += "<tr><td>" + esc(c.fecha) + "</td><td>" + esc(c.hora) + "</td><td>" + esc(c.tipo) + "</td><td>" + esc(c.cliente) +
+      "</td><td>" + (p ? esc(p.cliente) + " · " + esc(p.tipo) : "—") + "</td><td>" + esc(c.lugar) + "</td><td>" + estadoCell + "</td><td>" + esc(c.notas) + "</td></tr>";
+  });
+  $("tableCitas").innerHTML = html + "</tbody>";
+  Array.prototype.forEach.call($("tableCitas").querySelectorAll("[data-cita-estado]"), function(sel){
+    sel.addEventListener("change", function(){
+      apiCall("panel_p2_cita_update", { id: sel.getAttribute("data-cita-estado"), estado: sel.value }).then(function(r){
+        if (!r.ok) showMsg("appMsg", r.error || "No se pudo actualizar la cita", false); else loadP2();
+      });
+    });
+  });
+}
+$("ctGuardar").addEventListener("click", function(){
+  var fecha = $("ctFecha").value;
+  if (!fecha) { showMsg("ctMsg", "Elige la fecha de la cita.", false); return; }
+  apiCall("panel_p2_cita_create", { fecha: fecha, hora: $("ctHora").value, tipo: $("ctTipo").value,
+    proyectoId: $("ctProyecto").value, cliente: $("ctCliente").value, lugar: $("ctLugar").value, notas: $("ctNotas").value }).then(function(r){
+    if (!r.ok) { showMsg("ctMsg", r.error || "No se pudo guardar la cita", false); return; }
+    showMsg("ctMsg", "Cita guardada.", true);
+    loadP2();
+  });
+});
+
+/* ================= CUSTOMERS ================= */
+function renderClientes(){
+  if (!P2) return;
+  var q = ($("cuSearch").value || "").toLowerCase();
+  var rows = P2.clientes.filter(function(c){
+    return !q || (c.nombre + " " + c.telefono + " " + c.email).toLowerCase().indexOf(q) >= 0;
+  });
+  if (!rows.length) { $("tableClientes").innerHTML = "<tr><td style='padding:16px'>Sin clientes todavía. Se crean solos cuando entra un estimado del website.</td></tr>"; return; }
+  var html = "<thead><tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Dirección</th><th>Alta</th><th>Proyectos</th></tr></thead><tbody>";
+  rows.forEach(function(c){
+    var n = P2.proyectos.filter(function(p){ return p.clienteId === c.id; }).length;
+    html += '<tr data-cliente="' + esc(c.id) + '" style="cursor:pointer"><td><b>' + esc(c.nombre) + "</b></td><td>" + esc(c.telefono) + "</td><td>" + esc(c.email) + "</td><td>" + esc(c.direccion) + "</td><td>" + esc(c.fechaAlta) + "</td><td>" + n + "</td></tr>";
+  });
+  $("tableClientes").innerHTML = html + "</tbody>";
+  Array.prototype.forEach.call($("tableClientes").querySelectorAll("[data-cliente]"), function(tr){
+    tr.addEventListener("click", function(){ clienteSelId = tr.getAttribute("data-cliente"); renderClienteDetail(clienteSelId); });
+  });
+}
+$("cuSearch").addEventListener("input", renderClientes);
+
+function renderClienteDetail(id){
+  var c = clienteById(id);
+  var box = $("clienteDetail");
+  if (!c) { box.innerHTML = ""; clienteSelId = ""; return; }
+  var proys = P2.proyectos.filter(function(p){ return p.clienteId === c.id; });
+  var codes = {};
+  proys.forEach(function(p){ if (p.codigo) codes[p.codigo] = 1; });
+  function estRows(data){
+    if (!data || !data.rows) return [];
+    var codeH = (data.head || []).filter(function(h){ return String(h).indexOf("Código") === 0; })[0] || "Código";
+    return data.rows.filter(function(r){ return codes[String(r[codeH] || "")]; })
+      .map(function(r){ return { code: String(r[codeH] || ""), fila: r }; });
+  }
+  var ests = DATA ? estRows(DATA.quotes).concat(estRows(DATA.vendedores)) : [];
+  box.innerHTML = '<div class="card" style="margin-top:18px">' +
+    '<button type="button" class="miniBtn" id="cdBack">&#8592; Volver a la lista</button>' +
+    '<h3 style="font-size:19px;margin:12px 0 2px">' + esc(c.nombre) + "</h3>" +
+    '<div class="kv"><div class="cell"><small>Teléfono</small><b>' + esc(c.telefono || "—") + '</b></div>' +
+    '<div class="cell"><small>Email</small><b>' + esc(c.email || "—") + '</b></div>' +
+    '<div class="cell"><small>Dirección</small><b>' + esc(c.direccion || "—") + '</b></div>' +
+    '<div class="cell"><small>Cliente desde</small><b>' + esc(c.fechaAlta || "—") + "</b></div></div>" +
+    "<h3>Proyectos</h3>" + (proys.length ? proys.map(function(p){
+      return '<div class="listRow"><span><b>' + esc(p.tipo) + "</b> · " + esc(p.etapa) + '</span><span class="right">Total ' + money(p.total) + ' · <span class="chip ' + (p.saldo > 0 ? "saldoDebe" : "saldoOk") + '">Saldo ' + money(p.saldo) + '</span> <button type="button" class="miniBtn" data-goproy="' + esc(p.id) + '">Abrir</button></span></div>';
+    }).join("") : '<p class="muted">Sin proyectos.</p>') +
+    "<h3>Estimados</h3>" + (ests.length ? ests.map(function(e){
+      var r = e.fila;
+      return '<div class="listRow"><span>' + esc(shortCodeLabel(e.code)) + "</span><span>" + esc(r["Colección"] || r["Coleccion"] || "") + '</span><span class="right">' + esc(r["Estatus"] || "") + "</span></div>";
+    }).join("") : '<p class="muted">Sin estimados ligados.</p>') +
+    (isAdmin() ? '<h3>Editar ficha</h3><div class="grid2">' +
+      '<div><label>Nombre</label><input id="ceNombre" value="' + esc(c.nombre) + '"></div>' +
+      '<div><label>Teléfono</label><input id="ceTelefono" value="' + esc(c.telefono) + '"></div>' +
+      '<div><label>Email</label><input id="ceEmail" value="' + esc(c.email) + '"></div>' +
+      '<div><label>Dirección</label><input id="ceDireccion" value="' + esc(c.direccion) + '"></div></div>' +
+      '<label>Notas</label><textarea id="ceNotas" rows="2">' + esc(c.notas) + '</textarea>' +
+      '<div style="margin-top:10px"><button type="button" class="btn green small" id="ceGuardar">Guardar cambios</button></div>' : "") +
+    '<div id="cdMsg" class="msg" style="margin-top:12px"></div></div>';
+  $("cdBack").addEventListener("click", function(){ clienteSelId = ""; box.innerHTML = ""; });
+  Array.prototype.forEach.call(box.querySelectorAll("[data-goproy]"), function(b){
+    b.addEventListener("click", function(){
+      curProyId = b.getAttribute("data-goproy");
+      openView("proyectos");
+      renderProyDetail(curProyId);
+    });
+  });
+  var g = $("ceGuardar");
+  if (g) g.addEventListener("click", function(){
+    apiCall("panel_p2_cliente_update", { id: c.id, nombre: $("ceNombre").value, telefono: $("ceTelefono").value,
+      email: $("ceEmail").value, direccion: $("ceDireccion").value, notas: $("ceNotas").value }).then(function(r){
+      if (!r.ok) { showMsg("cdMsg", r.error || "No se pudo guardar", false); return; }
+      loadP2();
+    });
+  });
+}
+$("ncGuardar").addEventListener("click", function(){
+  var nombre = $("ncNombre").value.trim();
+  if (!nombre) { showMsg("ncMsg", "Escribe el nombre del cliente.", false); return; }
+  apiCall("panel_p2_cliente_create", { nombre: nombre, telefono: $("ncTelefono").value, email: $("ncEmail").value, direccion: $("ncDireccion").value }).then(function(r){
+    if (!r.ok) { showMsg("ncMsg", r.error || "No se pudo guardar", false); return; }
+    showMsg("ncMsg", r.existente ? "Ese cliente ya existía (mismo teléfono/email): se abrió su ficha." : "Cliente guardado.", true);
+    clienteSelId = r.cliente.id;
+    loadP2();
+  });
+});
+
+/* ================= WORK ORDERS ================= */
+function woLineasHtml(w){
+  if (!w.lineas.length) return '<span class="muted">Sin líneas de material.</span>';
+  return w.lineas.map(function(L){
+    return esc(L.nombre) + " ×" + esc(L.cantidad) + ' <span class="chip ' + (L.estado === "comprar" ? "comprar" : "desc") + '">' + (L.estado === "comprar" ? "⚠ comprar" : "descontado de inventario") + "</span>";
+  }).join(" · ");
+}
+function renderWorkOrders(){
+  if (!P2) return;
+  if (!P2.workorders.length) { $("woList").innerHTML = '<div class="card"><p class="muted">Sin órdenes de trabajo. Se crean a mano aquí o solas al agregar una partida de material a un proyecto.</p></div>'; return; }
+  $("woList").innerHTML = P2.workorders.map(function(w){
+    var p = w.proyectoId ? proyById(w.proyectoId) : null;
+    var estadoCell = isAdmin()
+      ? '<select data-wo-estado="' + esc(w.id) + '" style="padding:7px;font-size:13px;width:auto">' + P2.woEstados.map(function(e){ return '<option' + (w.estado === e ? " selected" : "") + ">" + e + "</option>"; }).join("") + "</select>"
+      : '<span class="chip etapa">' + esc(w.estado) + "</span>";
+    return '<div class="proyCard" style="cursor:default"><div class="top"><span class="name" style="font-size:16px">' + esc(w.descripcion) + "</span>" +
+      '<span class="right" style="margin-left:auto">' + estadoCell + "</span></div>" +
+      '<div class="muted" style="margin-top:6px">' + esc(w.fecha) + (p ? " · Proyecto: " + esc(p.cliente) + " (" + esc(p.tipo) + ")" : " · Sin proyecto") + "</div>" +
+      '<div style="margin-top:8px;font-size:14px">' + woLineasHtml(w) + "</div>" +
+      (w.notas ? '<div class="muted" style="margin-top:6px">' + esc(w.notas) + "</div>" : "") + "</div>";
+  }).join("");
+  Array.prototype.forEach.call($("woList").querySelectorAll("[data-wo-estado]"), function(sel){
+    sel.addEventListener("change", function(){
+      apiCall("panel_p2_workorder_estado", { id: sel.getAttribute("data-wo-estado"), estado: sel.value }).then(function(r){
+        if (!r.ok) showMsg("appMsg", r.error || "No se pudo cambiar el estado", false); else loadP2();
+      });
+    });
+  });
+}
+$("woGuardar").addEventListener("click", function(){
+  var desc = $("woDesc").value.trim();
+  if (!desc) { showMsg("woMsg", "Escribe la descripción de la orden.", false); return; }
+  apiCall("panel_p2_workorder_create", { proyectoId: $("woProyecto").value, descripcion: desc, notas: $("woNotas").value }).then(function(r){
+    if (!r.ok) { showMsg("woMsg", r.error || "No se pudo crear la orden", false); return; }
+    $("woDesc").value = ""; $("woNotas").value = "";
+    loadP2();
+  });
+});
+
+/* ================= INVENTARIO ================= */
+function renderInventario(){
+  if (!P2) return;
+  if (!P2.inventario.length) { $("tableInventario").innerHTML = "<tr><td style='padding:16px'>Sin artículos todavía. Agrega el primero con el formulario de abajo.</td></tr>"; return; }
+  var html = "<thead><tr><th>Artículo</th><th>Categoría</th><th>Cantidad</th><th>Unidad</th><th>Costo unit.</th><th>Notas</th><th></th></tr></thead><tbody>";
+  P2.inventario.forEach(function(it){
+    html += "<tr><td><b>" + esc(it.nombre) + "</b></td><td>" + esc(it.categoria) + "</td>" +
+      '<td><input type="number" step="1" value="' + esc(it.cantidad) + '" id="ivc_' + esc(it.id) + '" style="width:100px;padding:7px"></td>' +
+      "<td>" + esc(it.unidad) + "</td>" +
+      '<td><input type="number" step="0.01" value="' + esc(it.costo) + '" id="ivp_' + esc(it.id) + '" style="width:110px;padding:7px"></td>' +
+      "<td>" + esc(it.notas) + "</td>" +
+      '<td><button type="button" class="miniBtn" data-iv-save="' + esc(it.id) + '">Guardar</button></td></tr>';
+  });
+  $("tableInventario").innerHTML = html + "</tbody>";
+  Array.prototype.forEach.call($("tableInventario").querySelectorAll("[data-iv-save]"), function(b){
+    b.addEventListener("click", function(){
+      var id = b.getAttribute("data-iv-save");
+      apiCall("panel_p2_inventario_update", { id: id, cantidad: Number($("ivc_" + id).value), costo: Number($("ivp_" + id).value) }).then(function(r){
+        if (!r.ok) { showMsg("appMsg", r.error || "No se pudo guardar", false); return; }
+        b.textContent = "¡Guardado!";
+        setTimeout(function(){ loadP2(); }, 700);
+      });
+    });
+  });
+}
+$("ivGuardar").addEventListener("click", function(){
+  var nombre = $("ivNombre").value.trim();
+  if (!nombre) { showMsg("ivMsg", "Escribe el nombre del artículo.", false); return; }
+  apiCall("panel_p2_inventario_create", { nombre: nombre, categoria: $("ivCategoria").value, cantidad: Number($("ivCantidad").value) || 0,
+    unidad: $("ivUnidad").value, costo: Number($("ivCosto").value) || 0, notas: $("ivNotas").value }).then(function(r){
+    if (!r.ok) { showMsg("ivMsg", r.error || "No se pudo agregar", false); return; }
+    $("ivNombre").value = ""; $("ivCantidad").value = "0"; $("ivCosto").value = "0"; $("ivNotas").value = "";
+    loadP2();
+  });
+});
+
+/* ================= MI CLAVE ================= */
+$("btnClave").addEventListener("click", function(){
+  var nueva = $("np").value;
+  if (nueva.length < 4) { showMsg("claveMsg", "La clave nueva debe tener al menos 4 caracteres.", false); return; }
+  apiCall("panel_change_pass", { nueva: nueva }).then(function(r){
+    if (!r.ok) { showMsg("claveMsg", r.error || "No se pudo cambiar la clave", false); return; }
+    CREDS.p = nueva;
+    sessionStorage.setItem("panelCreds", JSON.stringify(CREDS));
+    $("np").value = "";
+    showMsg("claveMsg", "Clave actualizada.", true);
+  });
+});
+
+/* ---------- Restaurar sesión guardada ---------- */
+(function(){
+  try {
+    var saved = JSON.parse(sessionStorage.getItem("panelCreds") || "null");
+    if (saved && saved.u && saved.p) {
+      CREDS = saved;
+      apiCall("panel_login").then(function(r){
+        if (r.ok) { enterApp(r); loadAll(); }
+        else { sessionStorage.removeItem("panelCreds"); }
+      }).catch(function(){});
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
