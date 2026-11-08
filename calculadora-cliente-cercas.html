@@ -238,12 +238,12 @@
           </div>
           <form id="calc-form" autocomplete="off">
             <div class="field">
-              <label for="client-name" data-i18n="client_name">Nombre del cliente</label>
+              <label for="client-name" data-i18n="client_name">Nombre del cliente</label> <span class="req-note" id="req-client-name" data-i18n="req_field" style="display:none;color:#c0392b;font-weight:700;font-size:12px;margin-left:6px;">Requerido</span>
               <input type="text" id="client-name" data-i18n-ph="client_name_ph" placeholder="Nombre y apellido" />
             </div>
             <div class="two-col">
               <div class="field cf-more" id="cf-contact" style="margin-bottom:0">
-                <label for="client-contact" data-i18n="client_contact">Teléfono / Email</label>
+                <label for="client-contact" data-i18n="client_contact">Teléfono / Email</label> <span class="req-note" id="req-client-contact" data-i18n="req_field" style="display:none;color:#c0392b;font-weight:700;font-size:12px;margin-left:6px;">Requerido</span>
                 <input type="text" id="client-contact" placeholder="(346) 000-0000" />
               </div>
               <div class="field cf-more" id="cf-date" style="margin-bottom:0">
@@ -252,7 +252,7 @@
               </div>
             </div>
             <div class="field cf-more" id="cf-address" style="margin-top:16px">
-              <label for="project-address" data-i18n="project_address">Dirección del proyecto</label>
+              <label for="project-address" data-i18n="project_address">Dirección del proyecto</label> <span class="req-note" id="req-project-address" data-i18n="req_field" style="display:none;color:#c0392b;font-weight:700;font-size:12px;margin-left:6px;">Requerido</span>
               <input type="text" id="project-address" data-i18n-ph="project_address_ph" placeholder="Calle, ciudad, TX" />
             </div>
             <div class="two-col">
@@ -449,6 +449,7 @@
             </div>
           </div>
 
+          <p class="disc-note" id="disc-note" data-i18n="disclosure" style="display:none;font-size:11px;color:#777;line-height:1.5;margin:0 0 10px;">Este es un estimado general generado en línea. El precio final puede variar según las características específicas de cada trabajo, las condiciones del sitio y las medidas exactas verificadas en la visita. El precio definitivo se confirma por escrito antes de firmar el contrato.</p>
           <div id="bd-head" role="button" tabindex="0" aria-expanded="false"><span class="acc-chev" id="bd-chev">▸</span><span data-i18n="breakdown_l">Desglose de materiales</span></div>
           <div id="bd-body" hidden>
           <table class="breakdown">
@@ -920,7 +921,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           brand_sub: "Legra's Outdoor Systems · A division of Legra's C & D LLC",
           h1: "Calculadora de Cercas de Metal — Cliente",
           head_p: "Arma tu cerca, mira tu precio al instante y genera tu propio presupuesto.",
-          client_info: "Información del cliente", client_name: "Nombre del cliente", client_name_ph: "Nombre y apellido",
+          client_info: "Información del cliente", client_name: "Nombre del cliente", req_field: "Requerido", client_name_ph: "Nombre y apellido",
           client_contact: "Teléfono / Email", date: "Fecha", project_address: "Dirección del proyecto",
           project_address_ph: "Calle, ciudad, TX", project_title: "Título del proyecto", project_title_def: "",
           estimate_no: "No. de estimado", fence_data: "Datos de la cerca", feet: "Pies lineales de cerca", feet_suffix: "pies",
@@ -989,7 +990,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           total_price: "PRECIO TOTAL DEL PROYECTO", total_price_en: "TOTAL PROJECT PRICE",
           permits_l: "Permisos", taxes_l: "Impuestos",
           thanks: "¡Gracias por confiar en Legra's Outdoor Systems! Nos especializamos en brindar un servicio personalizado donde la calidad, la elegancia y la confianza son los pilares de nuestra compañía.",
-          sig_client: "Firma del cliente", sig_date: "Fecha", sig_contractor: "Contratista",
+          sig_client: "Firma del cliente", disclosure: "Este es un estimado general generado en línea. El precio final puede variar según las características específicas de cada trabajo, las condiciones del sitio y las medidas exactas verificadas en la visita. El precio definitivo se confirma por escrito antes de firmar el contrato.", sig_date: "Fecha", sig_contractor: "Contratista",
           dash: "—",
           download: "⬇️ Descargar PDF", po_btn: "🧾 Orden de compra (PDF)",
           pdf_dl_fail: "No se pudo cargar el generador de PDF. Revisa tu conexión e inténtalo de nuevo.",
@@ -1004,7 +1005,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           brand_sub: "Legra's Outdoor Systems · A division of Legra's C & D LLC",
           h1: "Metal Fence Calculator — Client",
           head_p: "Build your fence, see your price instantly and generate your own estimate.",
-          client_info: "Client information", client_name: "Client name", client_name_ph: "Full name",
+          client_info: "Client information", client_name: "Client name", req_field: "Required", client_name_ph: "Full name",
           client_contact: "Phone / Email", date: "Date", project_address: "Project address",
           project_address_ph: "Street, city, TX", project_title: "Project title", project_title_def: "",
           estimate_no: "Estimate No.", fence_data: "Fence details", feet: "Linear feet of fence", feet_suffix: "ft",
@@ -1071,7 +1072,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           total_price: "TOTAL PROJECT PRICE", total_price_en: "TOTAL PROJECT PRICE",
           permits_l: "Permits", taxes_l: "Taxes",
           thanks: "Thank you for trusting Legra's Outdoor Systems! We specialize in providing personalized service where quality, elegance, and trust are the pillars of our company.",
-          sig_client: "Client signature", sig_date: "Date", sig_contractor: "Contractor",
+          sig_client: "Client signature", disclosure: "This is a general estimate generated online. The final price may vary depending on the specific characteristics of each job, site conditions, and the exact measurements verified during the visit. The definitive price is confirmed in writing before signing the contract.", sig_date: "Date", sig_contractor: "Contractor",
           dash: "—",
           download: "⬇️ Download PDF", po_btn: "🧾 Purchase order (PDF)",
           pdf_dl_fail: "Could not load the PDF generator. Check your connection and try again.",
@@ -1522,6 +1523,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (r.permits > 0) body += row(L("permits_l"), L("mat_included"));
         if (r.taxes > 0) body += row(L("taxes_l"), L("mat_included"));
         body += row(L("total_price"), "<strong>" + fmt(r.total) + "</strong>") + "</table>";
+        body += "<p style='font-size:11px;color:#666;line-height:1.5;'>" + L("disclosure") + "</p>";
         body += paymentTable(r, L("pay_adv"), L("pay_final"), L("due_sign"), L("due_done"));
         body += "<h2 class='sec'>" + L("sec_thanks") + "</h2><div class='thanks'>" + L("thanks") + "</div>";
         body += "<h2 class='sec'>" + L("sec_accept") + "</h2><div class='sig-grid'>" +
@@ -1711,6 +1713,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           doc.autoTable({ startY: y, body: prows, styles: { fontSize: 10 }, columnStyles: { 0: { fontStyle: "bold", cellWidth: 55 } } });
           y = doc.lastAutoTable.finalY + 6;
           y = pdfTotals(doc, y, [], L("total_price"), fmt(r.total));
+          doc.setFont("helvetica", "italic"); doc.setFontSize(8.5); doc.setTextColor(100, 100, 100);
+          var dsc34 = doc.splitTextToSize(L("disclosure"), 182);
+          if (y + dsc34.length * 4.2 > 280) { doc.addPage(); y = 15; }
+          doc.text(dsc34, 14, y); y += dsc34.length * 4.2 + 5;
+          doc.setFont("helvetica", "normal"); doc.setTextColor(0, 0, 0);
           y = pdfSection(doc, y, L("sec_pay"));
           doc.autoTable({
             startY: y,
@@ -2019,6 +2026,44 @@ var __qSentHash = "";
 var __qSending = false;
 function __qHash(s) { var h = 0, i; for (i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; } return "h" + h; }
 function __qEl(id) { return document.getElementById(id); }
+// v3.4c: datos requeridos del cliente (nombre, teléfono/contacto y
+// dirección del proyecto). Sin ellos no se revela el precio ni se envía
+// el estimado automático; junto a cada campo faltante aparece el aviso
+// «Requerido / Required» (clave i18n req_field). El email NO es requerido.
+var __Q_REQ = ["client-name", "client-contact", "project-address"];
+var __qReqShown = false;
+function __qReqMissing() {
+  var miss = [];
+  for (var i = 0; i < __Q_REQ.length; i++) {
+    var n = __qEl(__Q_REQ[i]);
+    if (!n || n.value.trim() === "") miss.push(__Q_REQ[i]);
+  }
+  return miss;
+}
+function __qReqPaint(miss) {
+  for (var i = 0; i < __Q_REQ.length; i++) {
+    var id = __Q_REQ[i], bad = miss.indexOf(id) >= 0;
+    var note = __qEl("req-" + id);
+    if (note) note.style.display = bad ? "" : "none";
+    var inp = __qEl(id);
+    if (inp) inp.style.borderColor = bad ? "#c0392b" : "";
+  }
+}
+function __qReqValid(focusFirst) {
+  var miss = __qReqMissing();
+  if (!miss.length) { if (__qReqShown) __qReqPaint(miss); return true; }
+  __qReqShown = true;
+  try { if (typeof clientRevealAll === "function") clientRevealAll(); } catch (e) {}
+  __qReqPaint(miss);
+  if (focusFirst) {
+    var first = __qEl(miss[0]);
+    if (first) {
+      try { first.scrollIntoView({ block: "center" }); } catch (e) {}
+      try { first.focus({ preventScroll: true }); } catch (e2) {}
+    }
+  }
+  return false;
+}
 function __qSplitContact(v) { v = (v || "").trim(); if (v.indexOf("@") >= 0) return { phone: "", email: v }; return { phone: v, email: "" }; }
 function __qCodeObj() {
   try {
@@ -2099,6 +2144,7 @@ function __qPost(payload) {
 }
 function __qSend() {
   if (__qSending) return;
+  if (__QUOTE_KIND === "client" && !__qReqValid(false)) return; // v3.4c: sin datos requeridos no hay envío
   var o = __qCodeObj();
   if (!o || !Number(o.f)) return;
   var h = __qHash(String(window.__lastOrderCode || "") + "|" + __QUOTE_KIND);
@@ -2146,6 +2192,11 @@ function __qWrap(name) {
     }
   }
   if (__QUOTE_KIND === "client") {
+    // v3.4c: al escribir en un campo requerido, su aviso se actualiza en vivo.
+    for (var qi = 0; qi < __Q_REQ.length; qi++) {
+      var qn = __qEl(__Q_REQ[qi]);
+      if (qn) qn.addEventListener("input", function () { if (__qReqShown) __qReqPaint(__qReqMissing()); });
+    }
     // Opciones de contacto SOLO arriba del presupuesto del cliente.
     var viewName = __Q_VIEWS[0];
     var origView = window[viewName];
@@ -2172,8 +2223,10 @@ function __qWrap(name) {
     if (t.closest(".q-callback")) { __qCallback(); }
     var rv = t.closest("#price-reveal");
     if (rv) {
+      if (__QUOTE_KIND === "client" && !__qReqValid(true)) return; // v3.4c: bloquea «Ver precio total» hasta completar los datos requeridos
       var tw = __qEl("totals-wrap");
       if (tw) tw.style.display = "";
+      var dn34 = __qEl("disc-note"); if (dn34) dn34.style.display = ""; // v3.4
       rv.style.display = "none";
       try { __qSend(); } catch (e2) {}
     }
