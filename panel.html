@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel v2.2 — Legra's Outdoor Systems</title>
+<title>Panel v3 — Centro de Gestión · Legra's Outdoor Systems</title>
 <style>
 :root{--green:#062d23;--green2:#0c4a37;--accent:#0b6e3c;--gold:#d7ac59;--cream:#f7f5ee;--ink:#15251f;--muted:#62736a;--line:#dde3da;--red:#b3382e;--amber:#b97d16}
 *{box-sizing:border-box}
@@ -111,6 +111,13 @@ tr:nth-child(even) td{background:#f4f6f1}
 .checkline{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
 .checkline input{width:auto}
 .msec{margin:20px 0 8px;color:var(--green2);border-bottom:2px solid var(--gold);padding-bottom:4px;font-size:15px}
+    .mspec{margin:2px 0 10px 14px}
+    .mspec summary{cursor:pointer;color:var(--green2);font-size:13px;padding:2px 0}
+    .mstone{width:100%;border-collapse:collapse}
+    .mstone th,.mstone td{border-bottom:1px solid #e3e3da;padding:6px 8px;text-align:left;vertical-align:top;font-size:14px}
+    .tl{border-left:3px solid #dfe8d8;margin:8px 0 4px 4px;padding-left:14px}
+    .tlItem{margin:0 0 9px;font-size:14px}
+    .tlItem .when{color:#8a8a7a;font-size:12px;margin-right:6px}
 .mrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:4px 0;border-bottom:1px dashed #e3ddcf;font-size:14px}
 .mrow span{flex:1}
 .mrow input{width:130px;padding:6px 8px;text-align:right}
@@ -146,9 +153,13 @@ tr:nth-child(even) td{background:#f4f6f1}
   <div class="layout">
     <aside class="sidebar">
       <nav id="sideNav">
+        <button type="button" class="sideBtn" data-view="dashboard">🏠 Dashboard</button>
         <button type="button" class="sideBtn" data-view="proyectos">📁 Proyectos <span class="cnt" id="cntProyectos"></span></button>
         <button type="button" class="sideBtn" data-view="estimados">🧾 Estimados</button>
         <button type="button" class="sideBtn" data-view="citas">📅 Citas <span class="cnt" id="cntCitas"></span></button>
+        <button type="button" class="sideBtn adminOnly" data-view="finanzas">💰 Finanzas</button>
+        <button type="button" class="sideBtn adminOnly" data-view="marketing">📣 Marketing</button>
+        <button type="button" class="sideBtn" data-view="comunicacion">💬 Comunicación</button>
         <button type="button" class="sideBtn" data-view="customers">👥 Customers</button>
         <button type="button" class="sideBtn" data-view="workorders">🛠️ Work Orders <span class="cnt" id="cntWO"></span></button>
         <button type="button" class="sideBtn adminOnly" data-view="inventario">📦 Inventario</button>
@@ -163,8 +174,50 @@ tr:nth-child(even) td{background:#f4f6f1}
     <main class="content">
       <div id="appMsg" class="msg"></div>
 
+      <!-- DASHBOARD (v3: vista de inicio) -->
+      <section class="view" id="view-dashboard">
+        <h2>Dashboard</h2>
+        <p class="muted">El resumen del negocio de un vistazo: qué entró nuevo, en qué etapa va cada proyecto, qué citas vienen y cuánto falta por cobrar. Del estimado al cobro final, todo vive aquí.</p>
+        <div id="dashBody"><p class="muted">Cargando…</p></div>
+      </section>
+
+      <!-- FINANZAS (v3) -->
+      <section class="view hide" id="view-finanzas">
+        <h2>Finanzas</h2>
+        <p class="muted">La contabilidad por proyecto: cobrado, pagos, materiales y ganancia. La ganancia sale sola de lo que ya registraste — sin capturar nada dos veces.</p>
+        <div id="finBody"><p class="muted">Cargando…</p></div>
+        <div class="card">
+          <h3 style="margin-top:0">🏦 Cuenta de banco</h3>
+          <p class="muted" style="margin:0">Cuenta de banco aún no activa — por ahora las Finanzas viven solo en el website (este panel). Cuando la cuenta esté activa, esta sección se amarra a ella.</p>
+        </div>
+      </section>
+
+      <!-- MARKETING (v3) -->
+      <section class="view hide" id="view-marketing">
+        <h2>Marketing</h2>
+        <p class="muted">Qué video trajo qué: leads generados y dinero de promote por video y plataforma. Se llena a mano en un minuto — sin datos inventados.</p>
+        <div class="tableWrap"><table id="tableMarketing"></table></div>
+        <div class="toolbar" style="margin-top:14px">
+          <button type="button" class="btn small" id="mktAdd">+ Agregar video</button>
+          <button type="button" class="btn green small" id="mktSave">Guardar marketing</button>
+          <span id="mktMsg" class="msg"></span>
+        </div>
+      </section>
+
+      <!-- COMUNICACIÓN (v3) -->
+      <section class="view hide" id="view-comunicacion">
+        <h2>Comunicación</h2>
+        <p class="muted">Todo el contacto en un solo lugar: el calendario, el correo de Legra's y el WhatsApp del negocio.</p>
+        <div class="kv">
+          <div class="cell"><small>📅 Calendario</small><b style="font-size:15px">Google Calendar</b><br><a class="btn small" href="https://calendar.google.com/calendar/u/0/r" target="_blank" rel="noopener">Abrir calendario</a></div>
+          <div class="cell"><small>✉️ Correo</small><b style="font-size:15px">Gmail de Legra's</b><br><a class="btn small" href="https://mail.google.com/mail/u/0/#inbox" target="_blank" rel="noopener">Abrir Gmail</a></div>
+          <div class="cell"><small>💬 WhatsApp</small><b style="font-size:15px">WhatsApp del negocio</b><br><a class="btn small" href="https://web.whatsapp.com" target="_blank" rel="noopener">WhatsApp Web</a> <a class="btn small" href="https://wa.me/13462131203" target="_blank" rel="noopener">Escribir al 346-213-1203</a></div>
+        </div>
+        <p class="muted">Los mensajes que llegan por el website (quotes) ya caen solos en Estimados; los de WhatsApp se atienden en la app del negocio. Aquí solo están los accesos directos — nada de bandejas falsas.</p>
+      </section>
+
       <!-- PROYECTOS -->
-      <section class="view" id="view-proyectos">
+      <section class="view hide" id="view-proyectos">
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <h2 style="margin:0">Proyectos</h2>
           <button type="button" class="btn green small adminOnly" id="btnNuevoProy" style="margin-left:auto">&#43; Nuevo proyecto</button>
@@ -266,13 +319,14 @@ tr:nth-child(even) td{background:#f4f6f1}
       <!-- INVENTARIO -->
       <section class="view hide" id="view-inventario">
         <h2>Inventario</h2>
-        <p class="muted">Lo que tenemos en existencia. Al agregar una partida de material a un proyecto, la cantidad se descuenta de aquí; si no alcanza, la orden de trabajo marca lo que falta <b>comprar</b>.</p>
+        <p class="muted">Todo lo que usa el negocio, por categoría, con su cantidad a mano (on hand) y su mínimo. Al <b>EJECUTAR</b> un proyecto (botón en su file, o al pasarlo a Producción), los materiales de sus work orders se descuentan solos de aquí; lo que no alcance queda marcado <b>comprar</b> en la work order.</p>
+        <div class="toolbar adminOnly"><button type="button" class="btn small" id="ivSeedBtn">⚙ Crear catálogo completo (todo en cero)</button><span id="ivSeedMsg" class="msg"></span></div>
         <div class="tableWrap"><table id="tableInventario"></table></div>
         <div class="card adminOnly" style="margin-top:18px">
           <h3 style="margin-top:0">Nuevo artículo</h3>
           <div class="grid3">
             <div><label>Nombre *</label><input id="ivNombre"></div>
-            <div><label>Categoría</label><input id="ivCategoria"></div>
+            <div><label>Categoría</label><input id="ivCategoria" list="ivCats"><datalist id="ivCats"><option value="Fence"></option><option value="Cocinas"></option><option value="Pérgolas"></option><option value="Pool Bath/Casitas"></option><option value="Buzones"></option><option value="Pool Houses"></option><option value="General"></option></datalist></div>
             <div><label>Cantidad</label><input id="ivCantidad" type="number" step="1" value="0"></div>
             <div><label>Unidad</label><input id="ivUnidad" placeholder="pzas, pies, cajas…"></div>
             <div><label>Costo unitario ($)</label><input id="ivCosto" type="number" step="0.01" value="0"></div>
@@ -286,6 +340,16 @@ tr:nth-child(even) td{background:#f4f6f1}
       <!-- GESTIÓN DEL WEBSITE -->
       <section class="view hide" id="view-gestion">
         <h2>Gestión del Website</h2>
+    <div class="card">
+      <h3 style="margin-top:0">📁 Acceso a Drive — las tablas del sistema</h3>
+      <p class="muted">Todas las bases viven en la carpeta SERVERS de Drive, relacionadas entre sí. Abre cualquiera con un clic:</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn small" href="https://drive.google.com/drive/folders/1INT8ovN0xyZg9a69zT0DPpwCRpy3pqjB" target="_blank" rel="noopener">Carpeta SERVERS</a>
+        <a class="btn small" href="https://docs.google.com/spreadsheets/d/1dNdm4j-uQjydeCOmGtwn0p20IdNg3GiTvxnxKhgYmR0" target="_blank" rel="noopener">Base de Quotes (todas las tablas)</a>
+        <a class="btn small" href="https://drive.google.com/drive/folders/1VIPv0VFihb3yhh9bdgBz_sEdxYKWsAM0" target="_blank" rel="noopener">Carpeta del website</a>
+      </div>
+    </div>
+
         <div class="toolbar">
           <button type="button" class="chipFilter active" data-gtab="fotos">🖼️ Fotos</button>
           <button type="button" class="chipFilter" data-gtab="materiales">💲 Materiales y precios</button>
@@ -332,7 +396,7 @@ var DATA = null;   // panel_data (estimados, usuarios, media, materiales)
 var P2 = null;     // panel_p2_data (proyectos, clientes, citas, workorders, inventario)
 var ESTATUS = ["Nuevo","Contactado","Visita agendada","Cotización enviada","Ganado","Perdido","Cerrado"];
 var TIPOS = ["Cocina","Cerca","Pérgola","Buzón","Pool Bath","Otro"];
-var curView = "proyectos";
+var curView = "dashboard";
 var curProyId = "";
 var tipoFilter = "Todos";
 var clienteSelId = "";
@@ -388,7 +452,7 @@ function enterApp(r){
   if (r.rol !== "admin") {
     Array.prototype.forEach.call(document.querySelectorAll(".adminOnly"), function(el){ el.classList.add("hide"); });
   }
-  openView("proyectos");
+  openView("dashboard");
 }
 
 /* ---------- Navegación (barra lateral) ---------- */
@@ -408,13 +472,16 @@ function openView(name){
   if (name === "customers") renderClientes();
   if (name === "workorders") renderWorkOrders();
   if (name === "inventario") renderInventario();
+  if (name === "dashboard") renderDashboard();
+  if (name === "finanzas") renderFinanzas();
+  if (name === "marketing") renderMarketing();
   if (name === "gestion") renderGestion();
 }
 
 /* ---------- Carga de datos ---------- */
 function loadAll(){
   apiCall("panel_data").then(function(r){
-    if (r.ok) { DATA = r; renderQuotes(); renderVend(); if (curView === "gestion") renderGestion(); }
+    if (r.ok) { DATA = r; renderQuotes(); renderVend(); if (curView === "gestion") renderGestion(); if (curView === "dashboard") renderDashboard(); if (curView === "finanzas") renderFinanzas(); }
   }).catch(function(){});
   loadP2();
 }
@@ -429,6 +496,7 @@ function loadP2(){
     openView(curView);
     if (curProyId) renderProyDetail(curProyId);
     if (clienteSelId) renderClienteDetail(clienteSelId);
+    loadP3();
   }).catch(function(){ showMsg("appMsg", "Sin conexión con el servidor.", false); });
 }
 function fillSelects(){
@@ -521,7 +589,7 @@ function renderProyDetail(id){
     (p.saldo > 0 ? "Saldo por cobrar: <b>" + money(p.saldo) + "</b>. " : "Sin saldo pendiente. ") +
     (faltaMat.length ? "Material por comprar: <b>" + faltaMat.map(function(L){ return esc(L.nombre) + " ×" + esc(L.cantidad); }).join(", ") + "</b>." : "Sin material pendiente de comprar.");
   var pagosHtml = p.pagos.length ? p.pagos.map(function(pg){
-    return '<div class="listRow"><span>' + esc(pg.fecha) + "</span><span>" + esc(pg.metodo || "") + (pg.nota ? " · " + esc(pg.nota) : "") + '</span><span class="right"><b>' + money(pg.monto) + "</b></span></div>";
+    return '<div class="listRow"><span>' + esc(pg.fecha) + "</span><span>" + esc(pg.metodo || "") + (pg.tipo && pg.tipo !== "cliente" ? ' <span class="chip tipo">' + esc(pg.tipo) + "</span>" : "") + (pg.nota ? " · " + esc(pg.nota) : "") + '</span><span class="right"><b>' + money(pg.monto) + "</b></span></div>";
   }).join("") : '<p class="muted">Sin pagos registrados.</p>';
   var ajustesHtml = p.ajustes.length ? p.ajustes.map(function(a){
     return '<div class="listRow"><span>' + esc(a.fecha) + "</span><span>" + esc(a.descripcion) + (a.esMaterial ? ' <span class="chip tipo">material</span>' : "") + '</span><span class="right"><b>' + (a.monto >= 0 ? "+" : "") + money(a.monto) + "</b></span></div>";
@@ -536,6 +604,7 @@ function renderProyDetail(id){
       return esc(L.nombre) + " ×" + esc(L.cantidad) + ' <span class="chip ' + (L.estado === "comprar" ? "comprar" : "desc") + '">' + (L.estado === "comprar" ? "⚠ comprar" : "en inventario") + "</span>";
     }).join(" · ") + '</span><span class="right"><span class="chip etapa">' + esc(w.estado) + "</span></span></div>";
   }).join("") : '<p class="muted">Sin órdenes de trabajo.</p>';
+  var tlHtml = timelineHtml(p.id);
   var invOpts = '<option value="">— Sin ligar a inventario —</option>' + P2.inventario.map(function(it){
     return '<option value="' + esc(it.id) + '">' + esc(it.nombre) + " (hay " + esc(it.cantidad) + " " + esc(it.unidad) + ")</option>";
   }).join("");
@@ -560,7 +629,8 @@ function renderProyDetail(id){
 
     '<h3>Pagos</h3>' + pagosHtml +
     (isAdmin() ? '<div class="grid3"><div><label>Monto ($)</label><input id="pgMonto" type="number" step="0.01" min="0"></div>' +
-      '<div><label>Método</label><select id="pgMetodo"><option>Zelle</option><option>Efectivo</option><option>Tarjeta</option><option>Cheque</option><option>Transferencia</option><option>Financiamiento</option><option>Otro</option></select></div>' +
+      '<div><label>Tipo de pago</label><select id="pgTipo"><option value="cliente">Cobro al cliente</option><option value="contratista">Pago a contratista</option><option value="material">Compra de material</option></select></div>' +
+    '<div><label>Método</label><select id="pgMetodo"><option>Zelle</option><option>Efectivo</option><option>Tarjeta</option><option>Cheque</option><option>Transferencia</option><option>Financiamiento</option><option>Otro</option></select></div>' +
       '<div><label>Nota</label><input id="pgNota"></div></div>' +
       '<div style="margin-top:10px"><button type="button" class="btn green small" id="pgGuardar">Registrar pago</button></div>' : "") +
 
@@ -574,6 +644,9 @@ function renderProyDetail(id){
       '<div style="margin-top:10px"><button type="button" class="btn green small" id="ajGuardar">Agregar partida</button></div>' +
       '<p class="muted">Cada partida lleva su fecha, suma al total y el saldo se recalcula solo. Si es material, se descuenta del inventario o queda marcado «comprar».</p></div>' : "") +
 
+    '<h3>Línea de tiempo</h3>' + tlHtml +
+    (isAdmin() ? '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px"><button type="button" class="btn green small" id="pdEjecutar">▶ Ejecutar proyecto — descuenta el inventario</button></div>' +
+    '<div class="grid2" style="margin-top:10px"><div><label>Nota en la línea de tiempo</label><input id="pdNota"></div><div style="display:flex;align-items:flex-end"><button type="button" class="btn small" id="pdNotaAdd">Agregar nota</button></div></div>' : "") +
     '<h3>Citas de este proyecto</h3>' + citasHtml +
     '<h3>Work Orders de este proyecto</h3>' + wosHtml +
     '<div id="pdMsg" class="msg" style="margin-top:12px"></div>' +
@@ -594,9 +667,30 @@ function renderProyDetail(id){
   if (pg) pg.addEventListener("click", function(){
     var monto = Number($("pgMonto").value);
     if (!(monto > 0)) { showMsg("pdMsg", "Escribe el monto del pago.", false); return; }
-    apiCall("panel_p2_proyecto_pago", { id: p.id, monto: monto, metodo: $("pgMetodo").value, nota: $("pgNota").value }).then(function(r){
+    apiCall("panel_p2_proyecto_pago", { id: p.id, monto: monto, tipo: $("pgTipo").value, metodo: $("pgMetodo").value, nota: $("pgNota").value }).then(function(r){
       if (!r.ok) { showMsg("pdMsg", r.error || "No se pudo registrar el pago", false); return; }
       loadP2();
+    });
+  });
+  var pej = $("pdEjecutar");
+  if (pej) pej.addEventListener("click", function(){
+    pej.disabled = true;
+    apiCall("panel_p3_proyecto_ejecutar", { id: p.id }).then(function(r){
+      if (!r.ok) { showMsg("pdMsg", r.error || "No se pudo ejecutar", false); pej.disabled = false; return; }
+      var ej = r.ejecucion || {};
+      var msg = "Proyecto ejecutado: " + (ej.unidadesDescontadas || 0) + " unidades descontadas del inventario.";
+      if (ej.porComprar && ej.porComprar.length) msg += " Por comprar: " + ej.porComprar.map(function(x){ return x.nombre + " ×" + x.cantidad; }).join(", ") + ".";
+      showMsg("pdMsg", msg, true);
+      loadP2(); loadP3();
+    }).catch(function(){ showMsg("pdMsg", "Sin conexión con el servidor.", false); pej.disabled = false; });
+  });
+  var pna = $("pdNotaAdd");
+  if (pna) pna.addEventListener("click", function(){
+    var texto = $("pdNota").value.trim();
+    if (!texto) { showMsg("pdMsg", "Escribe la nota.", false); return; }
+    apiCall("panel_p3_evento_add", { proyectoId: p.id, texto: texto }).then(function(r){
+      if (!r.ok) { showMsg("pdMsg", r.error || "No se pudo agregar la nota", false); return; }
+      loadP3();
     });
   });
   var aj = $("ajGuardar");
@@ -816,7 +910,7 @@ function renderClienteDetail(id){
   Array.prototype.forEach.call(box.querySelectorAll("[data-goproy]"), function(b){
     b.addEventListener("click", function(){
       curProyId = b.getAttribute("data-goproy");
-      openView("proyectos");
+      openView("dashboard");
       renderProyDetail(curProyId);
     });
   });
@@ -882,21 +976,33 @@ $("woGuardar").addEventListener("click", function(){
 /* ================= INVENTARIO ================= */
 function renderInventario(){
   if (!P2) return;
-  if (!P2.inventario.length) { $("tableInventario").innerHTML = "<tr><td style='padding:16px'>Sin artículos todavía. Agrega el primero con el formulario de abajo.</td></tr>"; return; }
-  var html = "<thead><tr><th>Artículo</th><th>Categoría</th><th>Cantidad</th><th>Unidad</th><th>Costo unit.</th><th>Notas</th><th></th></tr></thead><tbody>";
-  P2.inventario.forEach(function(it){
-    html += "<tr><td><b>" + esc(it.nombre) + "</b></td><td>" + esc(it.categoria) + "</td>" +
+  var cats = (P3 && P3.invCategorias) || ["Fence","Cocinas","Pérgolas","Pool Bath/Casitas","Buzones","Pool Houses","General"];
+  if (!P2.inventario.length) { $("tableInventario").innerHTML = "<tr><td style='padding:16px'>Sin artículos todavía. Crea el catálogo completo en cero con el botón «Crear catálogo» de arriba, o agrega el primero con el formulario de abajo.</td></tr>"; return; }
+  function rowHtml(it){
+    return "<tr><td><b>" + esc(it.nombre) + "</b></td><td>" + esc(it.categoria) + "</td>" +
       '<td><input type="number" step="1" value="' + esc(it.cantidad) + '" id="ivc_' + esc(it.id) + '" style="width:100px;padding:7px"></td>' +
       "<td>" + esc(it.unidad) + "</td>" +
       '<td><input type="number" step="0.01" value="' + esc(it.costo) + '" id="ivp_' + esc(it.id) + '" style="width:110px;padding:7px"></td>' +
+      '<td><input type="number" step="1" value="' + esc(it.minimo || 0) + '" id="ivm_' + esc(it.id) + '" style="width:90px;padding:7px"></td>' +
       "<td>" + esc(it.notas) + "</td>" +
       '<td><button type="button" class="miniBtn" data-iv-save="' + esc(it.id) + '">Guardar</button></td></tr>';
+  }
+  var html = "";
+  var used = {};
+  cats.concat(P2.inventario.map(function(it){ return it.categoria || "General"; })).forEach(function(cat){
+    if (used[cat]) return; used[cat] = 1;
+    var items = P2.inventario.filter(function(it){ return (it.categoria || "General") === cat; });
+    if (!items.length) return;
+    html += '<thead><tr><th colspan="8" style="background:#f4f7f0;text-align:left">📦 ' + esc(cat) + " (" + items.length + ")</th></tr></thead>";
+    html += "<thead><tr><th>Artículo</th><th>Categoría</th><th>On hand</th><th>Unidad</th><th>Costo unit.</th><th>Mínimo</th><th>Notas</th><th></th></tr></thead><tbody>";
+    items.forEach(function(it){ html += rowHtml(it); });
+    html += "</tbody>";
   });
-  $("tableInventario").innerHTML = html + "</tbody>";
+  $("tableInventario").innerHTML = html;
   Array.prototype.forEach.call($("tableInventario").querySelectorAll("[data-iv-save]"), function(b){
     b.addEventListener("click", function(){
       var id = b.getAttribute("data-iv-save");
-      apiCall("panel_p2_inventario_update", { id: id, cantidad: Number($("ivc_" + id).value), costo: Number($("ivp_" + id).value) }).then(function(r){
+      apiCall("panel_p2_inventario_update", { id: id, cantidad: Number($("ivc_" + id).value), costo: Number($("ivp_" + id).value), minimo: Number($("ivm_" + id).value) || 0 }).then(function(r){
         if (!r.ok) { showMsg("appMsg", r.error || "No se pudo guardar", false); return; }
         b.textContent = "¡Guardado!";
         setTimeout(function(){ loadP2(); }, 700);
@@ -1104,40 +1210,79 @@ $("mediaSaveBtn").addEventListener("click", function(){
 /* ---------- Materiales y precios (admin) ---------- */
 var MAT_SIZE13 = ["Counter 96x26","Counter 108x26","Counter 120x26","Isla 108x28","Isla 108x32","Isla 108x36","Isla 108x39","Isla 108x42","Isla 108x52","Bar 108x14","Bar 108x16","B/S 108x4","B/S 108x7"];
 var MAT_STONE_NAMES = {"Q001": "Ice Star", "Q002": "Snow White", "Q003": "Grey Star", "Q004": "Black Star", "Q005": "Venato", "Q006": "Calico", "Q007": "Concrete Grey", "Q008": "Shangi Grey", "Q009": "Autumn Leaf", "Q010": "Pure White", "Q011": "Pure Black", "Q013": "Cappuccino White", "Q014": "Fosmine", "Q015": "Frost Flowers", "Q016": "Calacata", "Q017": "New Calacata", "Q018": "Ice Flower", "Q020": "Calacata Grey", "Q022": "Dark Grey", "Q025": "Calacata Panda", "Q026": "Calacata Gold", "Q027": "Calacata Flower", "Q028": "Calacata Alaska", "Q029": "Calacata Galaxy", "Q030": "Calacata Venus", "Q031": "Calacata Cloud", "Q032": "Taj Mahal", "Q033": "White Dream", "Q034": "Calacata Florence", "Q035": "Carrera", "Q036": "Volarano", "Q037": "Valentino", "Q038": "Fantasy White", "Q039": "Winston White"};
-var MAT_ITEM_LABELS = { perfil22: 'Perfil 22" — framing', channel21: 'Perfil 21" — channel', screws: "Tornillos (paquete)", connT: "Conectores T", connC: "Conectores C (esquina)", connH: "Conectores H (horizontales)", wheels: "Rueditas", corner10: 'Esquinero decorativo 10"' };
+var MAT_ITEM_LABELS = { perfil22: "Perfil 2×1 channel de aluminio", channel21: "Channel 2×1 de aluminio", screws: "Tornillos (paquete)", connT: "Conectores T", connC: "Conectores C (esquina)", connH: "Conectores H (horizontales)", wheels: "Rueditas", corner10: 'Esquinero decorativo 10"' };
 function renderMateriales(){
   var host = $("matBody"); if (!host) return;
   var M = DATA && DATA.materiales;
   if (!M) { host.innerHTML = ""; return; }
   function num(path, val, step){ return '<input type="number" step="' + (step || "0.01") + '" data-mp="' + path + '" value="' + val + '">'; }
   function row(label, path, val, step){ return '<div class="mrow"><span>' + label + '</span>' + num(path, val, step) + '</div>'; }
+  /* v3: cada cosa lleva NOMBRE + PROVEEDOR («de dónde lo compro») y
+     un desplegable con especificaciones editables: si se compra por
+     unidad o por largo, y notas/specs. Se guardan en la misma
+     tienda (campos nombre/prov/unidadModo/specs); las calculadoras
+     ignoran esos campos y siguen leyendo solo precios. */
+  function specDetails(path, e){
+    e = e || {};
+    var nombre = e.nombre || e.es || e.label || e.name || "";
+    return '<details class="mspec"><summary>▸ Nombre, proveedor y especificaciones</summary>' +
+      '<div class="mrow"><span>Nombre</span><input type="text" data-mx="' + path + '|nombre" value="' + esc(nombre) + '"></div>' +
+      '<div class="mrow"><span>Proveedor (de dónde se compra)</span><input type="text" data-mx="' + path + '|prov" value="' + esc(e.prov || "") + '" placeholder="Ej. VEVOR, Home Depot, 37th Aluminum…"></div>' +
+      '<div class="mrow"><span>Se compra por</span><select data-mx="' + path + '|unidadModo"><option value="unidad"' + (e.unidadModo === "largo" ? "" : " selected") + '>Por unidad</option><option value="largo"' + (e.unidadModo === "largo" ? " selected" : "") + '>Por largo</option></select></div>' +
+      '<div class="mrow"><span>Especificaciones / notas</span><input type="text" data-mx="' + path + '|specs" value="' + esc(e.specs || "") + '"></div></details>';
+  }
+  function stoneMeta(code){
+    var arr = M.mat_stones || [];
+    for (var i = 0; i < arr.length; i++) if (arr[i].code === code) return arr[i];
+    return {};
+  }
   var h = "";
   h += '<h4 class="msec">Precios — framing y paneles</h4>';
   (M.mat_items || []).forEach(function(it){
     if (it.id === "wallpanel") return;
     if (it.presets) {
-      h += '<div class="mrow"><span><strong>' + esc(MAT_ITEM_LABELS[it.id] || it.id) + '</strong> — precios por largo de stock</span></div>';
+      h += '<div class="mrow"><span><strong>' + esc(it.nombre || MAT_ITEM_LABELS[it.id] || it.id) + '</strong> — precios por largo de stock</span></div>';
       it.presets.forEach(function(p, ix){ h += row('&nbsp;&nbsp;Largo ' + (p.stock != null ? p.stock : (p.len != null ? p.len : "")) + '&quot;', "mat_items|" + it.id + "|presets|" + ix, p.price); });
       h += row('&nbsp;&nbsp;Preset por defecto (0, 1, 2…)', "mat_items|" + it.id + "|defPreset", it.defPreset || 0, "1");
     } else {
-      h += row(esc(MAT_ITEM_LABELS[it.id] || it.id), "mat_items|" + it.id + "|price", it.price);
+      h += row(esc(it.nombre || MAT_ITEM_LABELS[it.id] || it.id), "mat_items|" + it.id + "|price", it.price);
     }
+    h += specDetails("mat_items|" + it.id, it);
   });
   h += '<div class="mrow"><span><strong>Paneles por color</strong> (precio por panel)</span></div>';
-  (M.mat_panel_colors || []).forEach(function(c){ h += row('&nbsp;&nbsp;' + esc(c.name), "mat_panel_colors|" + c.idx, c.price); });
-  h += '<h4 class="msec">Equipos — costo de compra por opción</h4>';
-  (M.mat_equipment || []).forEach(function(e2){ h += row(esc(e2.label), "mat_equipment|" + e2.equip + "|" + e2.idx, e2.price); });
-  h += '<h4 class="msec">Storages — costo por opción</h4>';
-  (M.mat_storage || []).forEach(function(s2){ h += row(esc(s2.label), "mat_storage|" + s2.idx, s2.price); });
-  h += '<h4 class="msec">Piedras — precio por GRUPO y tamaño</h4>';
-  h += '<p class="muted">Cada piedra hereda los 13 precios de su grupo. Orden de tamaños en cada grupo: ' + MAT_SIZE13.join(" · ") + '. Los tamaños Counter 114x26 y «Verificar» no tienen precio de catálogo y no se editan aquí.</p>';
-  var byGroup = {}; var mp = M.mat_stone_map || {};
-  Object.keys(mp).forEach(function(code){ (byGroup[mp[code]] = byGroup[mp[code]] || []).push(code); });
-  Object.keys(M.mat_stone_groups || {}).sort().forEach(function(g){
-    var members = (byGroup[g] || []).map(function(code){ return code + " " + (MAT_STONE_NAMES[code] || ""); }).join(" · ");
-    h += '<div class="mrow"><span><strong>Grupo ' + g + '</strong> — ' + esc(members) + '</span></div>';
-    MAT_SIZE13.forEach(function(sz, ix){ h += row('&nbsp;&nbsp;' + sz, "mat_stone_groups|" + g + "|" + ix, (M.mat_stone_groups[g] || [])[ix]); });
+  (M.mat_panel_colors || []).forEach(function(c){
+    h += row('&nbsp;&nbsp;' + esc(c.es || c.nombre || c.name || ""), "mat_panel_colors|" + c.idx, c.price);
+    h += specDetails("mat_panel_colors|" + c.idx, c);
   });
+  h += '<h4 class="msec">Equipos — costo de compra por opción</h4>';
+  (M.mat_equipment || []).forEach(function(e2){
+    h += row(esc(e2.nombre || e2.es || e2.label || ""), "mat_equipment|" + e2.equip + "|" + e2.idx, e2.price);
+    h += specDetails("mat_equipment|" + e2.equip + "|" + e2.idx, e2);
+  });
+  h += '<h4 class="msec">Storages — costo por opción</h4>';
+  (M.mat_storage || []).forEach(function(s2){
+    h += row(esc(s2.nombre || s2.es || s2.label || ""), "mat_storage|" + s2.idx, s2.price);
+    h += specDetails("mat_storage|" + s2.idx, s2);
+  });
+  h += '<h4 class="msec">Piedras — tabla por piedra</h4>';
+  h += '<p class="muted">Cada piedra con su nombre y su proveedor, como una tabla. Para variar los precios de una piedra, abre su desplegable: son los 13 precios de su grupo (las piedras del mismo grupo comparten precios — así los leen las calculadoras). Orden de tamaños en cada grupo: ' + MAT_SIZE13.join(" · ") + '. Los tamaños Counter 114x26 y «Verificar» no tienen precio de catálogo y no se editan aquí.</p>';
+  var mp = M.mat_stone_map || {};
+  h += '<table class="mstone"><thead><tr><th>Código</th><th>Piedra</th><th>Grupo</th><th>Nombre · proveedor · precios</th></tr></thead><tbody>';
+  Object.keys(mp).sort().forEach(function(code){
+    var g = mp[code];
+    var meta = stoneMeta(code);
+    var nombre = meta.nombre || MAT_STONE_NAMES[code] || code;
+    h += '<tr><td><b>' + esc(code) + '</b></td><td>' + esc(nombre) + '</td><td>Grupo ' + esc(g) + '</td><td>' +
+      '<details class="mspec"><summary>▸ Editar</summary>' +
+      '<div class="mrow"><span>Nombre</span><input type="text" data-mx="mat_stones|' + code + '|nombre" value="' + esc(nombre) + '"></div>' +
+      '<div class="mrow"><span>Proveedor (de dónde se compra)</span><input type="text" data-mx="mat_stones|' + code + '|prov" value="' + esc(meta.prov || "") + '" placeholder="Ej. Istar, MSI, Daltile…"></div>' +
+      '<div class="mrow"><span>Especificaciones / notas</span><input type="text" data-mx="mat_stones|' + code + '|specs" value="' + esc(meta.specs || "") + '"></div>' +
+      MAT_SIZE13.map(function(sz, ix){
+        return '<div class="mrow"><span>&nbsp;&nbsp;' + sz + ' (grupo ' + esc(g) + ')</span><input type="number" step="0.01" class="stonePrice" data-mp="mat_stone_groups|' + g + '|' + ix + '" value="' + ((M.mat_stone_groups[g] || [])[ix]) + '"></div>';
+      }).join("") +
+      '</details></td></tr>';
+  });
+  h += '</tbody></table>';
   h += '<h4 class="msec">Globales</h4>';
   h += row("Labor por día ($)", "mat_globals|labor_per_day", M.mat_globals.labor_per_day);
   h += row("Esquinero decorativo ($ c/u)", "mat_globals|esquinero_price", M.mat_globals.esquinero_price);
@@ -1169,11 +1314,27 @@ function renderMateriales(){
   h += row("Cocinas — margen base invisible del vendedor y del cliente (% de ganancia sobre el precio)", "mat_profit|seller_margin_pct", PG.seller_margin_pct);
   h += row("Cocinas — % de ganancia inicial en la calculadora principal (0 = abre en $0, como hoy)", "mat_profit|master_default_pct", PG.master_default_pct);
   host.innerHTML = h;
+  /* Las filas de piedras del mismo grupo comparten los 13 inputs de
+     precio: se marca la fila que el usuario edita para que
+     collectMateriales tome SU valor y no el de una fila hermana. */
+  Array.prototype.forEach.call(host.querySelectorAll("input.stonePrice"), function(inp){
+    inp.addEventListener("input", function(){ inp.setAttribute("data-touched", "1"); });
+  });
 }
 function collectMateriales(){
   var M = JSON.parse(JSON.stringify(DATA.materiales || {}));
+  if (!M.mat_stones || typeof M.mat_stones !== "object") M.mat_stones = [];
+  /* Piedras: varias filas (una por piedra) apuntan a los mismos 13
+     precios de su grupo. Si el usuario editó una fila, manda esa
+     (data-touched); las hermanas sin tocar no la pisan. */
+  var touchedPaths = {};
+  Array.prototype.forEach.call(document.querySelectorAll("#matBody input.stonePrice[data-touched='1']"), function(inp){
+    touchedPaths[inp.getAttribute("data-mp")] = 1;
+  });
   Array.prototype.forEach.call(document.querySelectorAll("#matBody input[data-mp]"), function(inp){
-    var parts = inp.getAttribute("data-mp").split("|");
+    var path = inp.getAttribute("data-mp");
+    var parts = path.split("|");
+    if (parts[0] === "mat_stone_groups" && touchedPaths[path] && inp.getAttribute("data-touched") !== "1") return;
     var v = parseFloat(inp.value); if (isNaN(v)) v = 0;
     var root = parts[0], i;
     if (root === "mat_items") {
@@ -1204,6 +1365,28 @@ function collectMateriales(){
       M.mat_profit[parts[1]] = v;
     }
   });
+  /* v3: campos de texto — nombre, proveedor, modo de compra
+     (unidad/largo) y especificaciones — de materiales, paneles,
+     equipos, storages y piedras (tabla mat_stones). */
+  Array.prototype.forEach.call(document.querySelectorAll("#matBody [data-mx]"), function(inp){
+    var parts = inp.getAttribute("data-mx").split("|");
+    var field = parts[parts.length - 1];
+    var v = inp.value;
+    var i, e = null;
+    if (parts[0] === "mat_items") {
+      for (i = 0; i < (M.mat_items || []).length; i++) if (M.mat_items[i].id === parts[1]) e = M.mat_items[i];
+    } else if (parts[0] === "mat_panel_colors") {
+      for (i = 0; i < (M.mat_panel_colors || []).length; i++) if (M.mat_panel_colors[i].idx === Number(parts[1])) e = M.mat_panel_colors[i];
+    } else if (parts[0] === "mat_equipment") {
+      for (i = 0; i < (M.mat_equipment || []).length; i++) if (M.mat_equipment[i].equip === parts[1] && M.mat_equipment[i].idx === Number(parts[2])) e = M.mat_equipment[i];
+    } else if (parts[0] === "mat_storage") {
+      for (i = 0; i < (M.mat_storage || []).length; i++) if (M.mat_storage[i].idx === Number(parts[1])) e = M.mat_storage[i];
+    } else if (parts[0] === "mat_stones") {
+      for (i = 0; i < M.mat_stones.length; i++) if (M.mat_stones[i].code === parts[1]) e = M.mat_stones[i];
+      if (!e) { e = { code: parts[1] }; M.mat_stones.push(e); }
+    }
+    if (e) e[field] = v;
+  });
   return M;
 }
 function saveMateriales(){
@@ -1215,6 +1398,163 @@ function saveMateriales(){
   }).catch(function(){ showMsg("matMsg", "Sin conexión con el servidor.", false); });
 }
 $("matSaveBtn").addEventListener("click", saveMateriales);
+
+
+/* ================= PANEL v3 — CENTRO DE GESTIÓN =================
+   Dashboard (vista de inicio), Finanzas por proyecto, Marketing
+   (videos/leads/promote), línea de tiempo por proyecto y el botón
+   EJECUTAR. Todo se alimenta del flujo que ya existe (estimados →
+   proyectos → work orders → inventario): nada de captura doble. */
+var P3 = null;      // panel_p3_data (eventos, marketing, categorías)
+var MKT_ROWS = null;
+
+function loadP3(){
+  return apiCall("panel_p3_data").then(function(r){
+    if (!r.ok) return;
+    P3 = r;
+    if (curProyId) renderProyDetail(curProyId);
+    if (curView === "marketing") renderMarketing();
+    if (curView === "dashboard") renderDashboard();
+  }).catch(function(){});
+}
+
+/* ---------- Dashboard: la vista de inicio ---------- */
+function renderDashboard(){
+  var box = $("dashBody"); if (!box) return;
+  if (!P2) { box.innerHTML = '<p class="muted">Cargando…</p>'; return; }
+  var nuevos = 0;
+  if (DATA) {
+    [DATA.quotes, DATA.vendedores].forEach(function(t){
+      ((t && t.rows) || []).forEach(function(r){ if (String(r["Estatus"] || "") === "Nuevo") nuevos++; });
+    });
+  }
+  var porEtapa = (P2.etapas || []).map(function(e){
+    var n = P2.proyectos.filter(function(p){ return p.etapa === e; }).length;
+    return '<span class="chip etapa">' + esc(e) + ": <b>" + n + "</b></span>";
+  }).join(" ");
+  var pend = P2.citas.filter(function(c){ return c.estado === "Pendiente"; });
+  var prox = pend.slice().sort(function(a, b){ return String(a.fecha).localeCompare(String(b.fecha)); }).slice(0, 5);
+  var proxHtml = prox.length ? prox.map(function(c){
+    return '<div class="listRow"><span>📅 ' + esc(c.fecha) + (c.hora ? " " + esc(c.hora) : "") + '</span><span>' + esc(c.tipo) + " · " + esc(c.cliente || "") + '</span><span class="right">' + esc(c.lugar || "") + "</span></div>";
+  }).join("") : '<p class="muted">Sin citas pendientes.</p>';
+  var conSaldo = P2.proyectos.filter(function(p){ return p.saldo > 0; });
+  var totalSaldo = conSaldo.reduce(function(s, p){ return s + p.saldo; }, 0);
+  var saldoHtml = conSaldo.length ? conSaldo.slice(0, 5).map(function(p){
+    return '<div class="listRow"><span>' + esc(p.cliente) + '</span><span>' + esc(p.tipo) + " · " + esc(p.etapa) + '</span><span class="right"><b>' + money(p.saldo) + "</b></span></div>";
+  }).join("") : '<p class="muted">Nada por cobrar. 🎉</p>';
+  box.innerHTML =
+    '<div class="kv">' +
+      '<div class="cell"><small>Estimados nuevos</small><b>' + nuevos + "</b></div>" +
+      '<div class="cell"><small>Proyectos</small><b>' + P2.proyectos.length + "</b></div>" +
+      '<div class="cell"><small>Citas pendientes</small><b>' + pend.length + "</b></div>" +
+      '<div class="cell"><small>Por cobrar</small><b>' + money(totalSaldo) + "</b></div>" +
+    "</div>" +
+    '<div class="card"><h3 style="margin-top:0">Proyectos por etapa</h3><div style="display:flex;gap:6px;flex-wrap:wrap">' + porEtapa + "</div></div>" +
+    '<div class="card"><h3 style="margin-top:0">Próximas citas</h3>' + proxHtml + "</div>" +
+    '<div class="card"><h3 style="margin-top:0">Saldos por cobrar</h3>' + saldoHtml + "</div>";
+}
+
+/* ---------- Finanzas: contabilidad por proyecto ---------- */
+function finProyecto(p){
+  var mats = 0;
+  (P2 ? P2.workorders : []).filter(function(w){ return w.proyectoId === p.id; }).forEach(function(w){
+    w.lineas.forEach(function(L){
+      if (L.estado !== "descontado") return;
+      var it = null;
+      (P2.inventario || []).forEach(function(x){ if (x.id === L.inventarioId) it = x; });
+      var cant = (L.descontado != null ? Number(L.descontado) : Number(L.cantidad)) || 0;
+      mats += cant * (it ? Number(it.costo) || 0 : 0);
+    });
+  });
+  mats = Math.round((mats + (p.gastosMateriales || 0)) * 100) / 100;
+  var cont = p.gastosContratista || 0;
+  return { materiales: mats, contratistas: cont,
+    ganancia: Math.round((p.total - mats - cont) * 100) / 100 };
+}
+function renderFinanzas(){
+  var box = $("finBody"); if (!box) return;
+  if (!P2) { box.innerHTML = '<p class="muted">Cargando…</p>'; return; }
+  var T = { total: 0, cobrado: 0, saldo: 0, materiales: 0, contratistas: 0, ganancia: 0 };
+  var rows = P2.proyectos.map(function(p){
+    var f = finProyecto(p);
+    T.total += p.total; T.cobrado += p.pagado; T.saldo += p.saldo;
+    T.materiales += f.materiales; T.contratistas += f.contratistas; T.ganancia += f.ganancia;
+    return "<tr><td><b>" + esc(p.cliente) + '</b><br><span class="muted">' + esc(p.tipo) + " · " + esc(p.etapa) + "</span></td>" +
+      "<td>" + money(p.total) + "</td><td>" + money(p.pagado) + "</td><td>" + money(p.saldo) + "</td>" +
+      "<td>" + money(f.materiales) + "</td><td>" + money(f.contratistas) + "</td><td><b>" + money(f.ganancia) + "</b></td></tr>";
+  }).join("");
+  box.innerHTML = '<div class="tableWrap"><table><thead><tr><th>Proyecto</th><th>Total</th><th>Cobrado</th><th>Saldo</th><th>Materiales</th><th>Contratistas</th><th>Ganancia</th></tr></thead><tbody>' +
+    (rows || "<tr><td colspan='7' style='padding:16px'>Sin proyectos todavía.</td></tr>") +
+    "<tr style='background:#f4f7f0'><td><b>Totales</b></td><td><b>" + money(T.total) + "</b></td><td><b>" + money(T.cobrado) + "</b></td><td><b>" + money(T.saldo) + "</b></td><td><b>" + money(T.materiales) + "</b></td><td><b>" + money(T.contratistas) + "</b></td><td><b>" + money(T.ganancia) + "</b></td></tr>" +
+    "</tbody></table></div>" +
+    '<p class="muted">Ganancia = total del proyecto − materiales − contratistas. Materiales = lo descontado del inventario valuado a costo, más las compras de material registradas como pago. Los pagos se clasifican al registrarlos en el file del proyecto: cliente, contratista o material.</p>';
+}
+
+/* ---------- Marketing: videos, leads y promote ---------- */
+function renderMarketing(){
+  var t = $("tableMarketing"); if (!t) return;
+  if (!P3) { t.innerHTML = "<tr><td style='padding:16px'>Cargando…</td></tr>"; return; }
+  if (MKT_ROWS === null) MKT_ROWS = JSON.parse(JSON.stringify(P3.marketing || []));
+  if (!MKT_ROWS.length) { t.innerHTML = "<tr><td style='padding:16px'>Sin videos registrados todavía. Agrega el primero con el botón de abajo.</td></tr>"; return; }
+  var html = "<thead><tr><th>Video</th><th>Plataforma</th><th>Fecha</th><th>Leads</th><th>$ Promote</th><th>Notas</th><th></th></tr></thead><tbody>";
+  MKT_ROWS.forEach(function(f, i){
+    html += "<tr>" +
+      '<td><input data-mkt="' + i + '|video" value="' + esc(f.video) + '" style="min-width:170px"></td>' +
+      '<td><input data-mkt="' + i + '|plataforma" value="' + esc(f.plataforma) + '" placeholder="TikTok, Instagram…"></td>' +
+      '<td><input data-mkt="' + i + '|fecha" type="date" value="' + esc(f.fecha) + '"></td>' +
+      '<td><input data-mkt="' + i + '|leads" type="number" step="1" value="' + esc(f.leads) + '" style="width:90px"></td>' +
+      '<td><input data-mkt="' + i + '|promote" type="number" step="0.01" value="' + esc(f.promote) + '" style="width:110px"></td>' +
+      '<td><input data-mkt="' + i + '|notas" value="' + esc(f.notas) + '"></td>' +
+      '<td><button type="button" class="miniBtn" data-mkt-del="' + i + '">Quitar</button></td></tr>';
+  });
+  t.innerHTML = html + "</tbody>";
+  Array.prototype.forEach.call(t.querySelectorAll("[data-mkt]"), function(inp){
+    inp.addEventListener("input", function(){
+      var p = inp.getAttribute("data-mkt").split("|");
+      MKT_ROWS[Number(p[0])][p[1]] = inp.value;
+    });
+  });
+  Array.prototype.forEach.call(t.querySelectorAll("[data-mkt-del]"), function(b){
+    b.addEventListener("click", function(){ MKT_ROWS.splice(Number(b.getAttribute("data-mkt-del")), 1); renderMarketing(); });
+  });
+}
+$("mktAdd").addEventListener("click", function(){
+  if (MKT_ROWS === null) MKT_ROWS = [];
+  MKT_ROWS.push({ video: "", plataforma: "", fecha: "", leads: 0, promote: 0, notas: "" });
+  renderMarketing();
+});
+$("mktSave").addEventListener("click", function(){
+  if (MKT_ROWS === null) return;
+  apiCall("panel_p3_marketing_save", { filas: MKT_ROWS }).then(function(r){
+    if (!r.ok) { showMsg("mktMsg", r.error || "No se pudo guardar", false); return; }
+    MKT_ROWS = null;
+    showMsg("mktMsg", "Marketing guardado.", true);
+    loadP3();
+  }).catch(function(){ showMsg("mktMsg", "Sin conexión con el servidor.", false); });
+});
+
+/* ---------- Línea de tiempo del proyecto ---------- */
+function timelineHtml(pid){
+  if (!P3) return '<p class="muted">Cargando línea de tiempo…</p>';
+  var evs = (P3.eventos || []).filter(function(e){ return e.proyectoId === pid; });
+  if (!evs.length) return '<p class="muted">Sin eventos todavía. Cada movimiento del proyecto (creación, etapas, pagos, partidas, citas, work orders y ejecuciones) se anota solo aquí.</p>';
+  var ICON = { proyecto: "📁", etapa: "🚦", pago: "💵", ajuste: "➕", cita: "📅", workorder: "🛠️", ejecutar: "▶️", nota: "📝" };
+  return '<div class="tl">' + evs.map(function(e){
+    return '<div class="tlItem"><span class="when">' + esc(e.fecha) + "</span>" + (ICON[e.tipo] || "•") + " " + esc(e.texto) + (e.actor ? ' <span class="muted">— ' + esc(e.actor) + "</span>" : "") + "</div>";
+  }).join("") + "</div>";
+}
+
+/* ---------- Inventario: crear el catálogo completo en cero ---------- */
+$("ivSeedBtn").addEventListener("click", function(){
+  var btn = $("ivSeedBtn");
+  btn.disabled = true;
+  apiCall("panel_p3_inventario_seed", {}).then(function(r){
+    btn.disabled = false;
+    if (!r.ok) { showMsg("ivSeedMsg", r.error || "No se pudo crear el catálogo", false); return; }
+    showMsg("ivSeedMsg", "Catálogo listo: " + r.creados + " artículos nuevos (todo en cero) · " + r.existentes + " ya existían.", true);
+    loadP2();
+  }).catch(function(){ btn.disabled = false; showMsg("ivSeedMsg", "Sin conexión con el servidor.", false); });
+});
 
 /* ---------- Restaurar sesión guardada ---------- */
 (function(){
