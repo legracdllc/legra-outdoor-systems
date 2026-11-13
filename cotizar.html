@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Quote in 5 Steps | Legra's Outdoor Systems</title>
+<meta name="description" content="Get your free quote for outdoor kitchens, pergolas, metal fences and mailboxes in Houston, Austin, San Antonio and Dallas. No measurements? No problem.">
+<style>
+:root{--green:#062d23;--gold:#d7ac59;--cream:#f7f5ee;--ink:#15251f}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+header{background:var(--green);color:#fff;position:sticky;top:0;z-index:10;box-shadow:0 3px 18px #0003}
+.nav{max-width:1280px;margin:auto;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{font-size:19px;font-weight:800;letter-spacing:.8px}.brand small{display:block;font-size:10px;font-weight:400;letter-spacing:2px;color:var(--gold);margin-top:4px}
+.navright{display:flex;align-items:center;gap:12px}
+.lang{background:transparent;color:#fff;border:1px solid #ffffff75;border-radius:40px;padding:10px 15px}.lang.active{background:var(--gold);color:#10261d;border-color:var(--gold);font-weight:bold}
+.navPhone{color:var(--gold);font-weight:800;text-decoration:none;white-space:nowrap}
+.wrap{max-width:880px;margin:auto;padding:44px 24px 60px}
+.eyebrow{letter-spacing:3px;color:#a67b33;font-size:12px;font-weight:bold}
+h1{font-family:Georgia,serif;font-size:clamp(30px,4.4vw,44px);margin:12px 0 8px;line-height:1.15}
+.sub{color:#62736a;line-height:1.6;margin:0 0 8px}
+.progRow{display:flex;justify-content:space-between;align-items:center;margin:26px 0 10px;font-size:13.5px;font-weight:700;color:#586c60}
+.progBar{height:9px;background:#e3e8e0;border-radius:99px;overflow:hidden}
+.progFill{height:100%;background:var(--gold);border-radius:99px;transition:width .35s ease}
+.stepTitle{font-family:Georgia,serif;font-size:26px;margin:26px 0 6px}
+.stepHint{color:#62736a;margin:0 0 18px;line-height:1.55}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pcard{background:#fff;border:2px solid #e5e8e0;border-radius:13px;overflow:hidden;padding:0;text-align:left;transition:border-color .15s,box-shadow .15s}
+.pcard img{width:100%;height:140px;object-fit:cover;display:block}
+.pcard span{display:block;padding:13px 15px;font-weight:800;font-size:15.5px}
+.pcard.sel{border-color:var(--gold);box-shadow:0 8px 26px #12271b1f}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.ocard{background:#fff;border:2px solid #e5e8e0;border-radius:13px;padding:18px;font-weight:800;font-size:16px;text-align:left}
+.ocard.sel{border-color:var(--gold);box-shadow:0 8px 26px #12271b1f}
+.sizeRow{display:flex;gap:16px;flex-wrap:wrap;align-items:end}
+.field{display:flex;flex-direction:column;gap:7px;font-size:14px;font-weight:bold}
+.field input,.field textarea{padding:13px;border:1px solid #bdc9c0;border-radius:6px;background:#fff;width:100%}
+.sizeRow .field input{width:130px}
+.unknownBtn{margin-top:18px;background:#fff;border:2px dashed #a67b33;color:#7a5410;border-radius:10px;padding:15px 18px;font-weight:800;width:100%}
+.unknownBtn.sel{background:#faf1da;border-style:solid}
+.finRow{margin-top:22px;background:#fff;border:1px solid #e5e8e0;border-radius:10px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start}
+.finRow input{width:20px;height:20px;margin-top:2px}
+.finRow p{margin:3px 0 0;color:#586c60;font-size:14px;line-height:1.55}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+.wide{grid-column:1/-1}
+.navBtns{display:flex;justify-content:space-between;gap:12px;margin-top:30px}
+.btn{border:0;border-radius:6px;background:var(--gold);color:#15271d;padding:14px 22px;font-weight:800}
+.btnBack{background:transparent;border:1.5px solid #9db3a5;color:#33473c;border-radius:6px;padding:13px 20px;font-weight:700}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.err{color:#b3261e;font-size:14px;font-weight:700;margin-top:14px;min-height:1.2em}
+.thanks{background:#fff;border:1px solid #e5e8e0;border-radius:14px;padding:34px 28px;text-align:center;margin-top:26px}
+.thanks .ok{width:64px;height:64px;border-radius:50%;background:#1e5631;color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.thanks h2{font-family:Georgia,serif;margin:0 0 10px}
+.thanks p{color:#586c60;line-height:1.65}
+.thanks .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.waBtn{background:#25d366;color:#fff;border-radius:6px;padding:14px 22px;font-weight:800;text-decoration:none;display:inline-block}
+.calcBtn{background:var(--green);color:#fff;border-radius:6px;padding:14px 22px;font-weight:800;text-decoration:none;display:inline-block}
+.foot{background:#062d23;color:#e4eae4;padding:30px 24px;text-align:center;font-size:13px}
+.foot a{color:var(--gold)}
+@media(max-width:700px){.cards{grid-template-columns:repeat(2,1fr)}.opts,.form{grid-template-columns:1fr}.wrap{padding:32px 16px 48px}.navPhone{display:none}}
+</style>
+</head>
+<body>
+<header><nav class="nav"><div class="brand">LEGRA'S OUTDOOR SYSTEMS<small>OUTDOOR LIVING MADE SIMPLE</small></div><div class="navright"><a class="navPhone" href="tel:+13462131203">346-213-1203</a><button class="lang active" id="enBtn" type="button" aria-pressed="true">EN</button><button class="lang" id="esBtn" type="button" aria-pressed="false">ES</button></div></nav></header>
+<div id="bucketTrust"></div>
+<main class="wrap">
+  <div class="eyebrow" data-i="eyebrow"></div>
+  <h1 data-i="title"></h1>
+  <p class="sub" data-i="sub"></p>
+  <div id="wizard"></div>
+  <div class="thanks" id="thanks" hidden>
+    <div class="ok">✓</div>
+    <h2 data-i="thTitle"></h2>
+    <p data-i="thText"></p>
+    <div class="row"><a class="waBtn" id="thWa" target="_blank" rel="noopener" data-i="thWa"></a><a class="calcBtn" id="thCalc" data-i="thCalc"></a></div>
+  </div>
+</main>
+<footer class="foot">LEGRA'S OUTDOOR SYSTEMS · <span data-i="footer"></span><br><br><a href="tel:+13462131203">346-213-1203</a> · <a href="index.html">legra-outdoor-systems.com</a></footer>
+<script>
+var RECEIVER="https://script.google.com/macros/s/AKfycbyfhzsyBcVwpVwXV0t9UfQIexUHCQKr_zMooFHzPofVZgV5usLDXZ77H4R5Sf7wytW0/exec";
+var i18n={
+en:{eyebrow:'FREE QUOTE',title:'Your project, in a few quick steps',sub:'No pressure and no obligation. If you do not know your measurements, that is fine — we verify them on a free visit.',stepOf:'Step',of:'of',s1t:'What are we building?',s1h:'Pick a service to start.',s2t:'Which type?',s2h:'Pick the closest one — we fine-tune it together later.',s3t:'Approximate size',s3h:'Rough numbers are fine.',s3tF:'How many linear feet?',s4t:'When do you want it?',s4h:'And one last thing:',s5t:'Where do we send it?',s5h:'Your contact info goes LAST — and it stays between us.',w:'Width (ft)',l:'Length (ft)',lf:'Linear feet',unknown:'I don\u2019t know my measurements',unknownOn:'No problem — we will measure on the free visit.',finT:'I\u2019m interested in financing',finD:'Through Lyon Financial and Acorn Finance. Pre-qualify without affecting your credit.',name:'Full name *',phone:'Phone / WhatsApp *',email:'Email',addr:'Project address / ZIP',notes:'Anything else? (optional)',back:'\u2190 Back',next:'Continue \u2192',send:'Send my request \u2192',sending:'Sending\u2026',errSvc:'Please choose a service to continue.',errType:'Please choose a type to continue.',errTime:'Please choose an option to continue.',errContact:'We need at least your name and phone so we can reach you.',thTitle:'Got it — thank you!',thText:'Your request is in. We will review it and contact you shortly. Want a faster answer? Continue on WhatsApp with your summary already filled in, or get your price right now with the calculator.',thWa:'Continue on WhatsApp',thCalc:'Get my instant price',footer:'A division of Legra\u2019s C & D LLC',
+svc:{kitchens:'Outdoor Kitchens',pergolas:'Pergolas & Patio Covers',fences:'Metal Fences',mailboxes:'Mailboxes',casitas:'Casitas / Pool Houses',poolhouses:'Pool Baths'},
+typ:{modular:'Modular (on wheels)',permanente:'Permanent',attached:'Attached to the house',freestanding:'Freestanding',cantilever:'Cantilever (no front posts)',durafence:'DuraFence metal',madera:'Wood',nose:'Not sure yet'},
+tim:{asap:'As soon as possible',mid:'In 1\u20133 months',explore:'Just exploring for now'}},
+es:{eyebrow:'COTIZACI\u00D3N GRATIS',title:'Tu proyecto, en pocos pasos r\u00E1pidos',sub:'Sin presi\u00F3n y sin compromiso. Si no sabes tus medidas, no pasa nada: las verificamos en una visita gratis.',stepOf:'Paso',of:'de',s1t:'\u00BFQu\u00E9 vamos a construir?',s1h:'Elige un servicio para empezar.',s2t:'\u00BFQu\u00E9 tipo?',s2h:'Elige el m\u00E1s cercano: los detalles los afinamos juntos despu\u00E9s.',s3t:'Tama\u00F1o aproximado',s3h:'Con n\u00FAmeros aproximados basta.',s3tF:'\u00BFCu\u00E1ntos pies lineales?',s4t:'\u00BFPara cu\u00E1ndo lo quieres?',s4h:'Y una \u00FAltima cosa:',s5t:'\u00BFA d\u00F3nde te lo enviamos?',s5h:'Tus datos van AL FINAL, y quedan entre nosotros.',w:'Ancho (ft)',l:'Largo (ft)',lf:'Pies lineales',unknown:'No s\u00E9 mis medidas',unknownOn:'Sin problema: medimos en la visita gratis.',finT:'Me interesa el financiamiento',finD:'Con Lyon Financial y Acorn Finance. Precalifica sin afectar tu cr\u00E9dito.',name:'Nombre completo *',phone:'Tel\u00E9fono / WhatsApp *',email:'Correo electr\u00F3nico',addr:'Direcci\u00F3n del proyecto / ZIP',notes:'\u00BFAlgo m\u00E1s? (opcional)',back:'\u2190 Atr\u00E1s',next:'Continuar \u2192',send:'Enviar mi solicitud \u2192',sending:'Enviando\u2026',errSvc:'Elige un servicio para continuar.',errType:'Elige un tipo para continuar.',errTime:'Elige una opci\u00F3n para continuar.',errContact:'Necesitamos al menos tu nombre y tel\u00E9fono para contactarte.',thTitle:'\u00A1Listo, gracias!',thText:'Tu solicitud ya lleg\u00F3. La revisamos y te contactamos muy pronto. \u00BFQuieres respuesta m\u00E1s r\u00E1pida? Sigue por WhatsApp con tu resumen ya escrito, o saca tu precio al momento con la calculadora.',thWa:'Seguir por WhatsApp',thCalc:'Ver mi precio al instante',footer:'Una divisi\u00F3n de Legra\u2019s C & D LLC',
+svc:{kitchens:'Cocinas exteriores',pergolas:'P\u00E9rgolas y patios cubiertos',fences:'Cercas de metal',mailboxes:'Buzones',casitas:'Casitas / Pool Houses',poolhouses:'Ba\u00F1os de piscina'},
+typ:{modular:'Modular (con ruedas)',permanente:'Permanente',attached:'Adosada a la casa',freestanding:'Independiente',cantilever:'Cantilever (sin postes frontales)',durafence:'Metal DuraFence',madera:'Madera',nose:'A\u00FAn no lo s\u00E9'},
+tim:{asap:'Lo antes posible',mid:'En 1 a 3 meses',explore:'Solo estoy explorando'}}};
+var SERVICES=[
+ {id:'kitchens',img:'photo_010.jpg',col:'Cocinas',types:['modular','permanente','nose'],calc:'calculadora-cliente.html'},
+ {id:'pergolas',img:'photo_020.jpg',col:'P\u00E9rgolas',types:['attached','freestanding','cantilever','nose'],calc:null},
+ {id:'fences',img:'photo_083.jpg',col:'Cercas',types:['durafence','madera','nose'],calc:'calculadora-cliente-cercas.html'},
+ {id:'mailboxes',img:'photo_066.jpg',col:'Buzones',types:[],calc:null},
+ {id:'casitas',img:'photo_048.jpg',col:'Casitas',types:[],calc:null},
+ {id:'poolhouses',img:'photo_087.jpg',col:'Pool Houses',types:[],calc:null}];
+var S={idx:0,service:null,type:null,sizeUnknown:false,w:'',l:'',lf:'',timing:null,fin:false,name:'',phone:'',email:'',addr:'',notes:''};
+var lang='en';
+var $=function(id){return document.getElementById(id)};
+function steps(){var st=['service'];var sv=SERVICES.filter(function(x){return x.id===S.service})[0];if(sv&&sv.types.length)st.push('type');st.push('size','timing','contact');return st;}
+function svcObj(){return SERVICES.filter(function(x){return x.id===S.service})[0]||null;}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function renderStatic(){document.documentElement.lang=lang;document.querySelectorAll('[data-i]').forEach(function(el){var k=el.getAttribute('data-i');if(i18n[lang][k])el.textContent=i18n[lang][k];});['en','es'].forEach(function(x){var b=$(x+'Btn');b.classList.toggle('active',x===lang);b.setAttribute('aria-pressed',String(x===lang));});}
+function renderWizard(){
+  var t=i18n[lang],st=steps(),cur=st[S.idx],h='';
+  h+='<div class="progRow"><span>'+t.stepOf+' '+(S.idx+1)+' '+t.of+' '+st.length+'</span><span>'+Math.round((S.idx+1)/st.length*100)+'%</span></div><div class="progBar"><div class="progFill" style="width:'+((S.idx+1)/st.length*100)+'%"></div></div>';
+  if(cur==='service'){
+    h+='<div class="stepTitle">'+t.s1t+'</div><p class="stepHint">'+t.s1h+'</p><div class="cards">';
+    SERVICES.forEach(function(sv){h+='<button type="button" class="pcard'+(S.service===sv.id?' sel':'')+'" data-svc="'+sv.id+'"><img src="'+sv.img+'" alt="" loading="lazy"><span>'+t.svc[sv.id]+'</span></button>';});
+    h+='</div>';
+  }else if(cur==='type'){
+    var sv=svcObj();h+='<div class="stepTitle">'+t.s2t+'</div><p class="stepHint">'+t.s2h+'</p><div class="opts">';
+    sv.types.forEach(function(ty){h+='<button type="button" class="ocard'+(S.type===ty?' sel':'')+'" data-typ="'+ty+'">'+t.typ[ty]+'</button>';});
+    h+='</div>';
+  }else if(cur==='size'){
+    var isF=S.service==='fences';
+    h+='<div class="stepTitle">'+(isF?t.s3tF:t.s3t)+'</div><p class="stepHint">'+t.s3h+'</p>';
+    if(!S.sizeUnknown){
+      h+='<div class="sizeRow">';
+      if(isF){h+='<label class="field"><span>'+t.lf+'</span><input id="inLf" type="number" min="1" inputmode="numeric" value="'+esc(S.lf)+'"></label>';}
+      else{h+='<label class="field"><span>'+t.w+'</span><input id="inW" type="number" min="1" inputmode="numeric" value="'+esc(S.w)+'"></label><label class="field"><span>'+t.l+'</span><input id="inL" type="number" min="1" inputmode="numeric" value="'+esc(S.l)+'"></label>';}
+      h+='</div>';
+    }else{h+='<p class="stepHint" style="font-weight:700;color:#7a5410">'+t.unknownOn+'</p>';}
+    h+='<button type="button" class="unknownBtn'+(S.sizeUnknown?' sel':'')+'" id="btnUnknown">'+t.unknown+(S.sizeUnknown?' \u2713':'')+'</button>';
+  }else if(cur==='timing'){
+    h+='<div class="stepTitle">'+t.s4t+'</div><p class="stepHint">'+t.s4h+'</p><div class="opts">';
+    ['asap','mid','explore'].forEach(function(k){h+='<button type="button" class="ocard'+(S.timing===k?' sel':'')+'" data-tim="'+k+'">'+t.tim[k]+'</button>';});
+    h+='</div><label class="finRow"><input type="checkbox" id="inFin"'+(S.fin?' checked':'')+'><span><b>'+t.finT+'</b><p>'+t.finD+'</p></span></label>';
+  }else if(cur==='contact'){
+    h+='<div class="stepTitle">'+t.s5t+'</div><p class="stepHint">'+t.s5h+'</p><div class="form">'
+      +'<label class="field"><span>'+t.name+'</span><input id="inName" autocomplete="name" value="'+esc(S.name)+'"></label>'
+      +'<label class="field"><span>'+t.phone+'</span><input id="inPhone" type="tel" autocomplete="tel" value="'+esc(S.phone)+'"></label>'
+      +'<label class="field"><span>'+t.email+'</span><input id="inEmail" type="email" autocomplete="email" value="'+esc(S.email)+'"></label>'
+      +'<label class="field"><span>'+t.addr+'</span><input id="inAddr" autocomplete="street-address" value="'+esc(S.addr)+'"></label>'
+      +'<label class="field wide"><span>'+t.notes+'</span><textarea id="inNotes" rows="3">'+esc(S.notes)+'</textarea></label></div>';
+  }
+  h+='<div class="err" id="wErr"></div><div class="navBtns">'
+    +(S.idx>0?'<button type="button" class="btnBack" id="btnBack">'+t.back+'</button>':'<span></span>')
+    +(cur==='contact'?'<button type="button" class="btn" id="btnSend">'+t.send+'</button>':'<button type="button" class="btn" id="btnNext">'+t.next+'</button>')
+    +'</div>';
+  $('wizard').innerHTML=h;wire();
+}
+function wire(){
+  document.querySelectorAll('[data-svc]').forEach(function(b){b.addEventListener('click',function(){S.service=b.getAttribute('data-svc');S.type=null;renderWizard();});});
+  document.querySelectorAll('[data-typ]').forEach(function(b){b.addEventListener('click',function(){S.type=b.getAttribute('data-typ');renderWizard();});});
+  document.querySelectorAll('[data-tim]').forEach(function(b){b.addEventListener('click',function(){S.timing=b.getAttribute('data-tim');renderWizard();});});
+  var bu=$('btnUnknown');if(bu)bu.addEventListener('click',function(){S.sizeUnknown=!S.sizeUnknown;renderWizard();});
+  var f=$('inFin');if(f)f.addEventListener('change',function(){S.fin=f.checked;});
+  var map={inW:'w',inL:'l',inLf:'lf',inName:'name',inPhone:'phone',inEmail:'email',inAddr:'addr',inNotes:'notes'};
+  Object.keys(map).forEach(function(id){var el=$(id);if(el)el.addEventListener('input',function(){S[map[id]]=el.value;});});
+  var bb=$('btnBack');if(bb)bb.addEventListener('click',function(){S.idx=Math.max(0,S.idx-1);renderWizard();window.scrollTo({top:0,behavior:'smooth'});});
+  var bn=$('btnNext');if(bn)bn.addEventListener('click',next);
+  var bs=$('btnSend');if(bs)bs.addEventListener('click',send);
+}
+function fail(msg){var e=$('wErr');if(e)e.textContent=msg;}
+function next(){
+  var t=i18n[lang],cur=steps()[S.idx];
+  if(cur==='service'&&!S.service)return fail(t.errSvc);
+  if(cur==='type'&&!S.type)return fail(t.errType);
+  if(cur==='timing'&&!S.timing)return fail(t.errTime);
+  S.idx=Math.min(steps().length-1,S.idx+1);renderWizard();window.scrollTo({top:0,behavior:'smooth'});
+}
+function sizeText(){
+  if(S.sizeUnknown)return 'No conoce sus medidas \u2014 confirmar en la visita gratis';
+  if(S.service==='fences')return S.lf?('Aprox. '+S.lf+' pies lineales'):'Sin medidas (no las escribi\u00F3)';
+  if(S.w||S.l)return 'Aprox. '+(S.w||'?')+' \u00D7 '+(S.l||'?')+' ft';
+  return 'Sin medidas (no las escribi\u00F3)';
+}
+function summaryES(){
+  var sv=svcObj(),es=i18n.es;
+  var lines=['Solicitud desde el formulario web de 5 pasos (sin calculadora).',
+   'Servicio: '+(sv?es.svc[sv.id]:''),];
+  if(sv&&sv.types.length)lines.push('Tipo: '+(S.type?es.typ[S.type]:'Sin elegir'));
+  lines.push('Medidas: '+sizeText());
+  lines.push('Tiempo: '+(S.timing?es.tim[S.timing]:'Sin elegir'));
+  lines.push('Financiamiento: '+(S.fin?'S\u00ED, le interesa':'No indicado'));
+  if(S.notes)lines.push('Notas del cliente: '+S.notes);
+  return lines.join('\n');
+}
+function send(){
+  var t=i18n[lang];
+  var nm=$('inName'),ph=$('inPhone'),em=$('inEmail'),ad=$('inAddr'),no=$('inNotes');
+  if(nm)S.name=nm.value;if(ph)S.phone=ph.value;if(em)S.email=em.value;if(ad)S.addr=ad.value;if(no)S.notes=no.value;
+  if(!S.name.trim()||!S.phone.trim())return fail(t.errContact);
+  var sv=svcObj(),btn=$('btnSend');btn.disabled=true;btn.textContent=t.sending;
+  var payload={type:'quote',origin:'Cliente web',collection:sv?sv.col:'',client:S.name,phone:S.phone,email:S.email,address:S.addr,specs:summaryES(),financing:S.fin?'S\u00ED':'',message:S.notes||''};
+  try{fetch(RECEIVER,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});}catch(e){}
+  var waLines=['Hola, soy '+S.name+'. Acabo de enviar mi solicitud en el website de Legra\u2019s Outdoor Systems:','',summaryES().split('\n').slice(1).join('\n')].join('\n');
+  $('thWa').href='https://wa.me/13462131203?text='+encodeURIComponent(waLines);
+  var calc=$('thCalc');
+  if(sv&&sv.calc){calc.href=sv.calc;calc.style.display='';}else{calc.style.display='none';}
+  $('wizard').hidden=true;$('thanks').hidden=false;window.scrollTo({top:0,behavior:'smooth'});
+}
+$('enBtn').addEventListener('click',function(){lang='en';renderStatic();renderWizard();});
+$('esBtn').addEventListener('click',function(){lang='es';renderStatic();renderWizard();});
+renderStatic();renderWizard();
+</script>
+<!-- ===== BUCKET A · NewGen template (marquee + trust + WhatsApp) ===== -->
+<style id="bucketA-css">
+.lgMq{background:#d7ac59;color:#10261d;overflow:hidden;white-space:nowrap;font-size:12.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;padding:8px 0;position:relative;z-index:30}
+.lgMqTrack{display:inline-block;padding-left:100%;animation:lgMqMove 30s linear infinite}
+@keyframes lgMqMove{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@media(prefers-reduced-motion:reduce){.lgMqTrack{animation:none;padding-left:0}.lgMq{text-align:center;white-space:normal}}
+.lgTrust{background:#fff;border-bottom:1px solid #e5e8e0;position:relative;z-index:5}
+.lgTrustIn{max-width:1280px;margin:auto;padding:12px 24px;display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;justify-content:center;font-size:14.5px;color:#15251f}
+.lgTrustIn .lgChip{display:inline-flex;align-items:center;gap:7px;font-weight:600}
+.lgTrustIn .lgStar{color:#d7ac59;font-size:16px}
+.lgTrustIn .lgOk{color:#1e5631;font-weight:900}
+.lgTrustIn .lgCities{color:#62736a;font-weight:600}
+.lgWa{position:fixed;right:18px;bottom:18px;z-index:9990;display:flex;align-items:flex-end;gap:10px;text-decoration:none}
+.lgWaBtn{width:58px;height:58px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.28);flex:none}
+.lgWaBtn svg{width:32px;height:32px;fill:#fff}
+.lgWaBub{background:#fff;color:#15251f;border-radius:14px;border-bottom-right-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.22);padding:12px 34px 12px 14px;font-size:14px;line-height:1.45;max-width:250px;position:relative;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .35s ease,transform .35s ease;font-family:Arial,Helvetica,sans-serif}
+.lgWaBub.show{opacity:1;transform:none;pointer-events:auto}
+.lgWaBub b{display:block;margin-bottom:2px}
+.lgWaX{position:absolute;top:5px;right:8px;border:0;background:transparent;font-size:16px;line-height:1;color:#62736a;cursor:pointer;padding:2px}
+@media(max-width:600px){.lgTrustIn{padding:10px 14px;font-size:13px;gap:8px 16px}.lgWa{right:12px;bottom:12px}.lgWaBub{max-width:205px}}
+</style>
+<script id="bucketA-js">
+(function(){
+"use strict";
+/* ================================================================
+   BUCKET A — CIFRAS DE CONFIANZA (acción pendiente de Legra):
+   Google rating / # de reseñas / # de proyectos NO se pudieron
+   verificar el 2026-11-12 (Google no mostró conteo público y la
+   Base de Quotes aún es pequeña). Cuando Legra confirme las cifras
+   reales, ponerlas aquí y los chips aparecen solos en todo el sitio:
+     TRUST_CFG.googleRating = 5.0; TRUST_CFG.googleReviews = 123;
+     TRUST_CFG.projects = 45;
+   Mientras sean null, esos chips NO se muestran. NO inventar cifras.
+   ================================================================ */
+var TRUST_CFG={googleRating:null,googleReviews:null,projects:null};
+var WA_NUM="13462131203";
+var TXT={
+ es:{fin:"FINANCIAMIENTO DISPONIBLE \u00B7 Precalifica sin afectar tu cr\u00E9dito \u00B7 Lyon Financial \u00B7 Acorn Finance \u00B7 ",
+     free:"Estimado gratis en l\u00EDnea",design:"Dise\u00F1o 3D gratis",fin2:"Financiamiento disponible",
+     cities:"Houston \u00B7 Austin \u00B7 San Antonio \u00B7 Dallas",
+     grev:function(r,n){return "\u2605 "+r+" en Google \u00B7 "+n+" rese\u00F1as";},
+     proj:function(n){return n+"+ proyectos completados";},
+     waBubT:"\u00A1Hola! \uD83D\uDC4B",waBub:"\u00BFTe ayudamos con tu estimado gratis?",
+     waText:"Hola, vengo del website de Legra's Outdoor Systems y quiero un estimado gratis."},
+ en:{fin:"FINANCING AVAILABLE \u00B7 Pre-qualify without affecting your credit \u00B7 Lyon Financial \u00B7 Acorn Finance \u00B7 ",
+     free:"Free online estimate",design:"Free 3D design",fin2:"Financing available",
+     cities:"Houston \u00B7 Austin \u00B7 San Antonio \u00B7 Dallas",
+     grev:function(r,n){return "\u2605 "+r+" on Google \u00B7 "+n+" reviews";},
+     proj:function(n){return n+"+ completed projects";},
+     waBubT:"Hi there! \uD83D\uDC4B",waBub:"Can we help you with your free estimate?",
+     waText:"Hi, I found Legra's Outdoor Systems online and I'd like a free estimate."}};
+function curLang(){var l=(document.documentElement.lang||"es").toLowerCase();return l.indexOf("en")===0?"en":"es";}
+function waHref(t){return "https://wa.me/"+WA_NUM+"?text="+encodeURIComponent(t.waText);}
+var mq=document.createElement("div");mq.className="lgMq";mq.setAttribute("aria-hidden","true");
+var mqTrack=document.createElement("div");mqTrack.className="lgMqTrack";mq.appendChild(mqTrack);
+var trustHost=document.getElementById("bucketTrust");
+var trust=document.createElement("div");trust.className="lgTrust";
+var trustIn=document.createElement("div");trustIn.className="lgTrustIn";trust.appendChild(trustIn);
+if(trustHost){trustHost.appendChild(trust);} 
+var wa=document.createElement("a");wa.className="lgWa";wa.target="_blank";wa.rel="noopener";wa.setAttribute("aria-label","WhatsApp");
+var bub=document.createElement("span");bub.className="lgWaBub";
+var bubT=document.createElement("b");var bubTx=document.createElement("span");
+var bubX=document.createElement("button");bubX.className="lgWaX";bubX.type="button";bubX.setAttribute("aria-label","Close");bubX.textContent="\u00D7";
+bubX.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();bub.classList.remove("show");});
+bub.appendChild(bubT);bub.appendChild(bubTx);bub.appendChild(bubX);
+var wbtn=document.createElement("span");wbtn.className="lgWaBtn";
+wbtn.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.4.7 4.6 2 6.5L4 29l7.7-2c1.8 1 3.9 1.5 6 1.5 6.6 0 12-5.4 12-12S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.5l-.4-.2-4 1 1.1-3.9-.3-.4a8.8 8.8 0 0 1-1.3-4.7c0-4.9 4-8.9 8.9-8.9s8.9 4 8.9 8.9-3.9 8.9-8.7 8.9zm4.9-6.6c-.3-.1-1.6-.8-1.9-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1a7.3 7.3 0 0 1-3.6-3.1c-.3-.5.3-.4 1.3-2.2.1-.2 0-.4 0-.5l-.9-2.1c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.6-.7 1.9-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.5-.3z"/></svg>';
+wa.appendChild(bub);wa.appendChild(wbtn);
+function render(){
+  var t=TXT[curLang()];
+  mqTrack.textContent=t.fin+t.fin+t.fin;
+  var chips=[];
+  if(TRUST_CFG.googleRating&&TRUST_CFG.googleReviews){chips.push('<span class="lgChip"><span class="lgStar">\u2605\u2605\u2605\u2605\u2605</span>'+t.grev(TRUST_CFG.googleRating,TRUST_CFG.googleReviews)+'</span>');}
+  if(TRUST_CFG.projects){chips.push('<span class="lgChip">'+t.proj(TRUST_CFG.projects)+'</span>');}
+  chips.push('<span class="lgChip"><span class="lgOk">\u2713</span>'+t.free+'</span>');
+  chips.push('<span class="lgChip"><span class="lgOk">\u2713</span>'+t.design+'</span>');
+  chips.push('<span class="lgChip"><span class="lgOk">\u2713</span>'+t.fin2+'</span>');
+  chips.push('<span class="lgChip lgCities">\uD83D\uDCCD '+t.cities+'</span>');
+  trustIn.innerHTML=chips.join("");
+  bubT.textContent=t.waBubT;bubTx.textContent=t.waBub;
+  wa.href=waHref(t);
+}
+function mount(){
+  if(!document.body)return;
+  if(!mq.parentNode)document.body.insertBefore(mq,document.body.firstChild);
+  if(!trustHost&&!trust.parentNode&&mq.parentNode)mq.parentNode.insertBefore(trust,mq.nextSibling);
+  if(!wa.parentNode)document.body.appendChild(wa);
+  render();
+  setTimeout(function(){bub.classList.add("show");},5000);
+}
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",mount);}else{mount();}
+new MutationObserver(function(){render();}).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+})();
+</script>
+<!-- ===== /BUCKET A ===== -->
+</body>
+</html>
