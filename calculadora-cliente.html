@@ -4120,7 +4120,7 @@ function __qWrap(name) {
     </script>
 
 <script>
-/* ===== v3.10 móvil bajo el Step 1, alimenta el precio del Step 3 ===== */
+/* ===== v3.11 (base v3.10) móvil bajo el Step 1, alimenta el precio del Step 3 ===== */
 (function () {
   "use strict";
   var REQ = ["client-firstname", "client-lastname", "client-phone", "addr-street", "addr-city", "addr-state", "addr-zip"];
@@ -4486,6 +4486,10 @@ function __qWrap(name) {
       var b = el("price-reveal");
       if (b) { b.scrollIntoView({ behavior: "smooth", block: "center" }); b.click(); }
     }
+    if (e.data.type === "legra-height") {
+      var fr = el("d3d-frame");
+      if (fr && fr.clientWidth <= 900 && e.data.h > 100) fr.style.height = Math.ceil(e.data.h) + "px";
+    }
   });
   /* La calculadora activa los segmentos del Step 2 solo cuando el Step 1 está
      completo; si el diseño llegó antes, se reaplica al completarse el Step 1. */
@@ -4515,6 +4519,11 @@ function __qWrap(name) {
     wrap.appendChild(right);
   }
 
+  window.addEventListener("resize", function () {
+    var fr = el("d3d-frame");
+    if (fr && fr.clientWidth > 900 && fr.style.height) fr.style.height = "";
+  });
+
   /* ---------- Guarda anti-salto: al tocar el 3D, la página no brinca arriba ---------- */
   var lastY = 0;
   window.addEventListener("blur", function () {
@@ -4540,7 +4549,7 @@ img[data-cat="cat-tipos"],img[data-cat="cat-almacenamiento"],#panel-photo,img[da
 #layout-3d .col-3d{position:sticky;top:10px}
 @media (max-width:900px){#layout-3d{grid-template-columns:1fr}#layout-3d .col-3d{position:static}}
 @media (max-width:640px){
-.wrap{padding:12px 10px 28px}
+.wrap{padding:12px 10px calc(28px + env(safe-area-inset-bottom,0px))}
 .card{padding:14px 12px;border-radius:14px}
 input,select,textarea{font-size:16px!important;min-height:48px}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
