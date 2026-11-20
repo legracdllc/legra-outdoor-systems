@@ -4120,7 +4120,7 @@ function __qWrap(name) {
     </script>
 
 <script>
-/* ===== v3.7: flujo guiado — Step 1 se recoge, Step 2 avanza solo, foto = selección, piedras arriba ===== */
+/* ===== v3.8: Step 2 = diseñador 3D embebido que alimenta el precio del Step 3 ===== */
 (function () {
   "use strict";
   var REQ = ["client-firstname", "client-lastname", "client-phone", "addr-street", "addr-city", "addr-state", "addr-zip"];
@@ -4389,6 +4389,115 @@ function __qWrap(name) {
       if (row >= 0 && rowsM[row][col]) selectStone(rowsM[row][col]);
     });
   }
+  /* ---------- Step 2 = DISEÑADOR 3D embebido (su diseño alimenta el precio) ---------- */
+  var STONEQ = { q001: "Ice Star", q002: "Snow White", q003: "Grey Star", q004: "Black Star", q005: "Venato", q006: "Calico", q007: "Concrete Grey", q008: "Shangi Grey", q009: "Autumn Leaf", q010: "Pure White", q011: "Pure Black", q013: "Cappuccino White", q014: "Fosmine", q015: "Frost Flowers", q016: "Calacata", q017: "New Calacata", q018: "Ice Flower", q020: "Calacata Grey", q022: "Dark Grey", q025: "Calacata Panda", q026: "Calacata Gold", q027: "Calacata Flower", q028: "Calacata Alaska", q029: "Calacata Galaxy", q030: "Calacata Venus", q031: "Calacata Cloud", q032: "Taj Mahal", q033: "White Dream", q034: "Calacata Florence", q035: "Carrera", q036: "Volarano", q037: "Valentino", q038: "Fantasy White", q039: "Winston White" };
+  var STOMAP = { single: 0, double: 1, gavetero: 2, doblecajon: 3, trash: 4, combo295: 6 };
+  var EQMAPB = { grill: [0, 1], cooktop: [0, 1], sink: [2, 3, 4], faucet: [2, 3], fridge: [0, 1], outlet: [2, 0, 0, 3, 4, 0] };
+  var firstFs = sections()[0];
+  if (firstFs && firstFs.parentNode) {
+    sections().forEach(function (fs) { fs.style.display = "none"; });
+    var blk = document.createElement("div");
+    blk.id = "d3d-block";
+    blk.innerHTML = '<div class="d3d-head">🖥️ <span>Diseñador 3D — diseña tu cocina y el precio se calcula solo</span></div>' +
+      '<iframe id="d3d-frame" src="disenador-3d-cocinas.html?embed=1" title="3D Kitchen Designer" loading="lazy"></iframe>' +
+      '<div id="d3d-status"></div>' +
+      '<div class="d3d-full"><a href="disenador-3d-cocinas.html" target="_blank" rel="noopener">⛶ Abrir el diseñador en pantalla completa</a></div>';
+    firstFs.parentNode.insertBefore(blk, firstFs);
+  }
+  function segSet(k, v) {
+    var b = document.querySelector('.seg[data-group="' + k + '"] button[data-value="' + v + '"]');
+    if (b && !b.classList.contains("active")) b.click();
+  }
+  function setSel(elm, val) {
+    if (!elm) return;
+    var o = elm.querySelector('option[value="' + val + '"]');
+    if (o) { o.hidden = false; o.disabled = false; }
+    elm.value = String(val);
+    elm.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  function setOn(id, on) {
+    var c = el("eqon_" + id);
+    if (c && c.checked !== on) c.click();
+  }
+  function setQty(id, q) {
+    var e = el("q_" + id);
+    if (e) { e.value = q; e.dispatchEvent(new Event("input", { bubbles: true })); e.dispatchEvent(new Event("change", { bubbles: true })); }
+  }
+  function applyCfg(c) {
+    if (!c) return;
+    var parts = [];
+    if (c.type) { segSet("ktype", c.type); parts.push(c.type); }
+    if (c.sizeFt) {
+      if ([6, 8, 10].indexOf(c.sizeFt) >= 0) segSet("ksize", String(c.sizeFt));
+      else { segSet("ksize", "custom"); var f = el("ksize-ft"); if (f) { f.value = c.sizeFt; f.dispatchEvent(new Event("input", { bubbles: true })); f.dispatchEvent(new Event("change", { bubbles: true })); } }
+      parts.push(c.sizeFt + " ft");
+    }
+    if (typeof c.panel === "number") setSel(el("s_wallpanel"), c.panel);
+    if (c.stone && c.stone !== "gray" && STONEQ[c.stone]) {
+      setSel(el("sm_stone1"), "quartz"); setSel(el("sn_stone1"), STONEQ[c.stone]);
+      parts.push(STONEQ[c.stone]);
+    }
+    if (typeof c.backsplash === "number") setSel(el("bs-size"), c.backsplash);
+    var sts = c.storages || [];
+    if (sts.length) {
+      segSet("nstorage", String(Math.min(4, sts.length)));
+      sts.forEach(function (st, i) {
+        if (STOMAP[st.id] !== undefined) setSel(el("sto_" + i), STOMAP[st.id]);
+        if (st.pos) setSel(el("pos_sto_" + i), String(st.pos).toLowerCase());
+      });
+      parts.push(sts.length + " storage");
+    }
+    ["grill", "cooktop", "sink", "fridge"].forEach(function (k) {
+      var e = c.equip && c.equip[k];
+      if (!e) return;
+      setOn(k, !!e.on);
+      if (e.on) {
+        var midx = (EQMAPB[k] || [])[c.models ? c.models[k] : 0];
+        if (midx !== undefined) setSel(el("s_" + k), midx);
+        if (e.pos) setSel(el("pos_" + k), String(e.pos).toLowerCase());
+        if (!num("q_" + k)) setQty(k, 1);
+        parts.push(k);
+      }
+    });
+    var sinkOn = !!(c.equip && c.equip.sink && c.equip.sink.on);
+    setOn("faucet", sinkOn);
+    if (sinkOn) { var fm = (EQMAPB.faucet || [])[c.models ? c.models.faucet : 0]; if (fm !== undefined) setSel(el("s_faucet"), fm); if (!num("q_faucet")) setQty("faucet", 1); }
+    var oe = c.equip && c.equip.outlets;
+    if (oe) {
+      setOn("outlet", !!oe.on);
+      if (oe.on) { var om = (EQMAPB.outlet || [])[c.models ? c.models.outlets : 0]; if (om !== undefined) setSel(el("s_outlet"), om); setQty("outlet", oe.count || 2); }
+    }
+    var isl = el("island-on");
+    if (isl && isl.checked !== !!c.island) isl.click();
+    if (c.island) {
+      parts.push("isla " + (c.islandFt || 6) + " ft");
+      setSel(el("isz_"), (c.islandFt && c.islandFt <= 6) ? "Isla 108x32" : "Isla 108x36");
+      if (c.islandStone && c.islandStone !== "gray" && STONEQ[c.islandStone]) { setSel(el("ism_"), "quartz"); setSel(el("isn_"), STONEQ[c.islandStone]); }
+    }
+    var stEl = el("d3d-status");
+    if (stEl) stEl.textContent = "✓ Diseño aplicado: " + parts.join(" · ");
+    if (typeof window.recalc === "function") window.recalc();
+  }
+  var lastCfg = null, reTimer = null;
+  window.addEventListener("message", function (e) {
+    if (e.origin !== location.origin || !e.data) return;
+    if (e.data.type === "legra-cfg") { lastCfg = e.data.cfg; applyCfg(lastCfg); }
+    if (e.data.type === "legra-goto") {
+      var b = el("price-reveal");
+      if (b) { b.scrollIntoView({ behavior: "smooth", block: "center" }); b.click(); }
+    }
+  });
+  /* La calculadora activa los segmentos del Step 2 solo cuando el Step 1 está
+     completo; si el diseño llegó antes, se reaplica al completarse el Step 1. */
+  var kf = el("kitchen-form");
+  if (kf) kf.addEventListener("change", function () {
+    if (!lastCfg) return;
+    clearTimeout(reTimer);
+    reTimer = setTimeout(function () {
+      var b = document.querySelector('.seg[data-group="ktype"] button.active');
+      if (!b || b.getAttribute("data-value") !== lastCfg.type) applyCfg(lastCfg);
+    }, 350);
+  });
 })();
 </script>
 <style>
@@ -4396,6 +4505,12 @@ function __qWrap(name) {
 #cf-summary .cf-sum-edit{background:#004020;color:#f2c94c;border-radius:999px;padding:5px 14px;font-weight:800;font-size:.85rem;white-space:nowrap}
 img[data-cat="cat-tipos"],img[data-cat="cat-almacenamiento"],#panel-photo,img[data-cat="piedra-carta1"],img[data-cat="piedra-carta2"]{cursor:pointer}
 #stone-picked{background:#eef6f0;border:1.5px solid #004020;border-radius:10px;padding:9px 13px;font-weight:700;color:#17351f;margin:8px 0}
+#d3d-block{margin:0 0 14px}
+.d3d-head{font-weight:800;font-size:17px;color:#17351f;margin:2px 0 10px}
+#d3d-frame{width:100%;height:min(80vh,780px);min-height:560px;border:1.5px solid #cfe0d2;border-radius:14px;background:#fff}
+#d3d-status{background:#eef6f0;border:1.5px solid #004020;border-radius:10px;padding:9px 13px;font-weight:700;color:#17351f;margin:10px 0 4px}
+#d3d-status:empty{display:none}
+.d3d-full{margin:6px 0 2px;font-weight:700}
 @media print{#cf-summary{display:none!important}}
 </style>
 
