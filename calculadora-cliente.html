@@ -4120,7 +4120,7 @@ function __qWrap(name) {
     </script>
 
 <script>
-/* ===== v3.6: flujo guiado — Step 1 se recoge, Step 2 avanza solo, foto = selección ===== */
+/* ===== v3.7: flujo guiado — Step 1 se recoge, Step 2 avanza solo, foto = selección, piedras arriba ===== */
 (function () {
   "use strict";
   var REQ = ["client-firstname", "client-lastname", "client-phone", "addr-street", "addr-city", "addr-state", "addr-zip"];
@@ -4258,7 +4258,7 @@ function __qWrap(name) {
       if (!sels.length) return !!segActive(fs, "nstorage");
       return sels.every(function (s) { return s.dataset.v36t === "1" && String(s.value) !== ""; });
     }
-    if (kind === "stone") return allTouched(fs, "#rows-stone select");
+    if (kind === "stone") { var sn = fs.querySelector("#sn_stone1"); return !!(sn && sn.dataset.v36t === "1" && String(sn.value) !== ""); }
     return false; // equip / island / other: cierre manual (selección múltiple)
   }
   var advTimer = null;
@@ -4339,12 +4339,63 @@ function __qWrap(name) {
       target.dispatchEvent(new Event("change", { bubbles: true }));
     }
   });
+
+  /* ---------- Piedras: el catálogo va ARRIBA y se escoge tocando la foto ---------- */
+  var charts = el("stone-charts");
+  var rowsStone = el("rows-stone");
+  if (charts && rowsStone && rowsStone.parentNode) {
+    rowsStone.parentNode.insertBefore(charts, rowsStone);
+    var picked = document.createElement("div");
+    picked.id = "stone-picked";
+    picked.style.display = "none";
+    charts.parentNode.insertBefore(picked, charts.nextSibling);
+    var showPicked = function () {
+      var sn = el("sn_stone1");
+      if (!sn || !sn.value) { picked.style.display = "none"; return; }
+      var opt = sn.options[sn.selectedIndex];
+      picked.textContent = "✓ " + (opt ? opt.textContent : sn.value);
+      picked.style.display = "";
+    };
+    var snMain = el("sn_stone1");
+    if (snMain) snMain.addEventListener("change", showPicked);
+    var selectStone = function (name) {
+      var sm = el("sm_stone1"), sn = el("sn_stone1");
+      if (!sm || !sn) return;
+      if (sm.value !== "quartz") {
+        sm.value = "quartz"; sm.dataset.v36t = "1";
+        sm.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      sn.value = name; sn.dataset.v36t = "1";
+      sn.dispatchEvent(new Event("change", { bubbles: true }));
+      showPicked();
+    };
+    tapSelect(document.querySelector('img[data-cat="piedra-carta1"]'), function (f) {
+      var rowsQ = [
+        ["Ice Star", "Snow White", "Grey Star", "Black Star", "Venato", "Concrete Grey"],
+        ["Pure Black", "Calacata", "New Calacata", "Calacata Grey", "Calacata Panda", "Calacata Gold"],
+        ["Calacata Flower", "Calacata Alaska", "Calacata Galaxy", "Calacata Venus", "Calacata Cloud", null]
+      ];
+      var row = f.y < 0.19 ? -1 : (f.y < 0.435 ? 0 : (f.y < 0.66 ? 1 : (f.y < 0.89 ? 2 : -1)));
+      var col = Math.max(0, Math.min(5, Math.floor(f.x * 6)));
+      if (row >= 0 && rowsQ[row][col]) selectStone(rowsQ[row][col]);
+    });
+    tapSelect(document.querySelector('img[data-cat="piedra-carta2"]'), function (f) {
+      var rowsM = [
+        ["Taj Mahal", "White Dream", "Calacata Florence", "Carrera", "Volarano"],
+        ["Valentino", "Fantasy White", "Winston White", null, null]
+      ];
+      var row = f.y < 0.19 ? -1 : (f.y < 0.445 ? 0 : (f.y < 0.70 ? 1 : -1));
+      var col = Math.max(0, Math.min(4, Math.floor(f.x * 5)));
+      if (row >= 0 && rowsM[row][col]) selectStone(rowsM[row][col]);
+    });
+  }
 })();
 </script>
 <style>
 #cf-summary{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#eef6f0;border:1.5px solid #004020;border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:600;color:#17351f}
 #cf-summary .cf-sum-edit{background:#004020;color:#f2c94c;border-radius:999px;padding:5px 14px;font-weight:800;font-size:.85rem;white-space:nowrap}
-img[data-cat="cat-tipos"],img[data-cat="cat-almacenamiento"],#panel-photo{cursor:pointer}
+img[data-cat="cat-tipos"],img[data-cat="cat-almacenamiento"],#panel-photo,img[data-cat="piedra-carta1"],img[data-cat="piedra-carta2"]{cursor:pointer}
+#stone-picked{background:#eef6f0;border:1.5px solid #004020;border-radius:10px;padding:9px 13px;font-weight:700;color:#17351f;margin:8px 0}
 @media print{#cf-summary{display:none!important}}
 </style>
 
