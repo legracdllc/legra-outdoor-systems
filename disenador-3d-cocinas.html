@@ -12,7 +12,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{font-family:"Segoe UI",Arial,Helvetica,sans-serif;background:#04150f;color:#e9efe9;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+body{font-family:"Segoe UI",Arial,Helvetica,sans-serif;background:#04150f;color:#e9efe9;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
 /* ---------- header ---------- */
 header{background:linear-gradient(90deg,#03211a,#07382a 60%,#0a4230);display:flex;align-items:center;justify-content:space-between;padding:10px 22px;border-bottom:2px solid var(--gold);flex:0 0 auto}
 .brand{display:flex;align-items:center;gap:13px}
@@ -38,7 +38,7 @@ header{background:linear-gradient(90deg,#03211a,#07382a 60%,#0a4230);display:fle
 .step .n{display:inline-block;background:rgba(255,255,255,.16);border-radius:50%;width:19px;height:19px;line-height:19px;font-size:11.5px;margin-right:6px}
 /* ---------- viewer ---------- */
 .viewer{position:relative;flex:1 1 auto;min-height:0;background:radial-gradient(ellipse at 50% 42%,#1e4d3b 0%,#0d3527 52%,#05231a 100%)}
-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab}
 canvas:active{cursor:grabbing}
 .badge{position:absolute;top:16px;left:18px;background:rgba(3,25,19,.78);border:1px solid rgba(215,172,89,.45);color:#e8dcc0;border-radius:999px;padding:7px 14px;font-size:12.5px;letter-spacing:.4px;pointer-events:none}
 .badge b{color:var(--gold)}
@@ -158,7 +158,7 @@ input[type=range].size{width:100%;accent-color:var(--gold);height:34px;cursor:po
 .stcount{font-size:12.5px;color:#a9c6b6;margin:2px 0 10px}
 /* v3: tarjetas de modelo con foto (estilo RTA) */
 .tcard{display:block;padding:0;overflow:hidden}
-.tcard img.ph{width:100%;height:132px;object-fit:cover;display:block}
+.tcard img.ph{width:100%;height:auto;object-fit:contain;display:block}
 .tcard .tbody{display:block;padding:10px 13px 12px}
 .mlabel{font-size:11.5px;letter-spacing:1.2px;color:#8fae9e;text-transform:uppercase;margin-top:12px}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
@@ -236,6 +236,19 @@ body[data-step="6"] .floatctl{display:flex}
   .selbar>summary{padding:9px 12px}
   .selbar .selbox{grid-template-columns:1fr;padding:9px 14px 11px}
   .selbar .selbox .row{font-size:12px}
+}
+
+/* v3.11 · MÓVIL (Legra 2026-11-20): barra de pasos — solo el paso actual con
+   número + nombre completo; los demás pasos solo su número, sin cortes.
+   Barra inferior con safe-area de iOS. */
+@media(max-width:640px){
+  .step{flex:0 1 auto;padding:8px 3px}
+  .step.active{flex:1 1 auto;padding:8px 6px}
+  .step:not(.active) .sname{display:none}
+  .step:not(.active) .n{margin-right:0}
+  .step.active .sname{white-space:nowrap}
+  .langsw button{padding:5px 6px;font-size:10.5px}
+  .bottombar{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
 }
 
 /* v12 · VISTA PREVIA grande de la piedra: tarjeta sobre la encimera,
@@ -2660,13 +2673,13 @@ function syncStepsBar(){
     var n = parseInt(el.dataset.step, 10);
     if (n < cfg.step){
       el.className = 'step done';
-      el.innerHTML = '<span class="chk">✓</span>' + n + ' · ' + stepName(n);
+      el.innerHTML = '<span class="chk">✓</span>' + n + '<span class="sname"> · ' + stepName(n) + '</span>';
     } else if (n === cfg.step){
       el.className = 'step active';
-      el.innerHTML = '<span class="n">' + n + '</span>' + stepName(n);
+      el.innerHTML = '<span class="n">' + n + '</span><span class="sname">' + stepName(n) + '</span>';
     } else {
       el.className = 'step';
-      el.innerHTML = '<span class="n">' + n + '</span>' + stepName(n);
+      el.innerHTML = '<span class="n">' + n + '</span><span class="sname">' + stepName(n) + '</span>';
     }
   });
 }
@@ -2933,9 +2946,24 @@ render();
 /* ===== MODO EMBEBIDO (calculadora del cliente, Step 2) ===== */
 (function(){
   if (!/[?&]embed=1/.test(location.search)) return;
+  var flow = window.innerWidth <= 900;
+  if (flow) document.documentElement.classList.add('emb-flow');
   var st = document.createElement('style');
-  st.textContent = '#docBar{display:none!important}.selbar-total{display:none!important}#selBar .total{display:none!important}#selBar .row:has(#selDep){display:none!important}';
+  st.textContent = '#docBar{display:none!important}.selbar-total{display:none!important}#selBar .total{display:none!important}#selBar .row:has(#selDep){display:none!important}'
+    + 'html.emb-flow body{height:auto!important;overflow:visible!important}'
+    + 'html.emb-flow .workspace{overflow:visible!important;flex:0 0 auto!important}'
+    + 'html.emb-flow .viewer{flex:0 0 400px!important}'
+    + 'html.emb-flow body[data-step="6"] .viewer{flex:0 0 480px!important}'
+    + 'html.emb-flow .selbar{max-height:none!important}';
   document.head.appendChild(st);
+  var lastH = 0;
+  function sendH(){
+    if (!flow) return;
+    try {
+      var h = Math.ceil(document.body.getBoundingClientRect().height);
+      if (h > 100 && h !== lastH) { lastH = h; parent.postMessage({ type: 'legra-height', h: h }, location.origin); }
+    } catch (e) {}
+  }
   var last = '';
   function send(){
     try {
@@ -2943,7 +2971,9 @@ render();
       if (j !== last) { last = j; parent.postMessage({ type: 'legra-cfg', cfg: JSON.parse(j) }, location.origin); }
     } catch (e) {}
   }
-  window.addEventListener('load', function(){ send(); setInterval(send, 400); });
+  window.addEventListener('load', function(){ send(); sendH(); setInterval(function(){ send(); sendH(); }, 400); });
+  window.addEventListener('resize', function(){ setTimeout(sendH, 80); });
+  document.addEventListener('click', function(){ setTimeout(sendH, 90); }, true);
   document.addEventListener('click', function(e){
     if (e.target && e.target.id === 'btnCta') {
       try { parent.postMessage({ type: 'legra-goto' }, location.origin); } catch (err) {}
