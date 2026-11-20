@@ -1008,7 +1008,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
           stone_chart_l: "Ver carta de piedras",
           seller_results_l: "Precio para el cliente", total_l: "Precio total",
-          doc_workorder: "ORDEN DE TRABAJO", wo_specs: "Características de la cocina", wo_notes: "Notas",
+          doc_workorder: "ORDEN DE TRABAJO", wo_specs: "Características de la cocina", wo_notes: "Notas", height_std_l: "Alto estándar", sel_t: "Selección del cliente", items_t: "Equipos y storage", model_l: "Modelo", panels_buy_t: "Paneles — compra y cortes", 
           wo_days: "Días de trabajo", no_l: "No", st0: "0 storage",
           btn_workorder: "🧾 Orden de trabajo", wo_btn: "🧾 Orden de trabajo", doc_workorder: "Orden de trabajo",
           wo_profiles: "Perfiles 2x2", wo_channels: "Canales 2x1",
@@ -1139,7 +1139,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
           stone_chart_l: "View stone chart",
           seller_results_l: "Client price", total_l: "Total price",
-          doc_workorder: "WORK ORDER", wo_specs: "Kitchen characteristics", wo_notes: "Notes",
+          doc_workorder: "WORK ORDER", wo_specs: "Kitchen characteristics", wo_notes: "Notes", height_std_l: "Standard height", sel_t: "Client selection", items_t: "Equipment & storage", model_l: "Model", panels_buy_t: "Panels — purchase & cuts", 
           wo_days: "Work days", no_l: "No", st0: "0 storage",
           btn_workorder: "🧾 Work order", wo_btn: "🧾 Work Order", doc_workorder: "Work Order",
           wo_profiles: "2x2 Profiles", wo_channels: "2x1 Channels",
@@ -1420,7 +1420,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         "8": { long_len: 96, long_bars_modperm: 2, long_bars_movil: 4, transversals: 6, transversal_len: 18, columns: 8, col_len_modperm: 34, col_len_movil: 32, conn_h: 8, wheels: 8, panels_linear_ft: 20, labor_days: 4 },
         "10": { long_len: 120, long_bars_modperm: 2, long_bars_movil: 4, transversals: 6, transversal_len: 18, columns: 8, col_len_modperm: 34, col_len_movil: 32, conn_h: 8, wheels: 8, panels_linear_ft: 24, labor_days: 4 }
       } };
-      var MATP = { conn_t_per_storage: 4, storage_bars_per_storage: 2, conn_c_permanente: 4, conn_c_otros: 8, screw_packs: 1, screw_packs_island: 2, labor_days_island_extra: 2, panel_divisor: 32, esquinero_base: 1, esquinero_por_isla: 1, esquinero_por_storage: 1, esquinero_por_fridge: 1, channel_stock: 288 };
+      var MATP = { conn_t_per_storage: 4, storage_bars_per_storage: 2, conn_c_permanente: 4, conn_c_otros: 8, screw_packs: 1, screw_packs_island: 2, labor_days_island_extra: 2, panel_divisor: 34, esquinero_base: 1, esquinero_por_isla: 1, esquinero_por_storage: 1, esquinero_por_fridge: 1, channel_stock: 288 };
       function matq(size){
         if (size === "custom" && customFtValid()) return matqCustom(capFt());
         return MATQ.qty_size[size] || MATQ.qty_size["6"];
@@ -1896,8 +1896,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           if (stdChanged) qwp.value = panels;
           qwp.disabled = false;
           if (note) note.textContent = LANG === "es"
-            ? "Cocina est\u00e1ndar de "+state.ksize+"\u2019 \u2014 "+ft+" pies lineales \u2192 "+panels+" paneles (32\" c/u, auto)."
-            : "Standard "+state.ksize+"\u2019 kitchen \u2014 "+ft+" linear feet \u2192 "+panels+" panels (32\" each, auto).";
+            ? "Cocina est\u00e1ndar de "+state.ksize+"\u2019 \u2014 "+ft+" pies lineales \u2192 "+panels+" paneles (34\" c/u, auto)."
+            : "Standard "+state.ksize+"\u2019 kitchen \u2014 "+ft+" linear feet \u2192 "+panels+" panels (34\" each, auto).";
         } else if (qwp){ qwp.disabled = false; if (note) note.textContent = ""; }
         var wrow = el("row-wheels");
         if (wrow){
@@ -2396,6 +2396,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         var r = lastResult || calculate();
         var c = clientInfo();
         var body = infoTable(c);
+        body += selectionSectionHTML(r);
         body += "<h2 class='sec'>" + L("sec_materials") + "</h2><table class='lines'><thead><tr><th>" + L("th_concept") + "</th><th class='num'>" + L("th_qty") + "</th><th class='num'>" + L("th_unit") + "</th><th class='num'>" + L("th_total") + "</th></tr></thead><tbody>";
         r.lines.forEach(function (l) {
           if (l.total === null) body += "<tr><td>" + l.label + "</td><td class='num'>" + l.qty + "</td><td class='num' colspan='2'><strong>" + L("unavailable") + "</strong></td></tr>";
@@ -2419,6 +2420,8 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           "<tr><td>" + L("profit_net_l") + "</td><td class='num t'>" + fmt(r.profit) + "</td></tr>" +
           "<tr><td>" + L("profit_pct_l") + "</td><td class='num t'>" + r.profitPct.toFixed(1) + "%</td></tr>" +
           "</tbody></table>";
+        body += panelsDetailHTML(r);
+        body += itemsDetailHTML(r);
         body += paymentTable(r, L("pay_adv"), L("pay_final"), L("due_sign"), L("due_done"));
         body += poSectionHTML(r);
         body += "<div class='totals'><div class='row'><span>" + L("sub_materials") + "</span><span>" + fmt(r.subMaterials) + "</span></div>" +
@@ -2441,6 +2444,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         var col = "";
         if (colSel && colSel.selectedIndex >= 0) col = colSel.options[colSel.selectedIndex].text.split(" — ")[0].replace(/^\d+\s*·\s*/, "");
         var mat = (el("sm_stone1") && el("sm_stone1").value === "granite") ? L("mat_granite") : L("mat_quartz");
+        var stoneName = (el("sn_stone1") && el("sn_stone1").value) || "";
         var sizeTxt = ksizeLabel();
         var eqNames = { grill: es ? "parrilla" : "grill", cooktop: es ? "estufa" : "cooktop", sink: es ? "fregadero" : "sink", faucet: es ? "llave" : "faucet", fridge: es ? "refrigerador" : "refrigerator", outlet: es ? "toma corriente" : "power outlet" };
         var eqs = [];
@@ -2449,7 +2453,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         if (es) {
           t = "Cocina exterior " + r.ktypeName.toLowerCase() + " de " + sizeTxt + " construida 100% en aluminio estructural: no se oxida, no se pudre y no la atacan las termitas. ";
           t += "Paneles exteriores aislados" + (col ? " con acabado " + col : "") + ", de alta calidad, hechos para vivir a la intemperie y resistir el sol, la lluvia y la humedad. ";
-          t += "Encimera de " + mat.toLowerCase() + " de alta calidad, resistente y de larga duración. ";
+          t += "Encimera de " + mat.toLowerCase() + (stoneName ? " " + stoneName : "") + " de alta calidad, resistente y de larga duración. ";
           if (nsto > 0) t += "Incluye " + nsto + (nsto === 1 ? " módulo" : " módulos") + " de almacenamiento de acero inoxidable. ";
           if (islOn) t += "Incluye además una isla de " + (state.isize || "6") + "′ con la misma construcción en aluminio y su propia encimera de piedra. ";
           if (eqs.length) t += "Equipada con " + eqs.join(", ") + ", todo de grado exterior. ";
@@ -2458,7 +2462,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         } else {
           t = r.ktypeName + " outdoor kitchen, " + sizeTxt + ", built 100% with structural aluminum: it will not rust, rot, or be attacked by termites. ";
           t += "Insulated exterior panels" + (col ? " with a " + col + " finish" : "") + ", high quality, made to live outdoors and withstand sun, rain, and humidity. ";
-          t += "High-quality " + mat.toLowerCase() + " countertop: durable and long-lasting. ";
+          t += "High-quality " + mat.toLowerCase() + (stoneName ? " (" + stoneName + ")" : "") + " countertop: durable and long-lasting. ";
           if (nsto > 0) t += "Includes " + nsto + " stainless-steel storage " + (nsto === 1 ? "module" : "modules") + ". ";
           if (islOn) t += "It also includes a " + (state.isize || "6") + "′ island with the same aluminum construction and its own stone countertop. ";
           if (eqs.length) t += "Equipped with " + eqs.join(", ") + ", all outdoor-grade. ";
@@ -2475,6 +2479,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         var body = infoTable(c);
         body += "<h2 class='sec'>" + L("sec_summary") + "</h2><p style='font-size:13.5px;line-height:1.6;'>" + projectSummary(r, c) + "</p>";
         body += "<h2 class='sec'>" + L("desc_t") + "</h2><p style='font-size:13.5px;line-height:1.6;'>" + descText(r) + "</p>";
+        body += selectionSectionHTML(r);
         body += "<h2 class='sec'>" + L("sec_scope") + "</h2><ol class='scope'>";
         scopeItems(r).forEach(function (it) { body += "<li>" + it + "</li>"; });
         body += "</ol>";
@@ -2487,6 +2492,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           body += "<tr><td>" + n + "</td><td>" + l.label.split(" — ")[0] + "</td><td class='num'>" + l.qty + "</td><td>" + unit + "</td><td>" + (l.spec || "") + "</td></tr>";
         });
         body += "</tbody></table>";
+        body += itemsDetailHTML(r);
         body += "<h2 class='sec'>" + L("sec_pricing") + "</h2><table class='info'>" +
           row(LANG === "es" ? "Materiales" : "Materials", L("mat_included")) +
           row(L("labor"), L("mat_included"));
@@ -2503,6 +2509,195 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         return estimateShell(L("doc_client"), body);
       }
 
+      // ===== v36 (2026-11-17): descripción completa de la selección en los
+      // 3 documentos (regla de Legra): medida, tipo, alto estándar 35.5",
+      // piedra elegida, panel exterior, disposición I/C/D con el NOMBRE de
+      // cada storage, cada equipo/storage con foto de catálogo + specs,
+      // paneles a comprar + cortes y órdenes de compra en el detallado. =====
+      var STD_HEIGHT_IN = "35.5 in";
+      function panelColorName() {
+        var s = el("s_wallpanel");
+        if (!s || s.selectedIndex < 0) return "";
+        return s.options[s.selectedIndex].text.replace(/ — \$[0-9][0-9,]*(\.[0-9]{2})?$/, "").replace(/^\d+\s*·\s*/, "");
+      }
+      function panelOptionLabel() {
+        var s = el("s_wallpanel");
+        if (!s || s.selectedIndex < 0) return "";
+        var rw = rowById("wallpanel");
+        var o = rw && rw.options ? rw.options[s.selectedIndex] : null;
+        return o ? (LANG === "es" ? o.es : o.en) : "";
+      }
+      function stoneChosenTxt(id) {
+        var m = el("sm_" + id), z = el("sz_" + id), n = el("sn_" + id);
+        if (!m || !z || !n || !n.value) return "";
+        return (m.value === "granite" ? L("mat_granite") : L("mat_quartz")) + " — " + n.value + " (" + z.value + ")";
+      }
+      function storageLineNames(r) {
+        return r.lines.filter(function (l) { return l.cat === "storage"; }).map(function (l) { return l.label; });
+      }
+      function layoutRowsNamed(r) {
+        var rows = [];
+        POS_ITEMS.forEach(function (id) { if (typeof EQON !== "undefined" && EQON[id]) rows.push([posItemName(id), posName(POS[id] || POS_DEF[id] || "c")]); });
+        var names = storageLineNames(r);
+        var n = parseInt(state.nstorage || "1", 10);
+        for (var i = 0; i < n; i++) rows.push([names[i] || (L("storage_unit") + " " + (i + 1)), posName(POS_STO[i] || POS_DEF_LIST[i] || "c")]);
+        if (el("island-on") && el("island-on").checked) {
+          var ni = parseInt(state.istorage || "1", 10);
+          for (var j = 0; j < ni; j++) rows.push([L("isl_storage") + " " + (j + 1), posName(POS_ISTO[j] || POS_DEF_LIST[j] || "c")]);
+        }
+        return rows;
+      }
+      function selectionRows(r) {
+        var rows = [
+          [L("ktype"), r.ktypeName],
+          [L("ksize"), r.ksizeName],
+          [L("height_std_l"), STD_HEIGHT_IN],
+          [L("stone_main"), stoneChosenTxt("stone1") || "—"]
+        ];
+        var pn = panelColorName(), pq = num("q_wallpanel");
+        rows.push([L("cat_panels"), pn ? pn + (pq > 0 ? " × " + pq : "") : "—"]);
+        return rows;
+      }
+      function selectionSectionHTML(r) {
+        var t = "<h2 class='sec'>" + L("sel_t") + "</h2><table class='info'>";
+        selectionRows(r).concat(layoutRowsNamed(r)).forEach(function (rw) { t += row(rw[0], rw[1]); });
+        return t + "</table>";
+      }
+      function selectionPDF(doc, y, r) {
+        y = pdfSection(doc, y, L("sel_t"));
+        doc.autoTable({ startY: y, body: selectionRows(r).concat(layoutRowsNamed(r)), styles: { fontSize: 10 }, columnStyles: { 0: { fontStyle: "bold", cellWidth: 55 } } });
+        return doc.lastAutoTable.finalY + 8;
+      }
+      function chosenItems(r) {
+        var items = [];
+        ["grill", "cooktop", "sideburner", "sink", "faucet", "fridge", "outlet"].forEach(function (id) {
+          if (typeof EQON === "undefined" || !EQON[id]) return;
+          var q = num("q_" + id); if (q <= 0) return;
+          var sel = el("s_" + id);
+          var model = sel && sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text.replace(/ — \$[0-9][0-9,]*(\.[0-9]{2})?$/, "") : "";
+          var title = POS_NAMES[id] ? posItemName(id) : rowLabel(rowById(id));
+          items.push({ img: (typeof CATALOG_IMGS !== "undefined" && CATALOG_IMGS[id]) || null, title: title, name: model,
+            pos: POS_ITEMS.indexOf(id) >= 0 ? posName(POS[id] || POS_DEF[id] || "c") : "", qty: q });
+        });
+        var names = storageLineNames(r);
+        var simg = null;
+        var sEl = document.querySelector('img[data-cat="cat-almacenamiento"]');
+        if (sEl && sEl.src) simg = sEl.src;
+        var n = parseInt(state.nstorage || "1", 10);
+        for (var i = 0; i < n; i++) {
+          if (!names[i]) continue;
+          items.push({ img: simg, title: L("storage_unit") + " " + (i + 1), name: names[i], pos: posName(POS_STO[i] || POS_DEF_LIST[i] || "c"), qty: 1 });
+        }
+        return items;
+      }
+      function itemsDetailHTML(r) {
+        var items = chosenItems(r);
+        if (!items.length) return "";
+        var t = "<h2 class='sec'>" + L("items_t") + "</h2><table class='lines'><tbody>";
+        items.forEach(function (it) {
+          t += "<tr><td style='width:170px;'>" + (it.img ? "<img src='" + it.img + "' alt='' style='width:160px;max-width:160px;border-radius:6px;'/>" : "") + "</td>" +
+            "<td><strong>" + it.title + (it.qty > 1 ? " × " + it.qty : "") + "</strong>" +
+            (it.pos ? "<br>" + L("pos_l") + ": " + it.pos : "") +
+            (it.name ? "<br>" + L("model_l") + ": " + it.name : "") + "</td></tr>";
+        });
+        return t + "</tbody></table>";
+      }
+      function itemsDetailPDF(doc, y, r) {
+        var items = chosenItems(r);
+        if (!items.length) return y;
+        y = pdfSection(doc, y, L("items_t"));
+        items.forEach(function (it) {
+          var imgH = 0;
+          if (it.img) { try { var pr = doc.getImageProperties(it.img); if (pr && pr.width) imgH = 48 * pr.height / pr.width; } catch (e) { imgH = 0; } }
+          if (y + Math.max(imgH, 16) + 5 > 282) { doc.addPage(); y = 15; }
+          if (it.img && imgH > 0) { try { doc.addImage(it.img, "JPEG", 14, y, 48, imgH); } catch (e) {} }
+          var tx = it.img && imgH > 0 ? 66 : 14;
+          doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(0, 0, 0);
+          doc.text(it.title + (it.qty > 1 ? " × " + it.qty : ""), tx, y + 5);
+          doc.setFont("helvetica", "normal"); doc.setFontSize(9.5);
+          var ly = y + 11;
+          if (it.pos) { doc.text(L("pos_l") + ": " + it.pos, tx, ly); ly += 5.5; }
+          if (it.name) { var nl = doc.splitTextToSize(L("model_l") + ": " + it.name, 196 - tx); doc.text(nl, tx, ly); ly += nl.length * 5; }
+          y += Math.max(imgH, ly - y) + 5;
+        });
+        return y + 3;
+      }
+      function woStoneHTML(r) {
+        var rows = [];
+        r.lines.forEach(function (l) { if (l.cat === "stone") rows.push([l.label, l.qty]); });
+        if (!rows.length) return "";
+        return "<h2 class='sec'>" + L("cat_stone") + "</h2>" + woRowsHTML(rows);
+      }
+      function woEquipHTML(r) {
+        var rows = [];
+        r.lines.forEach(function (l) { if (l.cat === "equip") rows.push([l.label, l.qty]); });
+        if (!rows.length) return "";
+        return "<h2 class='sec'>" + L("cat_equip") + "</h2>" + woRowsHTML(rows);
+      }
+      function panelBuyRows(r) {
+        var po = panelOptionLabel();
+        var rows = [];
+        r.lines.forEach(function (l) {
+          if (l.cat === "panels" && po && l.label === po) rows.push([l.label, l.qty]);
+          if (l.cat === "island" && l.label.indexOf(L("cat_panels")) >= 0) rows.push([l.label, l.qty]);
+        });
+        return rows;
+      }
+      function panelsDetailHTML(r) {
+        var rows = panelBuyRows(r);
+        if (!rows.length) return "";
+        var t = "<h2 class='sec'>" + L("panels_buy_t") + "</h2><table class='lines'><tbody>";
+        rows.forEach(function (rw) { t += "<tr><td>" + rw[0] + "</td><td class='num'>" + rw[1] + "</td></tr>"; });
+        t += "</tbody></table>";
+        var pcs = (typeof woPanelPieces === "function") ? woPanelPieces(state.ksize) : null;
+        if (pcs) {
+          t += "<p style='font-size:12.5px;margin:10px 0 4px;'><strong>" + L("wo_panel_cuts") + ":</strong></p><table class='lines'><tbody>";
+          pcs.forEach(function (g) { t += "<tr><td>" + g.w + "&quot; × " + WO_PANEL_H + "&quot;</td><td class='num'>" + g.n + "</td></tr>"; });
+          t += "</tbody></table>";
+        }
+        return t;
+      }
+      function panelsDetailPDF(doc, y, r) {
+        var rows = panelBuyRows(r).map(function (rw) { return [rw[0], String(rw[1])]; });
+        if (!rows.length) return y;
+        var pcs = (typeof woPanelPieces === "function") ? woPanelPieces(state.ksize) : null;
+        if (pcs) pcs.forEach(function (g) { rows.push([L("wo_panel_cuts") + ": " + g.w + "\" × " + WO_PANEL_H + "\"", String(g.n)]); });
+        y = pdfSection(doc, y, L("panels_buy_t"));
+        doc.autoTable({ startY: y, body: rows, styles: { fontSize: 9.5 }, columnStyles: { 1: { halign: "right" } } });
+        return doc.lastAutoTable.finalY + 8;
+      }
+      function poEmbedPDF(doc, y, r) {
+        var po = purchaseOrders(r);
+        var groups = [];
+        if (Array.isArray(po)) {
+          po.forEach(function (g) { groups.push({ title: L(g.key === "amazon" ? "po_amazon" : "po_call"), items: g.lines.map(function (l) { return { label: l.label, qty: l.qty, total: l.qty * l.unit }; }) }); });
+        } else if (po) {
+          if (po.amazon && po.amazon.length) groups.push({ title: L("po_amazon"), items: po.amazon });
+          if (po.call && po.call.length) groups.push({ title: L("po_call"), items: po.call });
+        }
+        if (!groups.length) return y;
+        y = pdfSection(doc, y, L("po_title"));
+        groups.forEach(function (g) {
+          if (y > 258) { doc.addPage(); y = 15; }
+          doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(20, 64, 31);
+          doc.text(g.title, 14, y); y += 3;
+          doc.setTextColor(0, 0, 0);
+          doc.autoTable({ startY: y, head: [["#", L("th_concept"), L("th_qty"), L("th_total")]],
+            body: g.items.map(function (l, i) { return [String(i + 1), l.label, String(l.qty), fmt(l.total)]; }),
+            styles: { fontSize: 9 }, headStyles: { fillColor: [30, 86, 49] } });
+          y = doc.lastAutoTable.finalY + 5;
+          var st = g.items.reduce(function (a, l) { return a + l.total; }, 0);
+          doc.setFont("helvetica", "bold"); doc.setFontSize(10);
+          doc.text(L("total") + ": " + fmt(st), 196, y, { align: "right" }); y += 9;
+          doc.setFont("helvetica", "normal");
+        });
+        var note = doc.splitTextToSize(L("po_note"), 182);
+        if (y + note.length * 4.5 > 282) { doc.addPage(); y = 15; }
+        doc.setFontSize(8.5); doc.setTextColor(100, 100, 100);
+        doc.text(note, 14, y); y += note.length * 4.5 + 4;
+        doc.setTextColor(0, 0, 0);
+        return y;
+      }
       function purchaseOrders(r) {
         var amazon = [], call = [];
         r.lines.forEach(function (l) {
@@ -2591,6 +2786,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           var doc = new window.jspdf.jsPDF();
           var y = pdfHeader(doc, L("doc_contractor"));
           y = pdfInfo(doc, y, c);
+          y = selectionPDF(doc, y, r);
           y = pdfSection(doc, y, L("sec_materials"));
           doc.autoTable({
             startY: y,
@@ -2599,6 +2795,8 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
             styles: { fontSize: 9 }, headStyles: { fillColor: [30, 86, 49] }
           });
           y = doc.lastAutoTable.finalY + 8;
+          y = panelsDetailPDF(doc, y, r);
+          y = itemsDetailPDF(doc, y, r);
           y = pdfSection(doc, y, L("sec_labor"));
           var laborRows = [
             [L("labor_charged_l") + " (" + L("flat_l") + ")", fmt(r.labor)],
@@ -2641,6 +2839,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           if (r.taxes > 0) pairs.push([L("taxes_l"), fmt(r.taxes)]);
           if (r.logistics > 0) pairs.push([L("logistics_l"), fmt(r.logistics)]);
           y = pdfTotals(doc, y, pairs, L("total"), fmt(r.total));
+          y = poEmbedPDF(doc, y, r);
           doc.save("Presupuesto-Contratista-" + fileSafe(c.no) + ".pdf");
         });
       }
@@ -2661,6 +2860,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           var dt = doc.splitTextToSize(descText(r), 182);
           if (y + dt.length * 5 > 275) { doc.addPage(); y = 15; }
           doc.text(dt, 14, y); y += dt.length * 5 + 6;
+          y = selectionPDF(doc, y, r);
           y = pdfSection(doc, y, L("sec_scope"));
           doc.setFontSize(10);
           scopeItems(r).forEach(function (it, i) {
@@ -2679,6 +2879,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           });
           doc.autoTable({ startY: y, head: [["#", L("th_concept"), L("th_qty"), "Unit", "Spec"]], body: mrows, styles: { fontSize: 9 }, headStyles: { fillColor: [30, 86, 49] } });
           y = doc.lastAutoTable.finalY + 8;
+          y = itemsDetailPDF(doc, y, r);
           y = pdfSection(doc, y, L("sec_pricing"));
           var prows = [
             [LANG === "es" ? "Materiales" : "Materials", L("mat_included")],
@@ -2837,7 +3038,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         var colorSel = el("s_wallpanel");
         // La etiqueta de la opción trae el precio ("1 · Teak Brown — $28.00"):
         // la orden de trabajo NO muestra precios — se recorta el sufijo.
-        var colorTxt = colorSel ? colorSel.options[colorSel.selectedIndex].text.replace(/ — \$[0-9.]+$/, "") : "";
+        var colorTxt = colorSel ? colorSel.options[colorSel.selectedIndex].text.replace(/ — \$[0-9][0-9,]*(\.[0-9]{2})?$/, "") : "";
         var d = { r: r, custom: custom, islandOn: islOn, nst: nst,
           color: colorTxt,
           panels: num("q_wallpanel"), esquineros: 0 };
@@ -2893,7 +3094,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         var r = d.r, c = clientInfo();
         var body = infoTable(c);
         body += "<h2 class='sec'>" + L("ktype") + "</h2><p style='font-size:13.5px;'>" +
-          (r.ksize === "custom" ? ksizeLabel() : r.ksize + "'") + " · " + r.ktypeName + " · " + L("nstorage_l") + ": " + d.nst + "</p>";
+          (r.ksize === "custom" ? ksizeLabel() : r.ksize + "'") + " · " + r.ktypeName + " · " + L("nstorage_l") + ": " + d.nst + " · " + L("height_std_l") + ": " + STD_HEIGHT_IN + "</p>";
         if (d.custom) {
           body += "<p style='font-size:12.5px;color:#555;'>" + L("wo_manual") + "</p>";
           body += "<h2 class='sec'>" + L("wo_conn") + "</h2>" + woRowsHTML(woCustomRows(d));
@@ -2903,7 +3104,10 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           body += "<h2 class='sec'>" + L("wo_conn") + "</h2>" + woRowsHTML(woConnRows(d.main, d.esquineros));
         }
         body += woPanelsHTML(d.color, d.panels, r.ksize);
-        var layRows = layoutRows();
+        body += woStoneHTML(r);
+        body += woEquipHTML(r);
+        body += itemsDetailHTML(r);
+        var layRows = layoutRowsNamed(r);
         if (layRows.length) body += "<h2 class='sec'>" + L("dist_t") + "</h2>" + woRowsHTML(layRows);
         if (d.islandOn) {
           body += "<h2 class='sec'>" + L("wo_island_h") + " — " + d.islandSize + "' · " + L("k_" + d.islandType) + " · " + L("nstorage_l") + ": " + d.islandStorage + "</h2>";
@@ -2958,7 +3162,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           }
           y = pdfSection(doc, y, L("ktype").toUpperCase());
           doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(0, 0, 0);
-          doc.text((r.ksize === "custom" ? ksizeLabel() : r.ksize + "'") + " - " + r.ktypeName + " - " + L("nstorage_l") + ": " + d.nst, 14, y); y += 8;
+          doc.text((r.ksize === "custom" ? ksizeLabel() : r.ksize + "'") + " - " + r.ktypeName + " - " + L("nstorage_l") + ": " + d.nst + " - " + L("height_std_l") + ": " + STD_HEIGHT_IN, 14, y); y += 8;
           if (d.custom) {
             doc.setFontSize(9.5); doc.setTextColor(90, 90, 90);
             doc.text(L("wo_manual"), 14, y); y += 6; doc.setTextColor(0, 0, 0);
@@ -2969,7 +3173,14 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
             rowsPDF(L("wo_conn"), woConnRows(d.main, d.esquineros));
           }
           panelsPDF(d.color, d.panels, r.ksize);
-          var layRows = layoutRows();
+          var stoneRows = [];
+          r.lines.forEach(function (l) { if (l.cat === "stone") stoneRows.push([l.label, String(l.qty)]); });
+          if (stoneRows.length) rowsPDF(L("cat_stone"), stoneRows);
+          var equipRows = [];
+          r.lines.forEach(function (l) { if (l.cat === "equip") equipRows.push([l.label, String(l.qty)]); });
+          if (equipRows.length) rowsPDF(L("cat_equip"), equipRows);
+          y = itemsDetailPDF(doc, y, r);
+          var layRows = layoutRowsNamed(r);
           if (layRows.length) rowsPDF(L("dist_t"), layRows);
           if (d.islandOn) {
             y = pdfSection(doc, y, (L("wo_island_h") + " - " + d.islandSize + "' - " + L("k_" + d.islandType) + " - " + L("nstorage_l") + ": " + d.islandStorage).toUpperCase());
@@ -3433,10 +3644,11 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         var specs = [];
         specs.push([L("ktype"), r.ktypeName]);
         specs.push([L("ksize"), r.ksizeName]);
+        specs.push([L("height_std_l"), STD_HEIGHT_IN]);
         specs.push([L("cat_island"), islOn ? (L("k_" + (state.itype || "modular")) + " · " + (state.isize || "6") + "′") : L("no_l")]);
         var pcSel = el("s_wallpanel");
         specs.push([L("cat_panels"), (pcSel ? pcSel.options[pcSel.selectedIndex].text : "") + " × " + losNum("q_wallpanel")]);
-        specs.push([L("stone_main"), stoneDesc("stone1")]);
+        specs.push([L("stone_main"), stoneDesc("stone1") + " × " + losNum("q_stone1")]);
         var bsSv = el("bs-size") ? el("bs-size").value : "0";
         specs.push([L("backsplash_l"), (bsSv === "4" || bsSv === "6") ? ("Backsplash " + bsSv + "\\u0022 \\u2014 " + (el("sn_stone1") ? el("sn_stone1").value : "")) : L("no_l")]);
         var stoNames = [];
@@ -3451,7 +3663,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         }
         var eqs = r.lines.filter(function (l) { return l.cat === "equip"; }).map(function (l) { return l.label + (l.qty > 1 ? " × " + l.qty : ""); });
         specs.push([L("cat_equip"), eqs.length ? eqs.join("; ") : "—"]);
-        var layTxt = (typeof layoutText === "function") ? layoutText() : "";
+        var layTxt = layoutRowsNamed(r).map(function (rw) { return rw[0] + ": " + rw[1]; }).join("; ");
         if (layTxt) specs.push([L("dist_t"), layTxt]);
         specs.push([L("wo_days"), String(r.days)]);
         return { r: r, c: c, specs: specs, code: losEncode(gatherOrderCode(r)) };
@@ -3462,6 +3674,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         body += "<h2 class='sec'>" + L("wo_specs") + "</h2><table class='info'>";
         d.specs.forEach(function (sp) { body += row(sp[0], sp[1]); });
         body += "</table>";
+        body += itemsDetailHTML(d.r);
         body += "<h2 class='sec'>" + L("wo_notes") + "</h2><div class='wo-notes'><div></div><div></div><div></div></div>";
         return estimateShell(L("doc_workorder"), body);
       }
@@ -3476,9 +3689,22 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
         var body = infoTable(c);
         body += "<h2 class='sec'>" + L("sec_summary") + "</h2><p style='font-size:13.5px;line-height:1.6;'>" + sum + "</p>";
         body += "<h2 class='sec'>" + L("desc_t") + "</h2><p style='font-size:13.5px;line-height:1.6;'>" + descText(r) + "</p>";
+        body += selectionSectionHTML(r);
         body += "<h2 class='sec'>" + L("sec_pricing") + "</h2><table class='info'>" +
           row(L("total_price"), "<strong>" + fmt(r.total) + "</strong>") + "</table>";
         body += "<p style='font-size:11px;color:#666;line-height:1.5;'>" + L("disclosure") + "</p>";
+        body += "<h2 class='sec'>" + L("sec_scope") + "</h2><ol class='scope'>";
+        scopeItems(r).forEach(function (it) { body += "<li>" + it + "</li>"; });
+        body += "</ol>";
+        body += "<h2 class='sec'>" + L("sec_matspec") + "</h2><table class='lines'><thead><tr><th>#</th><th>" + L("th_concept") + "</th><th>" + L("th_qty") + "</th><th>" + L("th_unit") + "</th><th>Spec</th></tr></thead><tbody>";
+        var mn = 0;
+        r.lines.forEach(function (l) {
+          if (l.total === null) return;
+          mn++;
+          body += "<tr><td>" + mn + "</td><td>" + l.label.split(" — ")[0] + "</td><td class='num'>" + l.qty + "</td><td>" + "pcs" + "</td><td>" + (l.spec || "") + "</td></tr>";
+        });
+        body += "</tbody></table>";
+        body += itemsDetailHTML(r);
         body += paymentTable(r, L("pay_adv"), L("pay_final"), L("due_sign"), L("due_done"));
         body += "<h2 class='sec'>" + L("sec_thanks") + "</h2><div class='thanks'>" + L("thanks") + "</div>";
         body += "<h2 class='sec'>" + L("sec_accept") + "</h2><div class='sig-grid'>" +
@@ -3497,6 +3723,7 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           y = pdfSection(doc, y, L("wo_specs"));
           doc.autoTable({ startY: y, body: d.specs.map(function (sp) { return [sp[0], sp[1]]; }), styles: { fontSize: 10 }, columnStyles: { 0: { fontStyle: "bold", cellWidth: 55 } } });
           y = doc.lastAutoTable.finalY + 8;
+          y = itemsDetailPDF(doc, y, d.r);
           y = pdfSection(doc, y, L("wo_notes"));
           for (var i = 0; i < 3; i++) { doc.setDrawColor(150); doc.line(14, y + 8, 196, y + 8); y += 12; }
           doc.save("Orden-de-Trabajo-" + fileSafe(d.c.no) + ".pdf");
@@ -3520,6 +3747,26 @@ var money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" 
           var dt = doc.splitTextToSize(descText(r), 182);
           if (y + dt.length * 5 > 275) { doc.addPage(); y = 15; }
           doc.text(dt, 14, y); y += dt.length * 5 + 6;
+          y = selectionPDF(doc, y, r);
+          y = pdfSection(doc, y, L("sec_scope"));
+          doc.setFontSize(10);
+          scopeItems(r).forEach(function (it, i) {
+            var txt = doc.splitTextToSize((i + 1) + ". " + it.replace(/<[^>]+>/g, ""), 182);
+            if (y + txt.length * 5 > 280) { doc.addPage(); y = 15; }
+            doc.text(txt, 14, y); y += txt.length * 5 + 2;
+          });
+          y += 4;
+          y = pdfSection(doc, y, L("sec_matspec"));
+          var mn2 = 0;
+          var mrows2 = [];
+          r.lines.forEach(function (l) {
+            if (l.total === null) return;
+            mn2++;
+            mrows2.push([String(mn2), l.label.split(" — ")[0], String(l.qty), "pcs", l.spec || ""]);
+          });
+          doc.autoTable({ startY: y, head: [["#", L("th_concept"), L("th_qty"), "Unit", "Spec"]], body: mrows2, styles: { fontSize: 9 }, headStyles: { fillColor: [30, 86, 49] } });
+          y = doc.lastAutoTable.finalY + 8;
+          y = itemsDetailPDF(doc, y, r);
           y = pdfSection(doc, y, L("sec_pricing"));
           y = pdfTotals(doc, y, [], L("total_price"), fmt(r.total));
           doc.setFont("helvetica", "italic"); doc.setFontSize(8.5); doc.setTextColor(100, 100, 100);
@@ -3871,103 +4118,237 @@ function __qWrap(name) {
 
 
     </script>
- <style>.homeBtn{position:fixed;top:10px;left:10px;z-index:99999;background:#062d23;color:#d7ac59;border:1.5px solid #d7ac59;border-radius:999px;padding:9px 16px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.35)}@media print{.homeBtn{display:none!important}}</style>
-<a class="homeBtn" href="https://legra-outdoor-systems.com/">&#8592; Volver al inicio</a>
-<!-- ===== BUCKET A · NewGen template (marquee + trust + WhatsApp) ===== -->
-<style id="bucketA-css">
-.lgMq{background:#d7ac59;color:#10261d;overflow:hidden;white-space:nowrap;font-size:12.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;padding:8px 0;position:relative;z-index:30}
-.lgMqTrack{display:inline-block;padding-left:100%;animation:lgMqMove 30s linear infinite}
-@keyframes lgMqMove{from{transform:translateX(0)}to{transform:translateX(-100%)}}
-@media(prefers-reduced-motion:reduce){.lgMqTrack{animation:none;padding-left:0}.lgMq{text-align:center;white-space:normal}}
-.lgTrust{background:#fff;border-bottom:1px solid #e5e8e0;position:relative;z-index:5}
-.lgTrustIn{max-width:1280px;margin:auto;padding:12px 24px;display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;justify-content:center;font-size:14.5px;color:#15251f}
-.lgTrustIn .lgChip{display:inline-flex;align-items:center;gap:7px;font-weight:600}
-.lgTrustIn .lgStar{color:#d7ac59;font-size:16px}
-.lgTrustIn .lgOk{color:#1e5631;font-weight:900}
-.lgTrustIn .lgCities{color:#62736a;font-weight:600}
-.lgWa{position:fixed;right:18px;bottom:18px;z-index:9990;display:flex;align-items:flex-end;gap:10px;text-decoration:none}
-.lgWaBtn{width:58px;height:58px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.28);flex:none}
-.lgWaBtn svg{width:32px;height:32px;fill:#fff}
-.lgWaBub{background:#fff;color:#15251f;border-radius:14px;border-bottom-right-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.22);padding:12px 34px 12px 14px;font-size:14px;line-height:1.45;max-width:250px;position:relative;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .35s ease,transform .35s ease;font-family:Arial,Helvetica,sans-serif}
-.lgWaBub.show{opacity:1;transform:none;pointer-events:auto}
-.lgWaBub b{display:block;margin-bottom:2px}
-.lgWaX{position:absolute;top:5px;right:8px;border:0;background:transparent;font-size:16px;line-height:1;color:#62736a;cursor:pointer;padding:2px}
-@media(max-width:600px){.lgTrustIn{padding:10px 14px;font-size:13px;gap:8px 16px}.lgWa{right:12px;bottom:12px}.lgWaBub{max-width:205px}}
-</style>
-<script id="bucketA-js">
-(function(){
-"use strict";
-/* ================================================================
-   BUCKET A — CIFRAS DE CONFIANZA (acción pendiente de Legra):
-   Google rating / # de reseñas / # de proyectos NO se pudieron
-   verificar el 2026-11-12 (Google no mostró conteo público y la
-   Base de Quotes aún es pequeña). Cuando Legra confirme las cifras
-   reales, ponerlas aquí y los chips aparecen solos en todo el sitio:
-     TRUST_CFG.googleRating = 5.0; TRUST_CFG.googleReviews = 123;
-     TRUST_CFG.projects = 45;
-   Mientras sean null, esos chips NO se muestran. NO inventar cifras.
-   ================================================================ */
-var TRUST_CFG={googleRating:null,googleReviews:null,projects:null};
-var WA_NUM="13462131203";
-var TXT={
- es:{fin:"FINANCIAMIENTO DISPONIBLE \u00B7 Precalifica sin afectar tu cr\u00E9dito \u00B7 Lyon Financial \u00B7 Acorn Finance \u00B7 ",
-     free:"Estimado gratis en l\u00EDnea",design:"Dise\u00F1o 3D gratis",fin2:"Financiamiento disponible",
-     cities:"Houston \u00B7 Austin \u00B7 San Antonio \u00B7 Dallas",
-     grev:function(r,n){return "\u2605 "+r+" en Google \u00B7 "+n+" rese\u00F1as";},
-     proj:function(n){return n+"+ proyectos completados";},
-     waBubT:"\u00A1Hola! \uD83D\uDC4B",waBub:"\u00BFTe ayudamos con tu estimado gratis?",
-     waText:"Hola, vengo del website de Legra's Outdoor Systems y quiero un estimado gratis."},
- en:{fin:"FINANCING AVAILABLE \u00B7 Pre-qualify without affecting your credit \u00B7 Lyon Financial \u00B7 Acorn Finance \u00B7 ",
-     free:"Free online estimate",design:"Free 3D design",fin2:"Financing available",
-     cities:"Houston \u00B7 Austin \u00B7 San Antonio \u00B7 Dallas",
-     grev:function(r,n){return "\u2605 "+r+" on Google \u00B7 "+n+" reviews";},
-     proj:function(n){return n+"+ completed projects";},
-     waBubT:"Hi there! \uD83D\uDC4B",waBub:"Can we help you with your free estimate?",
-     waText:"Hi, I found Legra's Outdoor Systems online and I'd like a free estimate."}};
-function curLang(){var l=(document.documentElement.lang||"es").toLowerCase();return l.indexOf("en")===0?"en":"es";}
-function waHref(t){return "https://wa.me/"+WA_NUM+"?text="+encodeURIComponent(t.waText);}
-var mq=document.createElement("div");mq.className="lgMq";mq.setAttribute("aria-hidden","true");
-var mqTrack=document.createElement("div");mqTrack.className="lgMqTrack";mq.appendChild(mqTrack);
-var trustHost=document.getElementById("bucketTrust");
-var trust=document.createElement("div");trust.className="lgTrust";
-var trustIn=document.createElement("div");trustIn.className="lgTrustIn";trust.appendChild(trustIn);
-if(trustHost){trustHost.appendChild(trust);} 
-var wa=document.createElement("a");wa.className="lgWa";wa.target="_blank";wa.rel="noopener";wa.setAttribute("aria-label","WhatsApp");
-var bub=document.createElement("span");bub.className="lgWaBub";
-var bubT=document.createElement("b");var bubTx=document.createElement("span");
-var bubX=document.createElement("button");bubX.className="lgWaX";bubX.type="button";bubX.setAttribute("aria-label","Close");bubX.textContent="\u00D7";
-bubX.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();bub.classList.remove("show");});
-bub.appendChild(bubT);bub.appendChild(bubTx);bub.appendChild(bubX);
-var wbtn=document.createElement("span");wbtn.className="lgWaBtn";
-wbtn.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.4.7 4.6 2 6.5L4 29l7.7-2c1.8 1 3.9 1.5 6 1.5 6.6 0 12-5.4 12-12S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.5l-.4-.2-4 1 1.1-3.9-.3-.4a8.8 8.8 0 0 1-1.3-4.7c0-4.9 4-8.9 8.9-8.9s8.9 4 8.9 8.9-3.9 8.9-8.7 8.9zm4.9-6.6c-.3-.1-1.6-.8-1.9-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1a7.3 7.3 0 0 1-3.6-3.1c-.3-.5.3-.4 1.3-2.2.1-.2 0-.4 0-.5l-.9-2.1c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.6-.7 1.9-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.5-.3z"/></svg>';
-wa.appendChild(bub);wa.appendChild(wbtn);
-function render(){
-  var t=TXT[curLang()];
-  mqTrack.textContent=t.fin+t.fin+t.fin;
-  var chips=[];
-  if(TRUST_CFG.googleRating&&TRUST_CFG.googleReviews){chips.push('<span class="lgChip"><span class="lgStar">\u2605\u2605\u2605\u2605\u2605</span>'+t.grev(TRUST_CFG.googleRating,TRUST_CFG.googleReviews)+'</span>');}
-  if(TRUST_CFG.projects){chips.push('<span class="lgChip">'+t.proj(TRUST_CFG.projects)+'</span>');}
-  chips.push('<span class="lgChip"><span class="lgOk">\u2713</span>'+t.free+'</span>');
-  chips.push('<span class="lgChip"><span class="lgOk">\u2713</span>'+t.design+'</span>');
-  chips.push('<span class="lgChip"><span class="lgOk">\u2713</span>'+t.fin2+'</span>');
-  chips.push('<span class="lgChip lgCities">\uD83D\uDCCD '+t.cities+'</span>');
-  trustIn.innerHTML=chips.join("");
-  bubT.textContent=t.waBubT;bubTx.textContent=t.waBub;
-  wa.href=waHref(t);
-}
-function mount(){
-  if(!document.body)return;
-  if(!mq.parentNode)document.body.insertBefore(mq,document.body.firstChild);
-  if(!trustHost&&!trust.parentNode&&mq.parentNode)mq.parentNode.insertBefore(trust,mq.nextSibling);
-  if(!wa.parentNode)document.body.appendChild(wa);
-  render();
-  setTimeout(function(){bub.classList.add("show");},5000);
-}
-if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",mount);}else{mount();}
-new MutationObserver(function(){render();}).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+
+<script>
+/* ===== v3.6: flujo guiado — Step 1 se recoge, Step 2 avanza solo, foto = selección ===== */
+(function () {
+  "use strict";
+  var REQ = ["client-firstname", "client-lastname", "client-phone", "addr-street", "addr-city", "addr-state", "addr-zip"];
+  function el(id) { return document.getElementById(id); }
+  function langEn() { var b = el("lang-en"); return !!(b && b.classList.contains("active")); }
+  function txt(es, en) { return langEn() ? en : es; }
+
+  /* ---------- Step 1: recoger / desplegar ---------- */
+  var clientSec = document.querySelector('section.card[aria-label="client"]');
+  var calcForm = el("calc-form");
+  var summary = null;
+  function clientComplete() {
+    return REQ.every(function (id) { var e = el(id); return e && String(e.value || "").trim().length > 0; });
+  }
+  function summaryText() {
+    var v = function (id) { var e = el(id); return e ? String(e.value || "").trim() : ""; };
+    var name = (v("client-firstname") + " " + v("client-lastname")).trim();
+    var addr = (v("addr-street") + ", " + v("addr-city") + ", " + v("addr-state") + " " + v("addr-zip")).replace(/\s+,/g, ",").trim();
+    var parts = [];
+    if (v("estimate-no")) parts.push(v("estimate-no"));
+    if (name) parts.push(name);
+    if (v("client-phone")) parts.push(v("client-phone"));
+    if (addr.replace(/,/g, "").trim()) parts.push(addr);
+    return parts.join("  ·  ");
+  }
+  function renderSummary() {
+    if (!summary) return;
+    summary.querySelector(".cf-sum-text").textContent = "✓ " + summaryText();
+    summary.querySelector(".cf-sum-edit").textContent = txt("Editar", "Edit");
+  }
+  function collapseClient() {
+    if (!clientSec || !calcForm || !clientComplete()) return;
+    renderSummary();
+    calcForm.style.display = "none";
+    if (summary) summary.style.display = "";
+    var sa = el("cf-show-all"); if (sa) sa.style.display = "none";
+    clientSec.classList.add("cf-collapsed");
+  }
+  function expandClient() {
+    if (!calcForm) return;
+    calcForm.style.display = "";
+    if (summary) summary.style.display = "none";
+    var sa = el("cf-show-all"); if (sa) sa.style.display = "";
+    if (clientSec) clientSec.classList.remove("cf-collapsed");
+  }
+  window.__v36CollapseClient = collapseClient;
+  window.__v36ExpandClient = expandClient;
+  if (clientSec && calcForm) {
+    summary = document.createElement("div");
+    summary.id = "cf-summary";
+    summary.style.display = "none";
+    summary.setAttribute("role", "button");
+    summary.setAttribute("tabindex", "0");
+    summary.innerHTML = '<span class="cf-sum-text"></span><span class="cf-sum-edit"></span>';
+    calcForm.parentNode.insertBefore(summary, calcForm.nextSibling);
+    summary.addEventListener("click", expandClient);
+    summary.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); expandClient(); } });
+    calcForm.addEventListener("focusout", function () {
+      setTimeout(function () {
+        if (!calcForm.contains(document.activeElement)) collapseClient();
+      }, 300);
+    });
+    ["lang-es", "lang-en"].forEach(function (id) {
+      var b = el(id); if (b) b.addEventListener("click", function () { setTimeout(renderSummary, 60); });
+    });
+  }
+  // Al tocar el Step 2 o el Step 3: si el Step 1 está completo se recoge;
+  // si falta algo, se despliega para que la guarda de requeridos lo muestre.
+  document.addEventListener("click", function (e) {
+    if (!e.target || !e.target.closest) return;
+    if (e.target.closest("#kitchen-form") || e.target.closest('section.card[aria-label="results"]')) {
+      if (clientComplete()) collapseClient(); else expandClient();
+    }
+  }, true);
+
+  /* ---------- Step 2: acordeón que avanza solo ---------- */
+  var kitchenForm = el("kitchen-form");
+  if (!kitchenForm) return;
+  function sections() {
+    return Array.prototype.filter.call(kitchenForm.querySelectorAll(":scope > fieldset"), function (fs) {
+      return fs.style.display !== "none" && !!(fs.querySelector(":scope > .acc-body"));
+    });
+  }
+  function bodyOf(fs) { return fs.querySelector(":scope > .acc-body"); }
+  function isOpen(fs) { var b = bodyOf(fs); return !!(b && !b.hidden); }
+  function setCatalogs(fs, open) {
+    fs.querySelectorAll("details.catdet, details.stone-charts").forEach(function (d) { d.open = open; });
+  }
+  function openSec(fs, scroll) {
+    sections().forEach(function (o) { if (o !== fs) closeSec(o); });
+    var b = bodyOf(fs); if (!b) return;
+    b.hidden = false; fs.classList.add("open"); setCatalogs(fs, true);
+    if (scroll) { try { fs.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) {} }
+  }
+  function closeSec(fs) {
+    var b = bodyOf(fs); if (!b) return;
+    b.hidden = true; fs.classList.remove("open"); setCatalogs(fs, false);
+  }
+  function segActive(fs, group) {
+    return fs.querySelector('.seg[data-group="' + group + '"] button.active');
+  }
+  function visSelects(fs, sel) {
+    return Array.prototype.filter.call(fs.querySelectorAll(sel), function (s) {
+      var n = s;
+      while (n && n !== fs) { if (n.style && n.style.display === "none") return false; n = n.parentElement; }
+      return true;
+    });
+  }
+  function allTouched(fs, sel) {
+    var sels = visSelects(fs, sel);
+    if (!sels.length) return false;
+    return sels.every(function (s) { return s.dataset.v36t === "1" && String(s.value) !== ""; });
+  }
+  function secKind(fs) {
+    if (fs.querySelector('.seg[data-group="ktype"]')) return "ktype";
+    if (fs.querySelector('.seg[data-group="ksize"]')) return "ksize";
+    if (fs.querySelector("#rows-panels")) return "panels";
+    if (fs.querySelector("#storage-selects")) return "storage";
+    if (fs.querySelector("#rows-stone")) return "stone";
+    if (fs.querySelector("#rows-equip")) return "equip";
+    if (fs.querySelector("#island-on")) return "island";
+    return "other";
+  }
+  function secComplete(fs) {
+    var kind = secKind(fs);
+    if (kind === "ktype") return !!segActive(fs, "ktype");
+    if (kind === "ksize") {
+      var b = segActive(fs, "ksize"); if (!b) return false;
+      if (b.getAttribute("data-value") === "custom") { var f = el("ksize-ft"); return !!(f && parseFloat(f.value) > 0); }
+      return true;
+    }
+    if (kind === "panels") return allTouched(fs, "#rows-panels select");
+    if (kind === "storage") {
+      var sels = visSelects(fs, '#storage-selects select[id^="sto_"]');
+      if (!sels.length) return !!segActive(fs, "nstorage");
+      return sels.every(function (s) { return s.dataset.v36t === "1" && String(s.value) !== ""; });
+    }
+    if (kind === "stone") return allTouched(fs, "#rows-stone select");
+    return false; // equip / island / other: cierre manual (selección múltiple)
+  }
+  var advTimer = null;
+  function checkAdvance(fs) {
+    clearTimeout(advTimer);
+    advTimer = setTimeout(function () {
+      if (!isOpen(fs) || !secComplete(fs)) return;
+      var list = sections(), i = list.indexOf(fs);
+      closeSec(fs);
+      if (i >= 0 && i < list.length - 1) openSec(list[i + 1], true);
+    }, 450);
+  }
+  kitchenForm.addEventListener("click", function (e) {
+    var fs = e.target.closest ? e.target.closest("fieldset") : null;
+    if (!fs || sections().indexOf(fs) < 0) return;
+    if (e.target.closest("select")) e.target.dataset.v36t = "1";
+    if (e.target.closest("legend")) {
+      setTimeout(function () {
+        if (isOpen(fs)) openSec(fs, false); else closeSec(fs);
+      }, 0);
+      return;
+    }
+    checkAdvance(fs);
+  });
+  kitchenForm.addEventListener("change", function (e) {
+    var fs = e.target.closest ? e.target.closest("fieldset") : null;
+    if (!fs || sections().indexOf(fs) < 0) return;
+    if (e.target.matches && e.target.matches("select, input")) e.target.dataset.v36t = "1";
+    checkAdvance(fs);
+  });
+
+  /* ---------- La foto es la selección ---------- */
+  function frac(e, img) {
+    var r = img.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    return { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height };
+  }
+  function tapSelect(img, fn) {
+    if (!img) return;
+    img.style.cursor = "pointer";
+    img.addEventListener("click", function (e) { var f = frac(e, img); if (f) fn(f); });
+  }
+  // Tipos: tríptico MOBILE | MODULAR | PERMANENT (izquierda a derecha)
+  tapSelect(document.querySelector('img[data-cat="cat-tipos"]'), function (f) {
+    var val = f.x < 1 / 3 ? "movil" : (f.x < 2 / 3 ? "modular" : "permanente");
+    var b = document.querySelector('.seg[data-group="ktype"] button[data-value="' + val + '"]');
+    if (b) b.click();
+  });
+  // Paneles: 8 colores numerados en franjas iguales (zona de muestras)
+  tapSelect(el("panel-photo"), function (f) {
+    if (f.y < 0.30 || f.y > 0.92) return;
+    var idx = Math.floor((f.x - 0.028) / ((0.972 - 0.028) / 8));
+    idx = Math.max(0, Math.min(7, idx));
+    var sel = el("s_wallpanel");
+    if (sel && sel.options.length > idx) {
+      sel.selectedIndex = idx; sel.dataset.v36t = "1";
+      sel.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
+  // Storage: rejilla 3x2 — [Doble puerta, Doble cajón, Trash] / [3 cajones, Puerta sencilla, Combo grande]
+  tapSelect(document.querySelector('img[data-cat="cat-almacenamiento"]'), function (f) {
+    if (f.y < 0.15) return;
+    var col = Math.max(0, Math.min(2, Math.floor(f.x * 3)));
+    var row = f.y < 0.575 ? 0 : 1;
+    var map = [[1, 3, 4], [2, 0, 6]];
+    var val = String(map[row][col]);
+    var sels = document.querySelectorAll('#storage-selects select[id^="sto_"]');
+    if (!sels.length) {
+      var b0 = document.querySelector('.seg[data-group="nstorage"] button[data-value="1"]');
+      if (b0) b0.click();
+      sels = document.querySelectorAll('#storage-selects select[id^="sto_"]');
+    }
+    var target = null;
+    Array.prototype.forEach.call(sels, function (s) { if (!target && s.dataset.v36t !== "1") target = s; });
+    if (!target && sels.length) target = sels[sels.length - 1];
+    if (target) {
+      target.value = val; target.dataset.v36t = "1";
+      target.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
 })();
 </script>
-<!-- ===== /BUCKET A ===== -->
+<style>
+#cf-summary{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#eef6f0;border:1.5px solid #004020;border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:600;color:#17351f}
+#cf-summary .cf-sum-edit{background:#004020;color:#f2c94c;border-radius:999px;padding:5px 14px;font-weight:800;font-size:.85rem;white-space:nowrap}
+img[data-cat="cat-tipos"],img[data-cat="cat-almacenamiento"],#panel-photo{cursor:pointer}
+@media print{#cf-summary{display:none!important}}
+</style>
 
+ <style>.homeBtn{position:fixed;top:10px;left:10px;z-index:99999;background:#062d23;color:#d7ac59;border:1.5px solid #d7ac59;border-radius:999px;padding:9px 16px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.35)}@media print{.homeBtn{display:none!important}}</style>
+<a class="homeBtn" href="https://legra-outdoor-systems.com/">&#8592; Volver al inicio</a>
 </body>
 </html>
