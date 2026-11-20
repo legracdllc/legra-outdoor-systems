@@ -23,7 +23,7 @@ header{background:linear-gradient(90deg,#03211a,#07382a 60%,#0a4230);display:fle
 .wordmark .l1{font-size:21px;font-weight:800;letter-spacing:2.5px;color:var(--gold)}
 .wordmark .l1 span{color:#fff;font-weight:600}
 .wordmark .l2{font-size:10px;letter-spacing:3.5px;color:#bcd6c9;margin-top:3px}
-.phone{display:flex;align-items:center;gap:9px;color:var(--gold);font-weight:700;font-size:17px;letter-spacing:.5px}
+.phone{display:flex;align-items:center;gap:9px;color:var(--gold);font-weight:700;font-size:17px;letter-spacing:.5px;white-space:nowrap;flex:0 0 auto}
 .phone small{display:block;color:#9dbfae;font-weight:500;font-size:10.5px;letter-spacing:1.5px;text-align:right}
 /* ---------- steps ---------- */
 .steps{display:flex;gap:4px;background:#052a20;padding:9px 16px;flex:0 0 auto}
@@ -204,8 +204,8 @@ body[data-step="6"] .floatctl{display:flex}
 .selbox .note{font-size:9.5px;color:#5f7268;margin-top:5px;line-height:1.35}
 @media(max-width:900px){
   .workspace{flex-direction:column;overflow-y:auto}
-  .optpanel{width:auto;flex:0 0 auto;overflow:visible;border-right:0;border-bottom:1px solid rgba(215,172,89,.35);order:1}
-  .viewer{flex:0 0 54vh;order:2;min-height:340px}
+  .optpanel{width:auto;flex:0 0 auto;overflow:visible;border-right:0;border-bottom:1px solid rgba(215,172,89,.35);order:2}
+  .viewer{flex:0 0 54vh;order:1;min-height:340px}
   body[data-step="6"] .viewer{flex:1 1 auto}
 }
 
@@ -245,6 +245,10 @@ body[data-step="6"] .floatctl{display:flex}
   .step{flex:0 1 auto;padding:8px 3px}
   .step.active{flex:1 1 auto;padding:8px 6px}
   .step:not(.active) .sname{display:none}
+  /* v3.12 · números de paso SIEMPRE visibles: sin la flecha que los tapaba
+     y con el número en círculo dorado de alto contraste. */
+  .step:not(.active){clip-path:none;border-radius:9px;min-width:37px}
+  .step:not(.active) .n{background:var(--gold);color:#241a04;font-weight:800}
   .step:not(.active) .n{margin-right:0}
   .step.active .sname{white-space:nowrap}
   .langsw button{padding:5px 6px;font-size:10.5px}
@@ -453,8 +457,8 @@ body[data-step="5"] .stonepreview,body[data-step="6"] .stonepreview{display:bloc
     <canvas id="scene" aria-label="Vista 3D interactiva de la cocina exterior"></canvas>
     <div class="badge" id="badge">Cocina <b>permanente</b> · <b>6 ft</b> · sin isla</div>
     <div class="viewbtns">
-      <button id="vFront" data-i18n="vFront">Frontal</button>
-      <button id="vIso" class="on" data-i18n="vIso">Isométrica</button>
+      <button id="vFront" class="on" data-i18n="vFront">Frontal</button>
+      <button id="vIso" data-i18n="vIso">Isométrica</button>
       <button id="vTop" data-i18n="vTop">Superior</button>
     </div>
     <div class="floatctl">
@@ -844,7 +848,7 @@ var cfg = {
   storages: [],
   lang: 'es'                    // v10 · interfaz ES/EN (corrección 18)
 };
-var cam = { yaw: -0.62, pitch: 0.52, zoom: 1.0 };
+var cam = { yaw: 0, pitch: 0.16, zoom: 1.0 };
 /* v13 · la vista previa flotante de la piedra se ELIMINÓ (la «ventana» sobre la encimera): la piedra se aplica al instante en el render */
 var backdropMesh = null;                              /* v12 · cilindro de fondo (cerca o árboles) */
 
