@@ -2934,7 +2934,7 @@ render();
 (function(){
   if (!/[?&]embed=1/.test(location.search)) return;
   var st = document.createElement('style');
-  st.textContent = '#docBar{display:none!important}';
+  st.textContent = '#docBar{display:none!important}.selbar-total{display:none!important}#selBar .total{display:none!important}#selBar .row:has(#selDep){display:none!important}';
   document.head.appendChild(st);
   var last = '';
   function send(){
