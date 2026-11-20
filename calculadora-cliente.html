@@ -4120,7 +4120,7 @@ function __qWrap(name) {
     </script>
 
 <script>
-/* ===== v3.8: Step 2 = diseñador 3D embebido que alimenta el precio del Step 3 ===== */
+/* ===== v3.9: diseñador 3D a la izquierda bajo el Step 1, alimenta el precio del Step 3 ===== */
 (function () {
   "use strict";
   var REQ = ["client-firstname", "client-lastname", "client-phone", "addr-street", "addr-city", "addr-state", "addr-zip"];
@@ -4498,6 +4498,22 @@ function __qWrap(name) {
       if (!b || b.getAttribute("data-value") !== lastCfg.type) applyCfg(lastCfg);
     }, 350);
   });
+
+  /* ---------- Layout v3.9: el 3D siempre abierto a la IZQUIERDA, debajo del Step 1 ---------- */
+  var clientSec = document.querySelector('section.card[aria-label="client"]');
+  var kitchenSec = document.querySelector('section.card[aria-label="kitchen"]');
+  var resultsSec = document.querySelector('section.card[aria-label="results"]');
+  if (clientSec && kitchenSec && resultsSec && clientSec.parentNode) {
+    var wrap = document.createElement("div");
+    wrap.id = "layout-3d";
+    var left = document.createElement("div"); left.className = "col-3d";
+    var right = document.createElement("div"); right.className = "col-est";
+    clientSec.parentNode.insertBefore(wrap, clientSec.nextSibling);
+    left.appendChild(kitchenSec);
+    right.appendChild(resultsSec);
+    wrap.appendChild(left);
+    wrap.appendChild(right);
+  }
 })();
 </script>
 <style>
@@ -4511,6 +4527,9 @@ img[data-cat="cat-tipos"],img[data-cat="cat-almacenamiento"],#panel-photo,img[da
 #d3d-status{background:#eef6f0;border:1.5px solid #004020;border-radius:10px;padding:9px 13px;font-weight:700;color:#17351f;margin:10px 0 4px}
 #d3d-status:empty{display:none}
 .d3d-full{margin:6px 0 2px;font-weight:700}
+#layout-3d{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px;align-items:start}
+#layout-3d .col-3d{position:sticky;top:10px}
+@media (max-width:900px){#layout-3d{grid-template-columns:1fr}#layout-3d .col-3d{position:static}}
 @media print{#cf-summary{display:none!important}}
 </style>
 
