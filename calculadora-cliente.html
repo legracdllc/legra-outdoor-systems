@@ -4120,7 +4120,7 @@ function __qWrap(name) {
     </script>
 
 <script>
-/* ===== v3.9: diseñador 3D a la izquierda bajo el Step 1, alimenta el precio del Step 3 ===== */
+/* ===== v3.10 móvil bajo el Step 1, alimenta el precio del Step 3 ===== */
 (function () {
   "use strict";
   var REQ = ["client-firstname", "client-lastname", "client-phone", "addr-street", "addr-city", "addr-state", "addr-zip"];
@@ -4514,6 +4514,15 @@ function __qWrap(name) {
     wrap.appendChild(left);
     wrap.appendChild(right);
   }
+
+  /* ---------- Guarda anti-salto: al tocar el 3D, la página no brinca arriba ---------- */
+  var lastY = 0;
+  window.addEventListener("blur", function () {
+    var y = window.scrollY || 0;
+    setTimeout(function () {
+      if (Math.abs((window.scrollY || 0) - y) > 240) window.scrollTo(0, y);
+    }, 60);
+  });
 })();
 </script>
 <style>
@@ -4530,6 +4539,18 @@ img[data-cat="cat-tipos"],img[data-cat="cat-almacenamiento"],#panel-photo,img[da
 #layout-3d{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px;align-items:start;grid-column:1/-1}
 #layout-3d .col-3d{position:sticky;top:10px}
 @media (max-width:900px){#layout-3d{grid-template-columns:1fr}#layout-3d .col-3d{position:static}}
+@media (max-width:640px){
+.wrap{padding:12px 10px 28px}
+.card{padding:14px 12px;border-radius:14px}
+input,select,textarea{font-size:16px!important;min-height:48px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{min-height:48px;font-size:15px;padding:10px 12px}
+#cf-summary{flex-wrap:wrap;gap:6px}
+#d3d-frame{height:1120px}
+.d3d-full a{display:inline-block;padding:12px 6px;font-size:16px}
+#price-reveal{width:100%;min-height:54px;font-size:17px}
+button.btn-primary,.btn-primary{min-height:52px}
+}
 @media print{#cf-summary{display:none!important}}
 </style>
 
